@@ -2,7 +2,6 @@
 환경변수 설정 — Pydantic Settings 기반
 Railway 배포 및 로컬 개발 환경 모두 지원
 """
-from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -20,16 +19,13 @@ class Settings(BaseSettings):
     # Railway 환경 (development / production)
     railway_environment: str = "development"
 
-    # CORS 허용 오리진 목록 (환경변수에서 쉼표 구분 문자열로 전달)
-    allowed_origins: list[str] = ["http://localhost:3000"]
+    # CORS 허용 오리진 (쉼표 구분 문자열, 예: "http://localhost:3000,http://localhost:3001")
+    allowed_origins: str = "http://localhost:3000"
 
-    @field_validator("allowed_origins", mode="before")
-    @classmethod
-    def parse_origins(cls, v: object) -> list[str]:
-        """쉼표 구분 문자열을 리스트로 변환"""
-        if isinstance(v, str):
-            return [origin.strip() for origin in v.split(",") if origin.strip()]
-        return v  # type: ignore[return-value]
+    @property
+    def cors_origins(self) -> list[str]:
+        """CORS 오리진 리스트 반환"""
+        return [o.strip() for o in self.allowed_origins.split(",") if o.strip()]
 
     model_config = SettingsConfigDict(
         env_file=".env",
