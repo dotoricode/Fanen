@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 파낸 브랜드 CSS 변수 */
+:root {
+  --color-primary: #1A56DB;
+  --color-secondary: #0E9F6E;
+  --color-danger: #E02424;
+  --color-background: #ffffff;
+  --color-foreground: #171717;
+}
+
+/* 다크 모드 기본 지원 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: #0a0a0a;
+    --color-foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--color-foreground);
+  background: var(--color-background);
+}
+
+/* Senior 모드 — 글자 크기 확대, 고대비 */
+.senior {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+.senior h1 {
+  font-size: 2.5rem;
+  line-height: 3rem;
+}
+
+.senior h2 {
+  font-size: 2rem;
+  line-height: 2.5rem;
+}
+
+.senior h3 {
+  font-size: 1.75rem;
+  line-height: 2.25rem;
+}
+
+.senior h4 {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+/* Senior 모드 버튼 — 터치 영역 확대 */
+.senior button,
+.senior a {
+  min-height: 48px;
+  padding: 12px 24px;
+}

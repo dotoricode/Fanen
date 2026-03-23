@@ -1,0 +1,16 @@
+# 환경변수
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+.venv/
+*.pyc
+.pytest_cache/
+dist/
+
+# IDE
+.idea/
+.vscode/
+*.swp
