@@ -14,7 +14,7 @@
 | DB | Supabase (PostgreSQL + Auth + RLS + Realtime + TimescaleDB) |
 | 캐시 | Upstash Redis |
 | AI 서비스 | FastAPI (Python) → Railway 서울 리전 |
-| AI 모델 | Claude API + FinBERT |
+| AI 모델 | Gemini API + FinBERT |
 | 차트 | TradingView Lightweight Charts + D3.js |
 | 음성 | Whisper API (STT) + Clova Voice (TTS) |
 
@@ -110,7 +110,7 @@ RAILWAY_API_URL=http://localhost:8000
 SUPABASE_URL=your_supabase_url
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 SUPABASE_JWT_SECRET=your_jwt_secret
-ANTHROPIC_API_KEY=your_anthropic_api_key
+GEMINI_API_KEY=your_gemini_api_key
 UPSTASH_REDIS_URL=your_redis_url
 UPSTASH_REDIS_TOKEN=your_redis_token
 ```

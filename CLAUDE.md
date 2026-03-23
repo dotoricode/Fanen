@@ -11,7 +11,7 @@
 - DB: Supabase (서울 리전 ap-northeast-2 고정)
 - 캐시: Upstash Redis
 - AI 서비스: FastAPI → Railway 서울 리전
-- AI 모델: Claude API + FinBERT
+- AI 모델: Gemini API + FinBERT
 - 차트: TradingView Lightweight Charts + D3.js
 - 음성: Whisper API (STT) + Clova Voice (TTS)
 
