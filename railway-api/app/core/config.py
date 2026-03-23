@@ -2,6 +2,7 @@
 환경변수 설정 — Pydantic Settings 기반
 Railway 배포 및 로컬 개발 환경 모두 지원
 """
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -9,18 +10,26 @@ class Settings(BaseSettings):
     """파낸 AI API 환경변수 설정"""
 
     # Supabase 연결 정보
-    supabase_url: str
-    supabase_service_role_key: str
-    supabase_jwt_secret: str
+    supabase_url: str = ""
+    supabase_service_role_key: str = ""
+    supabase_jwt_secret: str = ""
 
     # Google Gemini API 키
-    gemini_api_key: str
+    gemini_api_key: str = ""
 
     # Railway 환경 (development / production)
     railway_environment: str = "development"
 
-    # CORS 허용 오리진 목록
+    # CORS 허용 오리진 목록 (환경변수에서 쉼표 구분 문자열로 전달)
     allowed_origins: list[str] = ["http://localhost:3000"]
+
+    @field_validator("allowed_origins", mode="before")
+    @classmethod
+    def parse_origins(cls, v: object) -> list[str]:
+        """쉼표 구분 문자열을 리스트로 변환"""
+        if isinstance(v, str):
+            return [origin.strip() for origin in v.split(",") if origin.strip()]
+        return v  # type: ignore[return-value]
 
     model_config = SettingsConfigDict(
         env_file=".env",
