@@ -3,10 +3,10 @@
 /**
  * AI 코치 채팅 메시지 말풍선 컴포넌트
  * - user: 오른쪽 정렬 파란색 말풍선
- * - assistant: 왼쪽 정렬 흰색 말풍선 + 핀이 아이콘
+ * - assistant: 왼쪽 정렬 흰색 말풍선 + 반디 아이콘
  */
 import AiBadge from '@/components/common/AiBadge';
-import { FinniAvatar } from './FinniAvatar';
+import { BandiAvatar } from './BandiAvatar';
 import type { ChatMessage as ChatMessageType } from '../types';
 
 /** ChatMessage Props */
@@ -24,7 +24,7 @@ export default function ChatMessage({ message, isLoading = false }: ChatMessageP
   if (isUser) {
     return (
       <div className="flex justify-end">
-        <div className="max-w-[75%] rounded-2xl rounded-tr-sm bg-blue-600 px-4 py-3 text-white">
+        <div className="max-w-[75%] rounded-2xl rounded-tr-sm bg-teal-600 px-4 py-3 text-white">
           <p className="whitespace-pre-wrap text-sm leading-relaxed">{message.content}</p>
         </div>
       </div>
@@ -33,9 +33,9 @@ export default function ChatMessage({ message, isLoading = false }: ChatMessageP
 
   return (
     <div className="flex items-start gap-2">
-      {/* 핀이 SVG 아바타 */}
+      {/* 반디 SVG 아바타 */}
       <div className="shrink-0">
-        <FinniAvatar size={32} mood="thinking" />
+        <BandiAvatar size={32} mood="thinking" />
       </div>
 
       {/* 말풍선 */}

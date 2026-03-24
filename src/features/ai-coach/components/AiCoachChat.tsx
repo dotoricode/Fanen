@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * AI 코치 "핀이" 채팅 UI 통합 컴포넌트
+ * AI 코치 "반디" 채팅 UI 통합 컴포넌트
  * - useAiCoach 훅으로 메시지 상태 관리
  * - DisclaimerBanner 필수 렌더링
  * - 빠른 질문 버튼 (환영 메시지만 있을 때)
@@ -13,9 +13,9 @@ import { useAiCoach } from '../hooks/useAiCoach';
 import { QUICK_QUESTIONS } from '../types';
 import ChatMessageComponent from './ChatMessage';
 import ChatInput from './ChatInput';
-import { FinniAvatar } from './FinniAvatar';
+import { BandiAvatar } from './BandiAvatar';
 
-/** AI 코치 핀이 채팅 통합 컴포넌트 */
+/** AI 코치 반디 채팅 통합 컴포넌트 */
 export default function AiCoachChat() {
   const { messages, loading, error, sendMessage, clearHistory } = useAiCoach();
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -33,10 +33,10 @@ export default function AiCoachChat() {
       {/* 헤더 */}
       <div className="flex items-center justify-between border-b border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-3">
         <div className="flex items-center gap-3">
-          {/* 핀이 SVG 아바타 */}
-          <FinniAvatar size={40} mood="happy" />
+          {/* 반디 SVG 아바타 */}
+          <BandiAvatar size={40} mood="happy" animate />
           <div>
-            <p className="text-sm font-semibold text-gray-900 dark:text-slate-100">핀이 (FinAI)</p>
+            <p className="text-sm font-semibold text-gray-900 dark:text-slate-100">반디 (Bandi)</p>
             <p className="text-xs text-gray-500 dark:text-slate-500">AI 투자 코치</p>
           </div>
         </div>

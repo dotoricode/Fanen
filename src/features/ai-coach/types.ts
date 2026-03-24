@@ -1,4 +1,4 @@
-/** AI 코치 "핀이" 기능 타입 정의 */
+/** AI 코치 "반디" 기능 타입 정의 */
 
 /** 채팅 메시지 인터페이스 */
 export interface ChatMessage {

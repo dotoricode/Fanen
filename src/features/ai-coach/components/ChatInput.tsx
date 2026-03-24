@@ -122,7 +122,7 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
         onChange={handleChange}
         onKeyDown={handleKeyDown}
         disabled={disabled}
-        placeholder="핀이에게 투자 질문을 입력하세요…"
+        placeholder="반디에게 투자 질문을 입력하세요…"
         rows={1}
         className="max-h-40 flex-1 resize-none bg-transparent text-sm leading-relaxed text-gray-800 dark:text-slate-200 placeholder-gray-400 dark:placeholder-slate-500 outline-none disabled:opacity-50"
         aria-label="채팅 입력"

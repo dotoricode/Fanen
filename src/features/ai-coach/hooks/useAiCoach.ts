@@ -1,5 +1,5 @@
 /**
- * AI 코치 "핀이" 채팅 훅
+ * AI 코치 "반디" 채팅 훅
  * 메시지 상태 관리, localStorage 히스토리 저장, Railway API / Mock 분기
  * 주의: 'use client' 지시어 없음 — 훅은 클라이언트 컴포넌트 내부에서 import
  */
@@ -17,7 +17,7 @@ const WELCOME_MESSAGE: ChatMessage = {
   id: 'welcome',
   role: 'assistant',
   content:
-    '안녕하세요! 저는 AI 투자 코치 핀이입니다. 투자에 관한 궁금한 점을 편하게 물어보세요. 단, 본 내용은 투자 참고자료이며 실제 투자 결정은 신중하게 해주세요.',
+    '안녕하세요! 저는 AI 투자 코치 반디입니다. 투자에 관한 궁금한 점을 편하게 물어보세요. 단, 본 내용은 투자 참고자료이며 실제 투자 결정은 신중하게 해주세요.',
   source_urls: [],
   timestamp: new Date(),
 };
@@ -62,7 +62,7 @@ export function useAiCoach(): UseAiCoachReturn {
   }, [messages]);
 
   /**
-   * 사용자 질문을 전송하고 핀이 응답을 메시지 목록에 추가
+   * 사용자 질문을 전송하고 반디 응답을 메시지 목록에 추가
    * Mock 모드: mockAskCoach로 1.5초 지연 후 랜덤 응답
    * 실 환경: Railway API 호출
    */

@@ -1,4 +1,4 @@
-/** AI 코치 핀이 Mock 응답 데이터 */
+/** AI 코치 반디 Mock 응답 데이터 */
 
 /** Mock 응답 목록 */
 const MOCK_RESPONSES = [
