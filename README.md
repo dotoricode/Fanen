@@ -51,8 +51,8 @@ fanen/
 ### 사전 요구사항
 
 - Node.js 18+
-- Python 3.11+
-- Supabase CLI (선택)
+- Python 3.12 (3.14 미지원 — [이슈 참고](docs/troubleshooting.md#2-pydantic-core-빌드-실패-python-314))
+- Colima (Docker 런타임) + Supabase CLI
 
 ### Frontend (Next.js)
 
@@ -92,15 +92,24 @@ uvicorn app.main:app --reload --port 8000
 
 `http://localhost:8000/health`에서 헬스체크 가능합니다.
 
-### Supabase 마이그레이션
+### Supabase 로컬 개발
 
 ```bash
-# Supabase CLI로 로컬 실행
+# 0. Colima 실행 확인 (macOS 재시작 시 매번 필요)
+colima start
+
+# 1. 로컬 Supabase 시작 (마이그레이션 자동 적용)
 supabase start
 
-# 마이그레이션 적용
+# 2. 원격 프로젝트 연결 (최초 1회)
+supabase link --project-ref prynzbofjuiptsjzunby
+
+# 3. 원격 DB에 마이그레이션 반영
 supabase db push
 ```
+
+> **주의**: Colima + virtiofs 환경에서 `docker.sock` 마운트 오류가 발생하면
+> [트러블슈팅 #5](docs/troubleshooting.md#5-supabase-start--dockersock-마운트-실패-virtiofs)를 참고하세요.
 
 ## 환경변수
 
@@ -133,6 +142,21 @@ UPSTASH_REDIS_TOKEN=your_redis_token
 | `UiModeSwitch` | Standard ↔ Senior UI 모드 전환 |
 | `TrafficLightSignal` | 교통신호등 매매 시그널 (buy/hold/sell) |
 | `SubscriptionGate` | 구독 플랜 기반 기능 접근 제어 |
+
+## 트러블슈팅
+
+개발 중 발생한 에러와 해결법은 [docs/troubleshooting.md](docs/troubleshooting.md)에 기록되어 있습니다.
+
+| # | 이슈 | 핵심 해결책 |
+|---|------|------------|
+| 1 | Claude Code 스킬 인식 안 됨 | `skills/<name>/SKILL.md` 경로 확인 |
+| 2 | pydantic-core 빌드 실패 | Python 3.12 venv 재생성 |
+| 3 | config.toml 파싱 에러 | `[project]` → `project_id` 변경 |
+| 4 | Docker daemon 연결 실패 | `colima start` |
+| 5 | docker.sock 마운트 실패 | `DOCKER_HOST=unix:///var/run/docker.sock` |
+| 6 | supabase db push — ref 없음 | `supabase link --project-ref <ref>` |
+| 7 | DB 버전 불일치 경고 | `config.toml` major_version 수정 |
+| 8 | Supabase 리전 변경 불가 | 새 프로젝트 생성 후 마이그레이션 |
 
 ## DB 스키마 (Supabase)
 
