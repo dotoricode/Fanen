@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   { href: '/portfolio', label: '포트폴리오' },
   { href: '/dividend', label: '배당 캘린더' },
   { href: '/mock-trading', label: '모의투자' },
+  { href: '/coach', label: 'AI 코치' },
 ] as const;
 
 export async function Header() {

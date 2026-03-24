@@ -105,6 +105,27 @@ export async function analyzeNews(
   return response.json() as Promise<NewsAnalyzeResponse>;
 }
 
+/** AI 코치 "핀이" 질문 응답 — KRX/DART 수치는 Railway에서만 생성 */
+export async function askCoach(
+  params: { question: string; language_level?: 'general' | 'expert' },
+  accessToken?: string
+): Promise<{ answer: string; source_urls: string[]; disclaimer: string }> {
+  try {
+    const response = await railwayFetch(
+      '/api/coach/ask',
+      { method: 'POST', body: JSON.stringify(params) },
+      accessToken
+    );
+    return response.json();
+  } catch {
+    return {
+      answer: '현재 AI 서비스를 이용할 수 없습니다. 잠시 후 다시 시도해주세요.',
+      source_urls: [],
+      disclaimer: 'AI 분석 결과는 투자 참고자료이며, 투자 판단의 책임은 이용자에게 있습니다.',
+    };
+  }
+}
+
 /**
  * 섹터 인과관계 맵 분석 요청
  * @param request 섹터 인과관계 분석 요청 데이터
