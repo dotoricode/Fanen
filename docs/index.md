@@ -10,6 +10,13 @@
 | [Sprint 2](./sprint2.md) | AI 분석 API — Gemini 통합 | ✅ 완료 |
 | [Sprint 3](./sprint3.md) | 프론트엔드 UI — 뉴스/섹터 컴포넌트 | ✅ 완료 |
 
+## 참고 문서
+
+| 문서 | 내용 |
+|------|------|
+| [남은 작업 목록](./TODO.md) | 스프린트별 미완성 태스크 |
+| [보안 체크리스트](./security.md) | 보안 이슈 추적 및 프로덕션 배포 전 필수 항목 |
+
 ## 기술 스택
 
 - **Frontend**: Next.js 14 (App Router) + TypeScript + TailwindCSS → Vercel

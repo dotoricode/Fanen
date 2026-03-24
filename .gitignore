@@ -4,6 +4,7 @@ node_modules/
 # 환경변수 (실제 값이 담긴 파일)
 .env.local
 .env.*.local
+railway-api/.env
 
 # Next.js 빌드
 .next/
