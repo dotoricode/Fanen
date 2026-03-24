@@ -1,0 +1,68 @@
+{
+  "tasks": [
+    {
+      "id": "T1",
+      "name": "useNewsImpacts.ts 'use client' 제거",
+      "description": "src/features/news-impact/hooks/useNewsImpacts.ts 첫 줄의 'use client' 지시어 제거",
+      "parallel_group": 1,
+      "dependencies": [],
+      "files": ["src/features/news-impact/hooks/useNewsImpacts.ts"]
+    },
+    {
+      "id": "T2",
+      "name": "useSectorCausalMap.ts 'use client' 제거",
+      "description": "src/features/sector-map/hooks/useSectorCausalMap.ts 첫 줄의 'use client' 지시어 제거",
+      "parallel_group": 1,
+      "dependencies": [],
+      "files": ["src/features/sector-map/hooks/useSectorCausalMap.ts"]
+    },
+    {
+      "id": "T3",
+      "name": "SectorMapSection.tsx 정리",
+      "description": "SectorMapSection.tsx에서 모든 디버그 코드 제거(console.log, try/catch). 정상적인 컴포넌트 로직으로 복원. dynamic import(ssr: false) 유지.",
+      "parallel_group": 1,
+      "dependencies": [],
+      "files": ["src/features/sector-map/components/SectorMapSection.tsx"]
+    },
+    {
+      "id": "T4",
+      "name": "sector/page.tsx 임포트 경로 정상화",
+      "description": "sector/page.tsx의 SectorMapSection 임포트를 barrel export(@/features/sector-map)로 복원",
+      "parallel_group": 1,
+      "dependencies": [],
+      "files": ["src/app/sector/page.tsx"]
+    },
+    {
+      "id": "T5",
+      "name": "sector-map index.ts SectorForceGraph 제거 확인",
+      "description": "SectorForceGraph는 d3 의존성으로 barrel에서 제외된 상태 유지. 현재 상태 확인.",
+      "parallel_group": 1,
+      "dependencies": [],
+      "files": ["src/features/sector-map/index.ts"]
+    },
+    {
+      "id": "T6",
+      "name": "docs/ 스프린트 문서 작성",
+      "description": "docs/ 디렉토리 생성. docs/index.md, docs/sprint1.md, docs/sprint2.md, docs/sprint3.md 작성.",
+      "parallel_group": 2,
+      "dependencies": ["T1", "T2", "T3", "T4"],
+      "files": ["docs/index.md", "docs/sprint1.md", "docs/sprint2.md", "docs/sprint3.md"]
+    },
+    {
+      "id": "T7",
+      "name": "README.md 업데이트",
+      "description": "프로젝트 개요, 기술 스택, 스프린트 현황, 실행 방법 포함한 README.md 작성",
+      "parallel_group": 2,
+      "dependencies": ["T1", "T2", "T3", "T4"],
+      "files": ["README.md"]
+    },
+    {
+      "id": "T8",
+      "name": "빌드 검증",
+      "description": "npm run build 또는 TypeScript check 실행하여 SSR 버그 수정 검증",
+      "parallel_group": 3,
+      "dependencies": ["T1", "T2", "T3", "T4", "T5"],
+      "files": []
+    }
+  ]
+}

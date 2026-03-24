@@ -1,0 +1,1 @@
+- [project_binah_pivot.md](project_binah_pivot.md) — BINAH brand pivot from Fanen: PRD status, key features, sprint roadmap

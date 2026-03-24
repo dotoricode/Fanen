@@ -1,0 +1,113 @@
+{
+  "run_id": "20260323_231049_77b4b4",
+  "status": "approved_with_comments",
+  "verdict": "Critical/Major 이슈 없음. public/CLAUDE.md 미생성 및 SubscriptionGate 내 PLAN_PRIORITY 중복 정의 등 minor 이슈 3건 확인. 기능 요구사항은 F001 일부 제외 전반 충족.",
+
+  "architecture_review": {
+    "directory_structure": "pass",
+    "data_residency": "pass",
+    "rls_compliance": "pass",
+    "tech_stack_consistency": "pass",
+    "separation_of_concerns": "pass"
+  },
+
+  "quality_review": {
+    "typescript_types": "pass",
+    "component_quality": "pass",
+    "korean_comments": "pass",
+    "naming_convention": "pass"
+  },
+
+  "completeness_check": {
+    "total_features": 6,
+    "completed": 5,
+    "missing": [
+      "F001 T005: public/CLAUDE.md 미생성 (spec.json T005 acceptance_criteria 미충족)"
+    ]
+  },
+
+  "issues": [
+    {
+      "severity": "minor",
+      "category": "completeness",
+      "file": "D:/00_work/Fanen/public/CLAUDE.md",
+      "line": null,
+      "description": "spec.json T005에 정의된 public/CLAUDE.md 파일이 존재하지 않음. code_result.json의 files_created 목록에도 포함되어 있지 않음.",
+      "suggestion": "D:/00_work/Fanen/public/CLAUDE.md를 생성하고 정적 에셋 명명 규칙(kebab-case), Next.js Image 컴포넌트 사용 원칙, SVG 아이콘 관리 방식을 포함할 것. spec.json T005 acceptance_criteria 참조."
+    },
+    {
+      "severity": "minor",
+      "category": "duplication",
+      "file": "D:/00_work/Fanen/src/components/common/SubscriptionGate.tsx",
+      "line": 19,
+      "description": "SubscriptionGate 컴포넌트 내부에 PLAN_PRIORITY 상수가 중복 정의되어 있음. 동일한 상수가 src/lib/plans.ts에 이미 PLAN_PRIORITY로 export되어 있음.",
+      "suggestion": "SubscriptionGate.tsx에서 내부 PLAN_PRIORITY 삭제 후 lib/plans.ts의 PLAN_PRIORITY 및 hasAccess 함수를 import하여 사용: import { PLAN_PRIORITY } from '@/lib/plans'; 또는 import { hasAccess } from '@/lib/plans';"
+    },
+    {
+      "severity": "minor",
+      "category": "style",
+      "file": "D:/00_work/Fanen/src/components/common/TrafficLightSignal.tsx",
+      "line": 26,
+      "description": "SIGNAL_CONFIG의 color 값(#1D9E75, #F5A623, #E24B4A)이 인라인 style={{ backgroundColor: config.color }}로 하드코딩되어 있으나 동시에 bgColor(bg-green-500 등) Tailwind 클래스도 함께 사용됨. 두 방식이 혼재하여 실제 렌더링 시 style 속성이 Tailwind 클래스를 덮어쓰게 되므로 혼동 유발.",
+      "suggestion": "color 인라인 스타일을 제거하고 bgColor Tailwind 클래스만 사용하거나, 반대로 Tailwind bgColor를 제거하고 인라인 style만 사용하여 방식을 통일할 것. 브랜드 컬러는 tailwind.config.ts의 theme.extend.colors에 정의하여 Tailwind 클래스로 관리 권장."
+    }
+  ],
+
+  "positive_findings": [
+    "11개 Supabase 마이그레이션 파일 전체에 RLS 활성화(ALTER TABLE ... ENABLE ROW LEVEL SECURITY) 및 정책이 누락 없이 포함됨. 사용자 데이터 테이블은 auth.uid() 기반 정책, 공개 테이블은 service_role 쓰기 제한 정책으로 올바르게 분리됨.",
+    "src/middleware.ts에서 Vercel 레이어 금융 개인정보 처리 없이 인증 라우팅만 담당하고, railway-api/app/middleware/auth.py에서 JWT 검증이 FastAPI Depends 패턴으로 구현되어 데이터 레지던시 원칙이 아키텍처 수준에서 잘 준수됨.",
+    "DisclaimerBanner: variant 4종(default/pack/tax/signal) + 각 문구 완전 구현. AiBadge: source prop 지원 + 접근성(aria-label) 적용. TrafficLightSignal: buy/hold/sell 3단계 신호 + 색상 구성 완비. SubscriptionGate: requiredPlan + children 렌더링 + 업그레이드 CTA 구현. 6종 공통 컴포넌트 모두 PascalCase 파일명, 한국어 JSDoc 주석, 명확한 Props 인터페이스 포함.",
+    "src/lib/plans.ts에 PLAN_PRIORITY, PLANS, FEATURE_PLAN_MAP, hasAccess()가 단일 파일로 집중 관리되어 플랜 관련 로직 하드코딩 방지 원칙 준수.",
+    "TypeScript strict 모드 사용, any 타입 미사용(railway-api auth.py의 type: ignore는 jose 라이브러리 타입 미지원으로 인한 불가피한 케이스), database.types.ts에 11개 테이블 전체 Row/Insert/Update 타입이 정의됨."
+  ],
+
+  "next_iteration_recommendations": [
+    "public/CLAUDE.md 생성 (T005 완료 처리): 정적 에셋 명명 규칙, Next.js Image 컴포넌트 사용 원칙 포함.",
+    "SubscriptionGate.tsx 내 PLAN_PRIORITY 중복 상수를 제거하고 @/lib/plans의 hasAccess() 함수를 활용하도록 리팩터링.",
+    "TrafficLightSignal의 bgColor(Tailwind) + color(인라인 style) 혼용 방식을 tailwind.config.ts 브랜드 컬러 확장으로 통일.",
+    "src/app/api/auth/callback/route.ts — 현재 Vercel Route Handler에서 OAuth 코드-세션 교환만 수행하므로 데이터 레지던시 원칙 준수 중. Sprint 2에서 추가 API Route 작성 시 금융 개인정보 처리가 Vercel 레이어에 유입되지 않도록 주의.",
+    "railway-api의 services/, models/ 디렉토리가 빈 상태. Sprint 2 AI 서비스 구현 시 FastAPI 라우터에 Depends(get_current_user) 적용 여부를 아키텍처 리뷰에서 재확인 권장."
+  ],
+
+  "critical_count": 0,
+  "major_count": 0,
+  "minor_count": 3,
+  "info_count": 0,
+
+  "reviewed_files": [
+    "D:/00_work/Fanen/CLAUDE.md",
+    "D:/00_work/Fanen/src/CLAUDE.md",
+    "D:/00_work/Fanen/src/components/common/CLAUDE.md",
+    "D:/00_work/Fanen/src/features/CLAUDE.md",
+    "D:/00_work/Fanen/supabase/CLAUDE.md",
+    "D:/00_work/Fanen/railway-api/CLAUDE.md",
+    "D:/00_work/Fanen/src/components/common/DisclaimerBanner.tsx",
+    "D:/00_work/Fanen/src/components/common/AiBadge.tsx",
+    "D:/00_work/Fanen/src/components/common/TrafficLightSignal.tsx",
+    "D:/00_work/Fanen/src/components/common/SubscriptionGate.tsx",
+    "D:/00_work/Fanen/src/components/common/LanguageToggle.tsx",
+    "D:/00_work/Fanen/src/components/common/UiModeSwitch.tsx",
+    "D:/00_work/Fanen/src/lib/supabase/client.ts",
+    "D:/00_work/Fanen/src/lib/supabase/server.ts",
+    "D:/00_work/Fanen/src/lib/plans.ts",
+    "D:/00_work/Fanen/src/types/database.types.ts",
+    "D:/00_work/Fanen/src/middleware.ts",
+    "D:/00_work/Fanen/src/app/layout.tsx",
+    "D:/00_work/Fanen/src/app/(auth)/login/page.tsx",
+    "D:/00_work/Fanen/src/app/api/auth/callback/route.ts",
+    "D:/00_work/Fanen/railway-api/app/main.py",
+    "D:/00_work/Fanen/railway-api/app/middleware/auth.py",
+    "D:/00_work/Fanen/railway-api/app/core/config.py",
+    "D:/00_work/Fanen/supabase/migrations/20260323000001_create_profiles.sql",
+    "D:/00_work/Fanen/supabase/migrations/20260323000002_create_portfolios.sql",
+    "D:/00_work/Fanen/supabase/migrations/20260323000003_create_dividend_simulations.sql",
+    "D:/00_work/Fanen/supabase/migrations/20260323000004_create_news_impacts.sql",
+    "D:/00_work/Fanen/supabase/migrations/20260323000005_create_sector_causal_maps.sql",
+    "D:/00_work/Fanen/supabase/migrations/20260323000006_create_mock_seasons.sql",
+    "D:/00_work/Fanen/supabase/migrations/20260323000007_create_mock_accounts.sql",
+    "D:/00_work/Fanen/supabase/migrations/20260323000008_create_mock_trades.sql",
+    "D:/00_work/Fanen/supabase/migrations/20260323000009_create_mock_rankings.sql",
+    "D:/00_work/Fanen/supabase/migrations/20260323000010_create_trade_journals.sql",
+    "D:/00_work/Fanen/supabase/migrations/20260323000011_create_dividend_calendar.sql"
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "run_id": "20260324_022803_a3c029",
+  "requirements": ":plan Sprint3 진행",
+  "template": "plan",
+  "stages": [
+    "architecting",
+    "git_analyzing",
+    "planning",
+    "coding",
+    "testing",
+    "reviewing"
+  ],
+  "status": "completed",
+  "current_stage_index": 5,
+  "iteration": 0,
+  "created_at": "2026-03-24T02:28:03.799546",
+  "updated_at": "2026-03-24T02:46:03.809135",
+  "stage_history": [
+    {
+      "stage": "architecting",
+      "completed_at": "2026-03-24T02:31:46.018171"
+    },
+    {
+      "stage": "git_analyzing",
+      "completed_at": "2026-03-24T02:35:26.863162"
+    },
+    {
+      "stage": "planning",
+      "completed_at": "2026-03-24T02:39:03.078121"
+    },
+    {
+      "stage": "coding",
+      "completed_at": "2026-03-24T02:43:51.955670"
+    },
+    {
+      "stage": "testing",
+      "completed_at": "2026-03-24T02:45:59.479442"
+    },
+    {
+      "stage": "reviewing",
+      "completed_at": "2026-03-24T02:46:00.011447"
+    }
+  ],
+  "completed_at": "2026-03-24T02:46:03.809114"
+}

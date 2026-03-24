@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "extraKnownMarketplaces": {
+    "popup-studio-ai": {
+      "source": {
+        "source": "github",
+        "repo": "popup-studio-ai/bkit-claude-code"
+      },
+      "autoUpdate": true
+    }
+  },
+  "enabledPlugins": {
+    "bkit@popup-studio-ai": true
+  },
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(npm:*)",
+      "Bash(npx:*)",
+      "Bash(node:*)",
+      "Bash(git:*)",
+      "Bash(python:*)",
+      "Bash(python3:*)",
+      "Bash(pip:*)",
+      "Bash(pip3:*)",
+      "Bash(uvicorn:*)",
+      "Bash(pytest:*)",
+      "Bash(uv:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(echo:*)",
+      "Bash(mkdir:*)",
+      "Bash(cp:*)",
+      "Bash(mv:*)",
+      "Bash(rm:*)",
+      "Bash(touch:*)",
+      "Bash(pwd:*)",
+      "Bash(which:*)",
+      "Bash(jq:*)",
+      "Bash(curl:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(sed:*)",
+      "Bash(awk:*)",
+      "Bash(tsc:*)",
+      "Bash(next:*)",
+      "Bash(supabase:*)",
+      "Read",
+      "Write",
+      "Edit",
+      "MultiEdit",
+      "Glob",
+      "Grep",
+      "WebFetch",
+      "WebSearch",
+      "NotebookRead",
+      "NotebookEdit"
+    ]
+  }
+}

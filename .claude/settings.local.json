@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3:*)",
+      "Bash(python -m py_compile \"D:/00_work/Fanen/railway-api/app/core/config.py\")",
+      "Bash(python -m py_compile \"D:/00_work/Fanen/railway-api/app/core/redis.py\")",
+      "Bash(python -m py_compile \"D:/00_work/Fanen/railway-api/app/core/supabase.py\")",
+      "Bash(python -m py_compile \"D:/00_work/Fanen/railway-api/app/core/gemini.py\")",
+      "Bash(python -m py_compile \"D:/00_work/Fanen/railway-api/app/services/cache.py\")",
+      "Bash(python -m py_compile \"D:/00_work/Fanen/railway-api/app/services/sentiment.py\")",
+      "Bash(python -m py_compile \"D:/00_work/Fanen/railway-api/app/services/news_analyzer.py\")",
+      "Bash(python -m py_compile \"D:/00_work/Fanen/railway-api/app/services/sector_analyzer.py\")",
+      "Bash(python -m py_compile \"D:/00_work/Fanen/railway-api/app/routes/news.py\")",
+      "Bash(python -m py_compile \"D:/00_work/Fanen/railway-api/app/routes/sector.py\")",
+      "Bash(python -m py_compile \"D:/00_work/Fanen/railway-api/app/routes/cron.py\")",
+      "Bash(python -m py_compile \"D:/00_work/Fanen/railway-api/app/main.py\")",
+      "Bash(python -m py_compile \"D:/00_work/Fanen/railway-api/app/middleware/auth.py\")",
+      "Bash(git:*)",
+      "Bash(find D:/00_work/Fanen -name *.test.* -o -name *.spec.*)",
+      "Bash(npx tsc:*)",
+      "Bash(timeout 15 npm run dev)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(''''main:'''', d.get\\(''''main''''\\)\\); print\\(''''module:'''', d.get\\(''''module''''\\)\\); print\\(''''exports_type:'''', type\\(d.get\\(''''exports'''', {}\\)\\).__name__\\)\")",
+      "Bash(curl:*)",
+      "Bash(sleep 5 curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3003/sector sleep 5 grep -E \"SectorMapSection|module load|render|GET /sector\" /tmp/next_clean.log)",
+      "Bash(sleep 5 curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3003/sector sleep 8 grep -E \"SectorMapSection|module load|render.*ENTERED|render.*after|GET /sector\" /tmp/next_clean.log)",
+      "Bash(sleep 5 curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3003/sector sleep 8 grep -E \"render.*ENTERED|render.*after|GET /sector\" /tmp/next_clean.log)",
+      "Bash(sleep 5 curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3003/sector sleep 8 grep -E \"render.*ENTERED|render.*after|THREW|useSectorCausal|GET /sector\" /tmp/next_clean.log)",
+      "Bash(sleep 5 curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3003/sector sleep 8 grep -E \"SectorMapSection|GET /sector\" /tmp/next_clean.log)",
+      "Bash(ls:*)",
+      "Bash(find /d/00_work/Fanen/node_modules/@supabase -name *.d.ts -path */types*)",
+      "Bash(find /d/00_work/Fanen/node_modules/@supabase/supabase-js -name *.d.mts)",
+      "Bash(ls /d/00_work/Fanen/src/app/\\\\\\(auth\\\\\\)/)",
+      "Bash(ls /d/00_work/Fanen/src/app/\\\\\\(auth\\\\\\)/login/)"
+    ]
+  }
+}

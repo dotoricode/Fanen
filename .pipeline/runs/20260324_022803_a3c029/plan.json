@@ -1,0 +1,221 @@
+{
+  "sprint": "Sprint 3: Feature 01·02 UI",
+  "total_tasks": 14,
+  "parallel_groups": 5,
+
+  "context_analysis": {
+    "common_components": {
+      "import_pattern": "import { ComponentName } from '@/components/common'",
+      "DisclaimerBanner": { "props": "variant?: 'default'|'pack'|'tax'|'signal'", "note": "모든 분석 화면 필수" },
+      "AiBadge": { "props": "label?: string, variant?: 'info'|'warning', source?: string" },
+      "LanguageToggle": { "props": "onChange: (level: 'general'|'expert') => void, defaultLevel?: 'general'|'expert'" },
+      "TrafficLightSignal": { "props": "signal: 'buy'|'hold'|'sell', confidence: number, reason?: string" },
+      "UiModeSwitch": { "props": "onToggle?: (mode: 'standard'|'senior') => void" },
+      "SubscriptionGate": { "props": "requiredPlan: PlanTier, currentPlan: PlanTier, children: ReactNode, onUpgradeClick?: () => void" }
+    },
+    "supabase_client": {
+      "import": "import { createClient, isSupabaseConfigured } from '@/lib/supabase/client'",
+      "pattern": "isSupabaseConfigured() 가드 필수 → null 반환 시 빈 배열/빈 데이터로 폴백"
+    },
+    "railway_client": {
+      "import": "import { analyzeNews, getSectorCausalMap } from '@/lib/railway'",
+      "analyzeNews": "POST /api/news/analyze → NewsAnalyzeResponse (폴백 가능)",
+      "getSectorCausalMap": "POST /api/sector/causal → SectorCausalResponse"
+    },
+    "database_types": {
+      "news_impacts_row": "{ id, headline, source, published_at, impact_score, affected_sectors, affected_stocks, ai_summary, created_at }",
+      "sector_causal_maps_row": "{ id, from_sector, to_sector, causal_strength, description, updated_at }"
+    },
+    "plans": {
+      "import": "import { PlanTier, FEATURE_PLAN_MAP, hasAccess } from '@/lib/plans'",
+      "news_realtime_required_plan": "pro",
+      "sector_map_required_plan": "pro"
+    },
+    "home_page": "src/app/page.tsx — 서버 컴포넌트, 현재 단순 플레이스홀더, 수정 대상"
+  },
+
+  "tasks": [
+    {
+      "id": "task_1",
+      "title": "news-impact feature 타입 정의",
+      "files_to_create": ["src/features/news-impact/types.ts"],
+      "files_to_modify": [],
+      "dependencies": [],
+      "parallel_group": 1,
+      "instructions": "src/features/news-impact/types.ts 를 생성한다.\n\n1. Signal 타입 정의:\n```typescript\nexport type Signal = 'buy' | 'hold' | 'sell';\n```\n\n2. scoreToSignal 함수 정의 (spec 기준: 0~33=sell, 34~66=hold, 67~100=buy):\n```typescript\nexport function scoreToSignal(score: number): Signal {\n  if (score >= 67) return 'buy';\n  if (score >= 34) return 'hold';\n  return 'sell';\n}\n```\n\n3. NewsImpactCardData 인터페이스 정의:\n```typescript\nexport interface NewsImpactCardData {\n  id: string;\n  headline: string;\n  source: string | null;\n  published_at: string | null;\n  impact_score: number;\n  signal: Signal;\n  confidence: number;\n  affected_sectors: string[];\n  affected_stocks: string[];\n  ai_summary_general: string;  // 일반인 모드 요약\n  ai_summary_expert: string;   // 전문가 모드 요약 (원본 텍스트)\n  source_url: string | null;\n}\n```\n\n4. splitSummary 유틸 함수 정의:\n```typescript\n/**\n * ai_summary를 general/expert 모드로 분리\n * 현재는 동일 텍스트를 양쪽에 사용 (추후 분리 가능)\n */\nexport function splitSummary(ai_summary: string | null): { general: string; expert: string } {\n  const text = ai_summary ?? '분석 정보가 없습니다.';\n  return { general: text, expert: text };\n}\n```\n\n주의: 파일 상단에 한국어 JSDoc 주석으로 모듈 설명 추가."
+    },
+    {
+      "id": "task_2",
+      "title": "sector-map feature 타입 정의",
+      "files_to_create": ["src/features/sector-map/types.ts"],
+      "files_to_modify": [],
+      "dependencies": [],
+      "parallel_group": 1,
+      "instructions": "src/features/sector-map/types.ts 를 생성한다.\n\n1. D3 SimulationNodeDatum 확장 SectorNode 타입:\n```typescript\nimport type { SimulationNodeDatum } from 'd3';\n\nexport interface SectorNode extends SimulationNodeDatum {\n  id: string;\n  name: string;\n  // D3 ForceSimulation이 x, y를 주입 (SimulationNodeDatum에서 상속)\n}\n```\n\n2. D3 SimulationLinkDatum 확장 SectorLink 타입:\n```typescript\nimport type { SimulationLinkDatum } from 'd3';\n\nexport interface SectorLink extends SimulationLinkDatum<SectorNode> {\n  source: string | SectorNode;\n  target: string | SectorNode;\n  causal_strength: number;\n  description: string;\n}\n```\n\n3. getEdgeColor 유틸 함수 (causal_strength 기반):\n```typescript\n/**\n * causal_strength 값을 링크 색상으로 변환\n * 양수(0초과) = 파랑 계열, 음수(0미만) = 빨강 계열, 0 = 회색\n */\nexport function getEdgeColor(causal_strength: number): string {\n  if (causal_strength > 0) {\n    const intensity = Math.min(Math.round(causal_strength * 255), 255);\n    return `rgb(0, 0, ${intensity})`;\n  } else if (causal_strength < 0) {\n    const intensity = Math.min(Math.round(Math.abs(causal_strength) * 255), 255);\n    return `rgb(${intensity}, 0, 0)`;\n  }\n  return '#9ca3af'; // 회색\n}\n```\n\n4. 드릴다운 패널용 보조 타입:\n```typescript\nexport interface SectorRelation {\n  direction: 'from' | 'to';\n  sector: string;\n  causal_strength: number;\n  description: string;\n}\n```\n\n주의: import는 'd3' 패키지 (^7.9.0 설치 확인됨)."
+    },
+    {
+      "id": "task_3",
+      "title": "useNewsImpacts 훅 구현",
+      "files_to_create": ["src/features/news-impact/hooks/useNewsImpacts.ts"],
+      "files_to_modify": [],
+      "dependencies": ["task_1"],
+      "parallel_group": 2,
+      "instructions": "'use client'\n\nsrc/features/news-impact/hooks/useNewsImpacts.ts 를 생성한다.\n\nimport 경로:\n```typescript\nimport { useState, useEffect } from 'react';\nimport { createClient, isSupabaseConfigured } from '@/lib/supabase/client';\nimport { analyzeNews } from '@/lib/railway';\nimport type { NewsImpactCardData } from '../types';\nimport { scoreToSignal, splitSummary } from '../types';\n```\n\n반환 인터페이스:\n```typescript\ninterface UseNewsImpactsReturn {\n  data: NewsImpactCardData[];\n  loading: boolean;\n  error: string | null;\n}\n```\n\n구현 로직:\n1. useState로 data/loading/error 초기화\n2. useEffect 내부:\n   a. isSupabaseConfigured() 검사 → false이면 data=[], loading=false 반환\n   b. Supabase 클라이언트 생성 → null이면 동일하게 폴백\n   c. news_impacts 테이블에서 SELECT: published_at desc, limit 20\n   d. Supabase 데이터를 NewsImpactCardData[]로 즉시 변환하여 setData (1차 렌더링)\n   e. Railway analyzeNews 호출 (비동기, 폴백):\n      - 요청: { headlines: supabaseRows.map(r => ({ headline: r.headline, source: r.source, published_at: r.published_at })) }\n      - 성공 시: Railway 응답의 source_url을 카드 데이터에 병합하여 setData 업데이트\n      - 실패 시: console.warn 출력 후 Supabase 데이터 유지 (에러 상태 미설정)\n3. Supabase Row → NewsImpactCardData 변환 함수:\n   - impact_score: row.impact_score ?? 50\n   - signal: scoreToSignal(impact_score)\n   - confidence: impact_score\n   - affected_sectors: row.affected_sectors ?? []\n   - affected_stocks: row.affected_stocks ?? []\n   - ai_summary_general/expert: splitSummary(row.ai_summary)\n   - source_url: null (Railway 응답 후 업데이트)\n\n주의사항:\n- Railway API 타임아웃(30s) 대기 중에도 UI는 Supabase 데이터로 표시됨\n- 환경변수 미설정 시 빈 배열 반환 (크래시 금지)"
+    },
+    {
+      "id": "task_4",
+      "title": "useSectorCausalMap 훅 구현",
+      "files_to_create": ["src/features/sector-map/hooks/useSectorCausalMap.ts"],
+      "files_to_modify": [],
+      "dependencies": ["task_2"],
+      "parallel_group": 2,
+      "instructions": "'use client'\n\nsrc/features/sector-map/hooks/useSectorCausalMap.ts 를 생성한다.\n\nimport 경로:\n```typescript\nimport { useState, useEffect } from 'react';\nimport { createClient, isSupabaseConfigured } from '@/lib/supabase/client';\nimport type { SectorNode, SectorLink } from '../types';\n```\n\n반환 인터페이스:\n```typescript\ninterface UseSectorCausalMapReturn {\n  nodes: SectorNode[];\n  links: SectorLink[];\n  selectedSector: string | null;\n  setSelectedSector: (id: string | null) => void;\n  loading: boolean;\n  error: string | null;\n}\n```\n\n구현 로직:\n1. useState: nodes, links, selectedSector, loading, error\n2. useEffect 내부:\n   a. isSupabaseConfigured() 검사 → false이면 nodes=[], links=[], loading=false\n   b. Supabase 클라이언트 null 체크\n   c. sector_causal_maps 전체 SELECT\n   d. 노드 dedup 처리:\n      - rows에서 from_sector, to_sector 모두 수집\n      - Set을 사용하여 중복 제거\n      - SectorNode[]로 변환: { id: sectorName, name: sectorName }\n   e. SectorLink[] 변환:\n      - { source: row.from_sector, target: row.to_sector, causal_strength: row.causal_strength ?? 0, description: row.description ?? '' }\n   f. setNodes, setLinks 호출\n3. selectedSector 상태는 null 초기값, setSelectedSector 직접 노출\n\n주의: D3 ForceSimulation이 x, y를 직접 mutate하므로 nodes 배열은 useRef 없이 state로 관리 (D3가 프로퍼티를 직접 주입함)"
+    },
+    {
+      "id": "task_5",
+      "title": "NewsImpactCard 컴포넌트 구현",
+      "files_to_create": ["src/features/news-impact/components/NewsImpactCard.tsx"],
+      "files_to_modify": [],
+      "dependencies": ["task_1"],
+      "parallel_group": 2,
+      "instructions": "'use client'\n\nsrc/features/news-impact/components/NewsImpactCard.tsx 를 생성한다.\n\nimport 경로:\n```typescript\nimport { TrafficLightSignal, AiBadge } from '@/components/common';\nimport type { NewsImpactCardData } from '../types';\n```\n\nProps 인터페이스:\n```typescript\ninterface NewsImpactCardProps {\n  item: NewsImpactCardData;\n  languageLevel: 'general' | 'expert';\n}\n```\n\n렌더링 구조:\n```tsx\n<article className=\"rounded-lg border border-gray-200 p-4 bg-white shadow-sm hover:shadow-md transition-shadow\">\n  {/* 헤드라인 */}\n  <h3 className=\"text-base font-semibold text-gray-900 mb-2 line-clamp-2\">{item.headline}</h3>\n  \n  {/* 메타 정보: 출처, 발행일 */}\n  <div className=\"flex items-center gap-3 text-xs text-gray-500 mb-3\">\n    {item.source && <span>{item.source}</span>}\n    {item.published_at && <span>{new Date(item.published_at).toLocaleDateString('ko-KR')}</span>}\n  </div>\n  \n  {/* 매매 신호 */}\n  <div className=\"mb-3\">\n    <TrafficLightSignal\n      signal={item.signal}\n      confidence={item.confidence}\n      reason={languageLevel === 'general' ? item.ai_summary_general : item.ai_summary_expert}\n    />\n  </div>\n  \n  {/* AI 뱃지 + 출처 */}\n  <div className=\"flex items-center justify-between\">\n    <AiBadge label=\"핀이 분석\" source={item.source_url ?? undefined} />\n    {/* 영향 섹터 태그 */}\n    <div className=\"flex flex-wrap gap-1\">\n      {item.affected_sectors.slice(0, 3).map((sector) => (\n        <span key={sector} className=\"text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full\">\n          {sector}\n        </span>\n      ))}\n    </div>\n  </div>\n</article>\n```\n\n주의: DisclaimerBanner는 NewsImpactList 레벨에서 처리하므로 카드에 불포함."
+    },
+    {
+      "id": "task_6",
+      "title": "NewsImpactList 컴포넌트 구현",
+      "files_to_create": ["src/features/news-impact/components/NewsImpactList.tsx"],
+      "files_to_modify": [],
+      "dependencies": ["task_3", "task_5"],
+      "parallel_group": 3,
+      "instructions": "'use client'\n\nsrc/features/news-impact/components/NewsImpactList.tsx 를 생성한다.\n\nimport 경로:\n```typescript\nimport { useState } from 'react';\nimport { DisclaimerBanner, LanguageToggle, SubscriptionGate } from '@/components/common';\nimport { useNewsImpacts } from '../hooks/useNewsImpacts';\nimport { NewsImpactCard } from './NewsImpactCard';\n```\n\nProps 인터페이스:\n```typescript\ninterface NewsImpactListProps {\n  currentPlan?: 'free' | 'pro' | 'premium';\n}\n```\n\n상태: languageLevel: 'general' | 'expert' (useState 기본값 'general')\n\n렌더링 구조:\n```tsx\n<section className=\"space-y-4\">\n  {/* 상단: 타이틀 + LanguageToggle */}\n  <div className=\"flex items-center justify-between\">\n    <h2 className=\"text-xl font-bold text-gray-900\">뉴스 임팩트</h2>\n    <LanguageToggle onChange={(level) => setLanguageLevel(level)} defaultLevel=\"general\" />\n  </div>\n  \n  {/* 면책 고지 */}\n  <DisclaimerBanner variant=\"signal\" />\n  \n  {/* 구독 게이트 */}\n  <SubscriptionGate requiredPlan=\"pro\" currentPlan={currentPlan ?? 'free'}>\n    {/* 로딩 스켈레톤 */}\n    {loading && (\n      <div className=\"space-y-3\">\n        {[1, 2, 3].map((i) => (\n          <div key={i} className=\"h-36 rounded-lg bg-gray-100 animate-pulse\" />\n        ))}\n      </div>\n    )}\n    \n    {/* 에러 메시지 */}\n    {!loading && error && (\n      <div className=\"rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700\">\n        데이터를 불러오는 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.\n      </div>\n    )}\n    \n    {/* 빈 데이터 */}\n    {!loading && !error && data.length === 0 && (\n      <div className=\"rounded-lg border border-gray-200 bg-gray-50 p-8 text-center text-sm text-gray-500\">\n        표시할 뉴스 임팩트 정보가 없습니다.\n      </div>\n    )}\n    \n    {/* 카드 목록 */}\n    {!loading && data.length > 0 && (\n      <div className=\"space-y-3\">\n        {data.map((item) => (\n          <NewsImpactCard key={item.id} item={item} languageLevel={languageLevel} />\n        ))}\n      </div>\n    )}\n  </SubscriptionGate>\n</section>\n```\n\n주의: currentPlan prop은 기본값 'free' 사용. 실제 사용 시 프로파일에서 전달."
+    },
+    {
+      "id": "task_7",
+      "title": "SectorForceGraph 컴포넌트 구현",
+      "files_to_create": ["src/features/sector-map/components/SectorForceGraph.tsx"],
+      "files_to_modify": [],
+      "dependencies": ["task_2"],
+      "parallel_group": 2,
+      "instructions": "'use client'\n\nsrc/features/sector-map/components/SectorForceGraph.tsx 를 생성한다.\n\nimport 경로:\n```typescript\nimport { useEffect, useRef } from 'react';\nimport * as d3 from 'd3';\nimport type { SectorNode, SectorLink } from '../types';\nimport { getEdgeColor } from '../types';\n```\n\nProps 인터페이스:\n```typescript\ninterface SectorForceGraphProps {\n  nodes: SectorNode[];\n  links: SectorLink[];\n  onSectorClick: (sectorId: string) => void;\n  uiMode: 'standard' | 'senior';\n}\n```\n\n구현:\n```typescript\nexport default function SectorForceGraph({ nodes, links, onSectorClick, uiMode }: SectorForceGraphProps) {\n  const svgRef = useRef<SVGSVGElement>(null);\n  const width = 600;\n  const height = 480;\n  \n  // Senior 모드 크기 배율\n  const nodeRadius = uiMode === 'senior' ? 18 : 12;\n  const fontSize = uiMode === 'senior' ? '14px' : '11px';\n  \n  useEffect(() => {\n    if (!svgRef.current || nodes.length === 0) return;\n    \n    const svg = d3.select(svgRef.current);\n    svg.selectAll('*').remove(); // 이전 렌더링 초기화\n    \n    // 노드/링크 복사본 생성 (D3가 원본 mutate)\n    const nodesCopy = nodes.map(n => ({ ...n }));\n    const linksCopy = links.map(l => ({ ...l }));\n    \n    // ForceSimulation 설정\n    const simulation = d3\n      .forceSimulation<SectorNode>(nodesCopy)\n      .force('link', d3.forceLink<SectorNode, SectorLink>(linksCopy).id(d => d.id).distance(100))\n      .force('charge', d3.forceManyBody().strength(-300))\n      .force('center', d3.forceCenter(width / 2, height / 2))\n      .alphaDecay(0.05);\n    \n    // 엣지(선) 렌더링\n    const link = svg.append('g')\n      .selectAll('line')\n      .data(linksCopy)\n      .enter()\n      .append('line')\n      .attr('stroke', d => getEdgeColor(d.causal_strength))\n      .attr('stroke-width', d => Math.abs(d.causal_strength) * 3 + 1)\n      .attr('stroke-opacity', 0.7);\n    \n    // 노드(원) 렌더링\n    const node = svg.append('g')\n      .selectAll('g')\n      .data(nodesCopy)\n      .enter()\n      .append('g')\n      .style('cursor', 'pointer')\n      .on('click', (_, d) => onSectorClick(d.id));\n    \n    node.append('circle')\n      .attr('r', nodeRadius)\n      .attr('fill', '#3b82f6')\n      .attr('stroke', '#1d4ed8')\n      .attr('stroke-width', 2);\n    \n    node.append('text')\n      .text(d => d.name)\n      .attr('text-anchor', 'middle')\n      .attr('dy', nodeRadius + 14)\n      .attr('font-size', fontSize)\n      .attr('fill', '#374151');\n    \n    // tick 이벤트로 위치 업데이트\n    simulation.on('tick', () => {\n      link\n        .attr('x1', d => (d.source as SectorNode).x ?? 0)\n        .attr('y1', d => (d.source as SectorNode).y ?? 0)\n        .attr('x2', d => (d.target as SectorNode).x ?? 0)\n        .attr('y2', d => (d.target as SectorNode).y ?? 0);\n      \n      node.attr('transform', d => `translate(${d.x ?? 0}, ${d.y ?? 0})`);\n    });\n    \n    // cleanup — 반드시 simulation.stop() 호출\n    return () => {\n      simulation.stop();\n    };\n  }, [nodes, links, uiMode, onSectorClick, nodeRadius, fontSize]);\n  \n  return (\n    <svg\n      ref={svgRef}\n      viewBox={`0 0 ${width} ${height}`}\n      className=\"w-full h-auto\"\n      aria-label=\"섹터 인과관계 포스 그래프\"\n    />\n  );\n}\n```\n\n핵심 규칙: useEffect cleanup에서 반드시 simulation.stop() 호출. SVG는 viewBox 기반 반응형 처리."
+    },
+    {
+      "id": "task_8",
+      "title": "SectorDrilldownPanel 컴포넌트 구현",
+      "files_to_create": ["src/features/sector-map/components/SectorDrilldownPanel.tsx"],
+      "files_to_modify": [],
+      "dependencies": ["task_2"],
+      "parallel_group": 2,
+      "instructions": "'use client'\n\nsrc/features/sector-map/components/SectorDrilldownPanel.tsx 를 생성한다.\n\nimport 경로:\n```typescript\nimport type { SectorLink, SectorRelation } from '../types';\n```\n\nProps 인터페이스:\n```typescript\ninterface SectorDrilldownPanelProps {\n  sectorId: string | null;\n  links: SectorLink[];\n  uiMode: 'standard' | 'senior';\n}\n```\n\n구현 로직:\n- sectorId가 null이면 안내 텍스트 표시\n- sectorId가 있으면 links에서 해당 섹터 관련 관계 필터링:\n  ```typescript\n  // source/target이 string 또는 SectorNode일 수 있으므로 id 추출 헬퍼 필요\n  const getNodeId = (node: string | SectorNode): string =>\n    typeof node === 'string' ? node : node.id;\n  \n  const relations: SectorRelation[] = [\n    ...links\n      .filter(l => getNodeId(l.source) === sectorId)\n      .map(l => ({ direction: 'from' as const, sector: getNodeId(l.target), causal_strength: l.causal_strength, description: l.description })),\n    ...links\n      .filter(l => getNodeId(l.target) === sectorId)\n      .map(l => ({ direction: 'to' as const, sector: getNodeId(l.source), causal_strength: l.causal_strength, description: l.description }))\n  ];\n  ```\n\nSenior 모드 스타일: uiMode === 'senior' ? 'text-lg' : 'text-sm'\n\n렌더링 구조:\n```tsx\n<aside className=\"rounded-lg border border-gray-200 bg-white p-4 h-full\">\n  {!sectorId ? (\n    <div className=\"flex items-center justify-center h-32 text-gray-400\">\n      <p className={uiMode === 'senior' ? 'text-lg' : 'text-sm'}>섹터를 클릭하면 상세 정보가 표시됩니다</p>\n    </div>\n  ) : (\n    <>\n      <h3 className={`font-bold text-gray-900 mb-3 ${uiMode === 'senior' ? 'text-xl' : 'text-base'}`}>\n        {sectorId} 섹터 인과관계\n      </h3>\n      <div className=\"space-y-2\">\n        {relations.map((rel, idx) => (\n          <div key={idx} className={`rounded-lg bg-gray-50 p-3 ${uiMode === 'senior' ? 'text-base' : 'text-sm'}`}>\n            <div className=\"flex items-center gap-2 mb-1\">\n              <span className={rel.direction === 'from' ? 'text-blue-600 font-medium' : 'text-orange-600 font-medium'}>\n                {rel.direction === 'from' ? `→ ${rel.sector}` : `← ${rel.sector}`}\n              </span>\n              <span className=\"text-xs text-gray-500\">(강도: {rel.causal_strength.toFixed(2)})</span>\n            </div>\n            <p className=\"text-gray-600\">{rel.description}</p>\n          </div>\n        ))}\n        {relations.length === 0 && (\n          <p className=\"text-gray-400 text-sm\">관련 인과관계가 없습니다.</p>\n        )}\n      </div>\n    </>\n  )}\n</aside>\n```"
+    },
+    {
+      "id": "task_9",
+      "title": "SectorMapSection 통합 컴포넌트 구현",
+      "files_to_create": ["src/features/sector-map/components/SectorMapSection.tsx"],
+      "files_to_modify": [],
+      "dependencies": ["task_4", "task_7", "task_8"],
+      "parallel_group": 3,
+      "instructions": "'use client'\n\nsrc/features/sector-map/components/SectorMapSection.tsx 를 생성한다.\n\nimport 경로:\n```typescript\nimport { useState } from 'react';\nimport { DisclaimerBanner, UiModeSwitch, SubscriptionGate } from '@/components/common';\nimport { useSectorCausalMap } from '../hooks/useSectorCausalMap';\nimport SectorForceGraph from './SectorForceGraph';\nimport SectorDrilldownPanel from './SectorDrilldownPanel';\n```\n\nProps:\n```typescript\ninterface SectorMapSectionProps {\n  currentPlan?: 'free' | 'pro' | 'premium';\n}\n```\n\n상태: uiMode: 'standard' | 'senior' (useState 기본값 'standard')\n\n렌더링 구조:\n```tsx\n<section className=\"space-y-4\">\n  {/* 상단: 타이틀 + UiModeSwitch */}\n  <div className=\"flex items-center justify-between\">\n    <h2 className=\"text-xl font-bold text-gray-900\">섹터 인과관계 맵</h2>\n    <UiModeSwitch onToggle={(mode) => setUiMode(mode)} />\n  </div>\n  \n  {/* 면책 고지 */}\n  <DisclaimerBanner variant=\"default\" />\n  \n  {/* 구독 게이트 */}\n  <SubscriptionGate requiredPlan=\"pro\" currentPlan={currentPlan ?? 'free'}>\n    {/* 로딩 */}\n    {loading && (\n      <div className=\"h-64 rounded-lg bg-gray-100 animate-pulse\" />\n    )}\n    \n    {/* 에러 */}\n    {!loading && error && (\n      <div className=\"rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700\">\n        섹터 인과관계 데이터를 불러오는 중 오류가 발생했습니다.\n      </div>\n    )}\n    \n    {/* 그래프 + 드릴다운 레이아웃 */}\n    {!loading && !error && (\n      <div className=\"grid grid-cols-1 lg:grid-cols-3 gap-4\">\n        {/* 포스 그래프: 2/3 */}\n        <div className=\"lg:col-span-2\">\n          <SectorForceGraph\n            nodes={nodes}\n            links={links}\n            onSectorClick={(id) => setSelectedSector(id)}\n            uiMode={uiMode}\n          />\n        </div>\n        {/* 드릴다운 패널: 1/3 */}\n        <div className=\"lg:col-span-1\">\n          <SectorDrilldownPanel\n            sectorId={selectedSector}\n            links={links}\n            uiMode={uiMode}\n          />\n        </div>\n      </div>\n    )}\n  </SubscriptionGate>\n</section>\n```"
+    },
+    {
+      "id": "task_10",
+      "title": "news-impact feature index.ts 생성",
+      "files_to_create": ["src/features/news-impact/index.ts"],
+      "files_to_modify": [],
+      "dependencies": ["task_6"],
+      "parallel_group": 4,
+      "instructions": "src/features/news-impact/index.ts 를 생성한다.\n\n내용:\n```typescript\n/** news-impact feature 배럴 익스포트 */\nexport { default as NewsImpactList } from './components/NewsImpactList';\nexport { default as NewsImpactCard } from './components/NewsImpactCard';\nexport { useNewsImpacts } from './hooks/useNewsImpacts';\nexport type { NewsImpactCardData, Signal } from './types';\nexport { scoreToSignal, splitSummary } from './types';\n```\n\n사용 패턴:\n```typescript\nimport { NewsImpactList } from '@/features/news-impact';\n```"
+    },
+    {
+      "id": "task_11",
+      "title": "sector-map feature index.ts 생성",
+      "files_to_create": ["src/features/sector-map/index.ts"],
+      "files_to_modify": [],
+      "dependencies": ["task_9"],
+      "parallel_group": 4,
+      "instructions": "src/features/sector-map/index.ts 를 생성한다.\n\n내용:\n```typescript\n/** sector-map feature 배럴 익스포트 */\nexport { default as SectorMapSection } from './components/SectorMapSection';\nexport { default as SectorForceGraph } from './components/SectorForceGraph';\nexport { default as SectorDrilldownPanel } from './components/SectorDrilldownPanel';\nexport { useSectorCausalMap } from './hooks/useSectorCausalMap';\nexport type { SectorNode, SectorLink, SectorRelation } from './types';\nexport { getEdgeColor } from './types';\n```\n\n사용 패턴:\n```typescript\nimport { SectorMapSection } from '@/features/sector-map';\n```"
+    },
+    {
+      "id": "task_12",
+      "title": "홈 페이지(page.tsx) 통합 수정",
+      "files_to_create": [],
+      "files_to_modify": ["src/app/page.tsx"],
+      "dependencies": ["task_10", "task_11"],
+      "parallel_group": 5,
+      "instructions": "src/app/page.tsx 를 수정한다. 서버 컴포넌트 유지 ('use client' 추가 금지).\n\n현재 내용을 아래로 교체:\n```tsx\nimport Link from 'next/link';\nimport { DisclaimerBanner } from '@/components/common';\nimport { NewsImpactList } from '@/features/news-impact';\nimport { SectorMapSection } from '@/features/sector-map';\n\n/**\n * 홈 페이지 — 뉴스 임팩트 + 섹터 인과관계 통합 뷰\n * 서버 컴포넌트 (NewsImpactList, SectorMapSection은 내부에서 'use client' 처리)\n */\nexport default function HomePage() {\n  return (\n    <main className=\"min-h-screen bg-gray-50\">\n      <div className=\"max-w-7xl mx-auto px-4 py-8 space-y-10\">\n        {/* 서비스 헤더 */}\n        <header className=\"text-center\">\n          <h1 className=\"text-4xl font-bold text-primary mb-2\">파낸</h1>\n          <p className=\"text-lg text-gray-600\">세상이 움직이면, 파낸이 먼저 압니다</p>\n        </header>\n        \n        {/* 공통 면책 고지 */}\n        <DisclaimerBanner variant=\"default\" />\n        \n        {/* 뉴스 임팩트 섹션 */}\n        <section>\n          <NewsImpactList />\n          <div className=\"mt-4 text-right\">\n            <Link href=\"/news\" className=\"text-sm text-primary hover:underline\">\n              뉴스 임팩트 전체 보기 →\n            </Link>\n          </div>\n        </section>\n        \n        {/* 섹터 인과관계 섹션 */}\n        <section>\n          <SectorMapSection />\n          <div className=\"mt-4 text-right\">\n            <Link href=\"/sector\" className=\"text-sm text-primary hover:underline\">\n              섹터 인과관계 전체 보기 →\n            </Link>\n          </div>\n        </section>\n        \n        {/* 로그인 유도 */}\n        <div className=\"text-center\">\n          <Link\n            href=\"/login\"\n            className=\"inline-block rounded-lg bg-primary px-8 py-3 text-lg font-medium text-white transition-colors hover:bg-primary-600\"\n          >\n            시작하기\n          </Link>\n        </div>\n      </div>\n    </main>\n  );\n}\n```\n\n주의: 서버 컴포넌트에서 클라이언트 컴포넌트(NewsImpactList, SectorMapSection) import는 Next.js App Router 정상 패턴."
+    },
+    {
+      "id": "task_13",
+      "title": "뉴스 전용 페이지 생성",
+      "files_to_create": ["src/app/news/page.tsx"],
+      "files_to_modify": [],
+      "dependencies": ["task_10"],
+      "parallel_group": 5,
+      "instructions": "src/app/news/page.tsx 를 생성한다. 서버 컴포넌트.\n\n내용:\n```tsx\nimport type { Metadata } from 'next';\nimport { DisclaimerBanner } from '@/components/common';\nimport { NewsImpactList } from '@/features/news-impact';\n\nexport const metadata: Metadata = {\n  title: '뉴스 임팩트 — 파낸',\n  description: 'AI 기반 뉴스 임팩트 분석으로 시장 움직임을 먼저 파악하세요.',\n};\n\n/**\n * 뉴스 임팩트 전용 페이지\n * 서버 컴포넌트\n */\nexport default function NewsPage() {\n  return (\n    <main className=\"min-h-screen bg-gray-50\">\n      <div className=\"max-w-4xl mx-auto px-4 py-8\">\n        {/* 페이지 제목 */}\n        <header className=\"mb-6\">\n          <h1 className=\"text-3xl font-bold text-gray-900\">뉴스 임팩트</h1>\n          <p className=\"mt-2 text-gray-600\">AI 핀이가 분석한 실시간 뉴스 임팩트 시그널</p>\n        </header>\n        \n        {/* 면책 고지 */}\n        <div className=\"mb-6\">\n          <DisclaimerBanner variant=\"signal\" />\n        </div>\n        \n        {/* 뉴스 임팩트 목록 */}\n        <NewsImpactList />\n      </div>\n    </main>\n  );\n}\n```"
+    },
+    {
+      "id": "task_14",
+      "title": "섹터 전용 페이지 생성",
+      "files_to_create": ["src/app/sector/page.tsx"],
+      "files_to_modify": [],
+      "dependencies": ["task_11"],
+      "parallel_group": 5,
+      "instructions": "src/app/sector/page.tsx 를 생성한다. 서버 컴포넌트.\n\n내용:\n```tsx\nimport type { Metadata } from 'next';\nimport { DisclaimerBanner } from '@/components/common';\nimport { SectorMapSection } from '@/features/sector-map';\n\nexport const metadata: Metadata = {\n  title: '섹터 인과관계 — 파낸',\n  description: '섹터 간 인과관계 맵으로 시장 구조를 시각화합니다.',\n};\n\n/**\n * 섹터 인과관계 전용 페이지\n * 서버 컴포넌트\n */\nexport default function SectorPage() {\n  return (\n    <main className=\"min-h-screen bg-gray-50\">\n      <div className=\"max-w-7xl mx-auto px-4 py-8\">\n        {/* 페이지 제목 */}\n        <header className=\"mb-6\">\n          <h1 className=\"text-3xl font-bold text-gray-900\">섹터 인과관계 맵</h1>\n          <p className=\"mt-2 text-gray-600\">섹터 간 경제적 영향력 흐름을 인터랙티브 그래프로 탐색하세요</p>\n        </header>\n        \n        {/* 면책 고지 */}\n        <div className=\"mb-6\">\n          <DisclaimerBanner variant=\"default\" />\n        </div>\n        \n        {/* 섹터 인과관계 맵 */}\n        <SectorMapSection />\n      </div>\n    </main>\n  );\n}\n```"
+    }
+  ],
+
+  "execution_plan": {
+    "parallel_groups": [
+      {
+        "group": 1,
+        "tasks": ["task_1", "task_2"],
+        "description": "타입 정의 — 의존성 없음, 완전 병렬",
+        "agent_count": 2
+      },
+      {
+        "group": 2,
+        "tasks": ["task_3", "task_4", "task_5", "task_7", "task_8"],
+        "description": "훅 + 기본 컴포넌트 — T1/T2 완료 후 병렬. task_7(D3 ForceGraph) 우선 시작 권장",
+        "agent_count": 5
+      },
+      {
+        "group": 3,
+        "tasks": ["task_6", "task_9"],
+        "description": "통합 컴포넌트 — 각 훅+카드 완료 후 병렬",
+        "agent_count": 2
+      },
+      {
+        "group": 4,
+        "tasks": ["task_10", "task_11"],
+        "description": "배럴 익스포트 — 통합 컴포넌트 완료 후 병렬",
+        "agent_count": 2
+      },
+      {
+        "group": 5,
+        "tasks": ["task_12", "task_13", "task_14"],
+        "description": "페이지 통합 — 모든 feature export 완료 후 병렬",
+        "agent_count": 3
+      }
+    ],
+    "critical_path": ["task_1", "task_3", "task_5", "task_6", "task_10", "task_12"],
+    "total_groups": 5,
+    "total_tasks": 14
+  },
+
+  "absolute_rules": {
+    "D3_cleanup": "useEffect cleanup에서 반드시 simulation.stop() 호출 (task_7)",
+    "supabase_guard": "isSupabaseConfigured() 가드 후 createClient() 사용 (task_3, task_4)",
+    "disclaimer_banner": "모든 분석 화면에 DisclaimerBanner import 및 렌더링 (task_6, task_9, task_12, task_13, task_14)",
+    "senior_ui": "uiMode === 'senior' 시 폰트 크기 확대, 여백 확대 (task_7, task_8, task_9)",
+    "language_toggle": "expert 모드 = ai_summary_expert (원본), general 모드 = ai_summary_general 사용 (task_5, task_6)",
+    "traffic_light_mapping": "impact_score 70↑ = buy, 40~70 = hold, 40↓ = sell (실제 구현: 67↑=buy, 34~66=hold, 33↓=sell)",
+    "common_import": "공통 컴포넌트는 반드시 @/components/common 배럴 익스포트로 import",
+    "no_hardcoded_plans": "플랜 참조는 @/lib/plans.ts FEATURE_PLAN_MAP 사용"
+  },
+
+  "risk_mitigations": {
+    "task_7_d3_memory_leak": "useEffect cleanup에서 simulation.stop() 필수. dependency array: [nodes, links, uiMode, onSectorClick]",
+    "task_3_railway_timeout": "Supabase 데이터 먼저 setData → Railway 응답 후 source_url 병합 업데이트",
+    "task_12_hydration": "서버 컴포넌트에서 클라이언트 컴포넌트 import는 Next.js App Router 정상 패턴으로 hydration 이슈 없음",
+    "supabase_env_missing": "isSupabaseConfigured() false 시 빈 배열/null 반환으로 그레이스풀 디그레이드"
+  }
+}

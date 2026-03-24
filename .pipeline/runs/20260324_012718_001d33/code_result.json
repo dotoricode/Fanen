@@ -1,0 +1,119 @@
+{
+  "tasks_completed": [
+    "task_1", "task_2", "task_3", "task_4", "task_5", "task_6",
+    "task_7", "task_8", "task_9", "task_10",
+    "task_11", "task_12",
+    "task_13", "task_14",
+    "task_15", "task_16",
+    "task_17"
+  ],
+  "files_modified": [
+    {
+      "path": "railway-api/app/core/config.py",
+      "action": "modified",
+      "summary": "Settings 클래스에 upstash_redis_rest_url, upstash_redis_rest_token, cron_secret 필드 추가. 기존 cors_origins 프로퍼티 및 allowed_origins 로직 보존."
+    },
+    {
+      "path": "railway-api/app/main.py",
+      "action": "modified",
+      "summary": "news_router, sector_router, cron_router import 및 app.include_router() 등록 추가. 기존 CORS 미들웨어 설정, lifespan, health_router 패턴 완전 보존."
+    },
+    {
+      "path": "railway-api/app/models/__init__.py",
+      "action": "created",
+      "summary": "모델 패키지 초기화 파일. news.py, sector.py 모델 전체 re-export."
+    },
+    {
+      "path": "railway-api/app/models/news.py",
+      "action": "created",
+      "summary": "Pydantic v2 뉴스 모델 정의: NewsHeadlineInput, NewsAnalyzeRequest, NewsImpactResult(impact_score ge=0 le=100, sentiment Literal, sentiment_confidence ge=0 le=1), NewsAnalyzeResponse."
+    },
+    {
+      "path": "railway-api/app/models/sector.py",
+      "action": "created",
+      "summary": "Pydantic v2 섹터 모델 정의: SectorCausalRequest, SectorCausalEdge(causal_strength ge=-1 le=1 음수=역방향), SectorCausalResponse."
+    },
+    {
+      "path": "supabase/migrations/20260324000001_seed_news_impacts.sql",
+      "action": "created",
+      "summary": "news_impacts 테이블 샘플 데이터 8개 삽입. 반도체, 자동차, 바이오, IT, 금융, 에너지, 반도체장비, 2차전지 섹터 포함."
+    },
+    {
+      "path": "supabase/migrations/20260324000002_seed_sector_causal_maps.sql",
+      "action": "created",
+      "summary": "sector_causal_maps 테이블 샘플 데이터 12개 삽입. 반도체→IT, 금리→금융, 유가→화학, 환율→수출, 미중무역→반도체 등 한국 시장 특성 반영. causal_strength -1~1 범위."
+    },
+    {
+      "path": "src/types/railway.types.ts",
+      "action": "created",
+      "summary": "Python Pydantic 모델과 1:1 대응하는 TypeScript 인터페이스 정의. NewsHeadlineInput, NewsAnalyzeRequest, NewsImpactResult, NewsAnalyzeResponse, SectorCausalRequest, SectorCausalEdge, SectorCausalResponse."
+    },
+    {
+      "path": "railway-api/app/core/redis.py",
+      "action": "created",
+      "summary": "Upstash Redis REST API 클라이언트 싱글톤. URL/토큰 미설정 시 None 반환(graceful fallback). get_redis_client() 함수 및 redis_client 싱글톤 제공."
+    },
+    {
+      "path": "railway-api/app/core/supabase.py",
+      "action": "created",
+      "summary": "Supabase service_role 클라이언트 싱글톤. URL/키 미설정 시 None 반환(graceful fallback). 과거 크래시 이슈 방어 코드 포함."
+    },
+    {
+      "path": "railway-api/app/core/gemini.py",
+      "action": "created",
+      "summary": "Gemini 1.5 Flash 모델 싱글톤. API 키 미설정 시 None 반환(graceful fallback). genai.configure() 후 GenerativeModel 인스턴스 생성."
+    },
+    {
+      "path": "src/lib/railway.ts",
+      "action": "created",
+      "summary": "Railway API 타입 안전 클라이언트. railwayFetch() 기본 함수(30초 타임아웃, Authorization Bearer 자동 포함), analyzeNews(), getSectorCausalMap() export. RailwayApiError 커스텀 에러."
+    },
+    {
+      "path": "railway-api/app/services/__init__.py",
+      "action": "created",
+      "summary": "서비스 패키지 초기화 파일."
+    },
+    {
+      "path": "railway-api/app/services/cache.py",
+      "action": "created",
+      "summary": "Redis JSON 캐시 유틸리티. get_cached(), set_cached(ttl=3600) 구현. 캐시 키 prefix 'fanen:'. Redis 미설정/실패 시 graceful fallback."
+    },
+    {
+      "path": "railway-api/app/services/sentiment.py",
+      "action": "created",
+      "summary": "Gemini 기반 금융 감성 분석 서비스(FinBERT 대체). analyze_sentiment() 반환: {label: positive|negative|neutral, score: 0~1}. 파싱 실패 시 최대 2회 재시도, 기본값 neutral/0.5 반환."
+    },
+    {
+      "path": "railway-api/app/services/news_analyzer.py",
+      "action": "created",
+      "summary": "뉴스 임팩트 분석 서비스. analyze_news_impact() 구현: Redis캐시→Gemini분석→감성분석→스코어결합→Supabase저장→Redis캐싱 흐름. AI 출처 URL 병기(CLAUDE.md 절대 원칙). 파싱 실패 시 최대 2회 재시도."
+    },
+    {
+      "path": "railway-api/app/services/sector_analyzer.py",
+      "action": "created",
+      "summary": "섹터 인과관계 분석 서비스. analyze_sector_causality() 구현: Redis캐시→Gemini분석→Supabase저장→Redis캐싱 흐름. target_sectors None이면 DEFAULT_SECTORS(14개) 자동 사용. causal_strength -1~1 클램핑."
+    },
+    {
+      "path": "railway-api/app/routes/news.py",
+      "action": "created",
+      "summary": "POST /api/news/analyze 엔드포인트. APIRouter(prefix='/api/news', tags=['news']). Depends(get_current_user) JWT 인증. NewsAnalyzeRequest → 헤드라인별 analyze_news_impact() 호출."
+    },
+    {
+      "path": "railway-api/app/routes/sector.py",
+      "action": "created",
+      "summary": "POST /api/sector/causal 엔드포인트. APIRouter(prefix='/api/sector', tags=['sector']). Depends(get_current_user) JWT 인증. SectorCausalRequest → analyze_sector_causality() 호출. 캐시 히트 여부 cached 필드 반영."
+    },
+    {
+      "path": "railway-api/app/routes/cron.py",
+      "action": "created",
+      "summary": "POST /api/cron/collect-news 엔드포인트(내부 전용). X-Cron-Secret 헤더 인증(JWT 미적용). cron_secret 미설정/불일치 시 403. Sprint 3 실제 뉴스 소스 연결 placeholder. analyze_news_impact() 분석 흐름 완성."
+    },
+    {
+      "path": "railway-api/cron.json",
+      "action": "created",
+      "summary": "Railway Cron 설정. /api/cron/collect-news 를 1시간 간격(0 * * * *)으로 실행."
+    }
+  ],
+  "implementation_notes": "1) failure-patterns.json 없음 — 스킵. 2) .env.local.example에 NEXT_PUBLIC_RAILWAY_API_URL 이미 존재하여 추가 불필요. 3) models/ 및 services/ 디렉토리가 미존재 상태였으므로 __init__.py와 함께 신규 생성. 4) FinBERT 미사용 결정(plan.json design_decisions 반영): Gemini API로 감성 분석 통합. 5) 모든 환경변수 미설정 시 graceful fallback 구현(앱 기동 보장). 6) AI 생성 텍스트 전체에 출처 URL 병기 및 '[AI 분석]' 뱃지 포함(CLAUDE.md 절대 원칙 준수). 7) 금융 수치(주가, 배당수익률) AI 직접 생성 금지 원칙 준수.",
+  "known_limitations": "1) news_analyzer.py의 cached 플래그: 라우터 수준에서는 보수적으로 False 반환 — 서비스 레이어에서 캐시 로직이 동작하나 응답 cached 필드는 단순화됨. Sprint 3에서 캐시 인터셉터 패턴으로 개선 권장. 2) cron.py의 뉴스 수집: Sprint 3에서 실제 KRX/DART/뉴스 API 연결 필요. 현재 샘플 헤드라인 2개로 흐름만 검증. 3) sector_analyzer.py의 Supabase upsert: from_sector+to_sector 복합 유니크 제약이 없으면 중복 삽입 가능 — DB 마이그레이션에서 유니크 제약 추가 권장."
+}

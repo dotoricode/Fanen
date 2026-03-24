@@ -1,0 +1,60 @@
+{
+  "run_id": "20260323_231049_77b4b4",
+  "status": "pass",
+  "qa_validator": {
+    "typescript_check": "pass",
+    "build_check": "warning",
+    "build_check_note": "컴파일 성공. /login 페이지 사전렌더링 시 SUPABASE 환경변수 미설정으로 런타임 에러 발생 — 환경변수 설정 후 정상 동작 예상 (허용 조건)",
+    "file_existence": {
+      "total": 20,
+      "found": 20,
+      "missing": [],
+      "detail": {
+        "claude_md": { "required": 6, "found": 6, "files": ["CLAUDE.md", "src/CLAUDE.md", "supabase/CLAUDE.md", "railway-api/CLAUDE.md", "src/features/CLAUDE.md", "src/components/common/CLAUDE.md"] },
+        "config_files": { "required": 4, "found": 4, "files": ["package.json", "tsconfig.json", "next.config.mjs", "tailwind.config.ts"] },
+        "migrations": { "required": 11, "found": 11 },
+        "railway_api": { "required": 2, "found": 2, "files": ["railway-api/app/main.py", "railway-api/requirements.txt"] },
+        "common_components": { "required": 6, "found": 6, "files": ["DisclaimerBanner.tsx", "AiBadge.tsx", "LanguageToggle.tsx", "TrafficLightSignal.tsx", "SubscriptionGate.tsx", "UiModeSwitch.tsx"] },
+        "supabase_lib": { "required": 2, "found": 2, "files": ["src/lib/supabase/client.ts", "src/lib/supabase/server.ts"] },
+        "middleware": { "required": 1, "found": 1, "files": ["src/middleware.ts"] },
+        "app_pages": { "required": 2, "found": 2, "files": ["src/app/layout.tsx", "src/app/page.tsx"] }
+      }
+    },
+    "rls_check": {
+      "total_tables": 11,
+      "rls_enabled": 11,
+      "missing": [],
+      "tables": ["profiles", "portfolios", "dividend_simulations", "news_impacts", "sector_causal_maps", "mock_seasons", "mock_accounts", "mock_trades", "mock_rankings", "trade_journals", "dividend_calendar"]
+    },
+    "rls_policy_check": {
+      "user_tables_auth_uid": "pass",
+      "checked_tables": ["profiles (auth.uid()=id)", "portfolios (auth.uid()=user_id)", "dividend_simulations (auth.uid()=user_id)", "mock_accounts (auth.uid()=user_id)", "mock_trades (auth.uid()=user_id)", "trade_journals (auth.uid()=user_id)"]
+    },
+    "public_tables_check": "pass",
+    "public_tables_detail": {
+      "news_impacts": "FOR SELECT USING (true) 확인",
+      "sector_causal_maps": "FOR SELECT USING (true) 확인",
+      "mock_seasons": "FOR SELECT USING (true) 확인",
+      "dividend_calendar": "FOR SELECT USING (true) 확인",
+      "mock_rankings": "FOR SELECT USING (true) 확인 (code_result notes에 명시된 공개 테이블)"
+    }
+  },
+  "security_auditor": {
+    "hardcoded_secrets": "pass",
+    "hardcoded_secrets_note": ".ts/.tsx/.py 파일에서 API 키, 비밀번호, JWT 시크릿 하드코딩 없음. 모든 민감 값은 환경변수(settings.* 또는 process.env.*)로 참조",
+    "env_files": "pass",
+    "env_files_note": ".env.local, .env 실제 파일 미생성 확인. .env.local.example, .env.example, railway-api/.env.example만 존재",
+    "gitignore": "warning",
+    "gitignore_note": "루트 .gitignore에 '.env'(bare) 및 '.env*' 패턴 누락. 현재는 '.env.local'과 '.env.*.local'만 커버됨. '.env' 단독 파일이나 '.env.production' 등이 실수로 커밋될 위험 있음. railway-api/.gitignore는 '.env' 및 '.env.*' 패턴 올바르게 설정됨",
+    "data_residency": "pass",
+    "data_residency_note": "src/app/api/에는 auth/callback/route.ts만 존재하며 OAuth 코드 교환(세션 교환)만 처리. 금융 개인정보(포트폴리오, 잔고, 거래내역 등) 처리 코드 없음",
+    "jwt_auth": "pass",
+    "jwt_auth_note": "railway-api/app/middleware/auth.py에 verify_jwt() 및 get_current_user() Depends 의존성 함수 구현 완료. python-jose로 HS256 검증, Bearer 토큰 추출, 401 에러 처리 포함"
+  },
+  "feedback": [
+    "[medium] 루트 .gitignore 보완 필요: '.env.local'과 '.env.*.local'만 커버되어 '.env', '.env.production', '.env.development' 등이 실수로 커밋될 수 있음. '.env'(bare)와 '.env*' 패턴 추가 권장 — 예: .env 및 .env* 라인 추가 후 !.env.local.example 등 예외 처리",
+    "[info] Next.js 빌드 시 /login 페이지 사전렌더링 에러(환경변수 미설정): 배포 환경에서 NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY 설정 필수. dynamic rendering 적용 또는 Suspense 경계로 해결 가능",
+    "[info] mock_rankings 테이블은 code_result.json 노트에 공개 테이블로 명시되어 있으나 plan.json 목표 명세(4개 공개 테이블)에는 포함되지 않음. 의도적 공개 설정인지 확인 권장"
+  ],
+  "summary": "Sprint 1 기반 세팅 전체 검증 완료. TypeScript 컴파일 에러 0건, 11개 테이블 전체 RLS 활성화, 사용자 데이터 테이블 auth.uid() 정책 적용, 공개 테이블 SELECT 정책 정상. 보안: 하드코딩 시크릿 없음, .env 파일 미생성, JWT 인증 구현 완료. 루트 .gitignore의 '.env' bare 패턴 누락이 medium 수준 개선 사항으로 식별되었으나 Critical/High 보안 이슈 없어 최종 판정 pass."
+}

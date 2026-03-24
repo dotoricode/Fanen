@@ -1,0 +1,142 @@
+{
+  "is_git_repo": true,
+  "branch": "main",
+  "commit_hash": "f5347aa714de85e611add3c395f8ed933318df83",
+  "analysis_timestamp": "2026-03-24T02:32:00+09:00",
+  "recent_commits": [
+    {
+      "hash": "f5347aa",
+      "message": "docs: add AGPL-3.0 license for open source with SaaS protection",
+      "date": "2026-03-24",
+      "files_changed": ["LICENSE"]
+    },
+    {
+      "hash": "011c65d",
+      "message": "docs: add pipeline progress reporting guidelines to CLAUDE.md",
+      "date": "2026-03-24",
+      "files_changed": ["CLAUDE.md"]
+    },
+    {
+      "hash": "29812d4",
+      "message": "fix: change allowed_origins from list[str] to str for pydantic-settings",
+      "date": "2026-03-24",
+      "files_changed": ["railway-api/app/core/config.py"]
+    },
+    {
+      "hash": "ffe7f25",
+      "message": "fix: handle comma-separated ALLOWED_ORIGINS in env and add defaults",
+      "date": "2026-03-24",
+      "files_changed": ["railway-api/app/core/config.py", "railway-api/app/main.py"]
+    },
+    {
+      "hash": "6a3bdb7",
+      "message": "refactor: replace Anthropic Claude API with Google Gemini API",
+      "date": "2026-03-24",
+      "files_changed": ["railway-api/app/core/config.py", "railway-api/app/main.py"]
+    }
+  ],
+  "unstaged_changes": {
+    "modified": [
+      "railway-api/app/core/config.py",
+      "railway-api/app/main.py"
+    ],
+    "untracked": [
+      ".claude/",
+      ".pipeline/",
+      "railway-api/app/core/gemini.py",
+      "railway-api/app/core/redis.py",
+      "railway-api/app/core/supabase.py",
+      "railway-api/app/models/",
+      "railway-api/app/routes/cron.py",
+      "railway-api/app/routes/news.py",
+      "railway-api/app/routes/sector.py",
+      "railway-api/app/services/",
+      "railway-api/cron.json",
+      "railway-api/venv/",
+      "src/lib/railway.ts",
+      "src/types/railway.types.ts",
+      "supabase/migrations/20260324000001_seed_news_impacts.sql",
+      "supabase/migrations/20260324000002_seed_sector_causal_maps.sql",
+      "tsconfig.tsbuildinfo"
+    ]
+  },
+  "changed_files": [
+    {
+      "path": "src/app/page.tsx",
+      "change_type": "not_modified",
+      "risk_level": "low",
+      "dependents": [],
+      "has_tests": false,
+      "impact_description": "현재 미수정 상태. 서버 컴포넌트로 간단한 홈페이지 플레이스홀더. 로그인 링크만 포함. 외부 의존성이 없어 수정 시 독립적인 변경으로 간주."
+    },
+    {
+      "path": "src/components/common/",
+      "change_type": "not_modified",
+      "risk_level": "medium",
+      "dependents": [],
+      "has_tests": false,
+      "impact_description": "6개 공통 컴포넌트 모음 (DisclaimerBanner, AiBadge, LanguageToggle, UiModeSwitch, TrafficLightSignal, SubscriptionGate). 현재 미수정 상태. 배럴 익스포트 index.ts 통해 참조됨. import만 허용, 수정 금지. 미사용 상태(현재 페이지에서 import 없음)이나 향후 Sprint 3 기능 개발 시 광범위하게 사용될 예정."
+    }
+  ],
+  "hotspot_files": [
+    {
+      "path": "railway-api/app/core/config.py",
+      "change_frequency": 3,
+      "note": "최근 5개 커밋 중 3회 수정됨. ALLOWED_ORIGINS, Gemini API 설정 변경으로 자주 수정되는 핫스팟."
+    },
+    {
+      "path": "railway-api/app/main.py",
+      "change_frequency": 2,
+      "note": "최근 5개 커밋 중 2회 수정됨. CORS 설정, API 엔드포인트 구성 변경."
+    },
+    {
+      "path": "CLAUDE.md",
+      "change_frequency": 2,
+      "note": "문서 업데이트. 파이프라인 진행 상황 보고 가이드라인 추가."
+    }
+  ],
+  "risk_summary": {
+    "high_risk_count": 0,
+    "medium_risk_count": 1,
+    "low_risk_count": 1,
+    "overall_risk": "low",
+    "main_concern": "현재 지정된 파일(src/app/page.tsx, src/components/common/)은 미수정 상태. src/components/common은 향후 Sprint 3에서 광범위하게 사용될 예정이므로 중간 위험도. 현재 실질적 변경은 railway-api/ 영역(FastAPI 설정, Gemini 통합)에 집중."
+  },
+  "past_failures": [
+    {
+      "pattern": "ALLOWED_ORIGINS 설정 오류 (3개 커밋 연속 수정)",
+      "affected_files": ["railway-api/app/core/config.py", "railway-api/app/main.py"],
+      "avoidance": "환경변수 처리 시 타입 검증 강화 필요. pydantic-settings에서 list[str] → str 변경으로 쉼표 분리 문자열 처리 추가."
+    },
+    {
+      "pattern": "Supabase 환경변수 누락으로 인한 런타임 크래시 (2개 커밋)",
+      "affected_files": ["src/middleware.ts"],
+      "avoidance": "환경변수 기본값 설정과 graceful fallback 추가. middleware에서 누락된 env 변수 처리 강화."
+    }
+  ],
+  "recommendations_for_planner": [
+    "src/app/page.tsx와 src/components/common/은 현재 미수정 상태이므로 Sprint 3 진행 시 수정 범위를 명확히 정의하여 불필요한 변경 최소화.",
+    "src/components/common/ 컴포넌트는 배럴 익스포트(index.ts)를 통해서만 참조하도록 강제. 직접 경로 import 금지.",
+    "DisclaimerBanner, AiBadge 등 금융 고지 관련 컴포넌트는 CLAUDE.md의 절대 원칙(AI 환각 방지, 면책 고지)을 준수하는지 영향 범위 점검 필수.",
+    "railway-api/app/core/config.py는 핫스팟 파일. Gemini API, Redis, Supabase 통합 시 환경변수 기본값과 타입 검증을 다시 강화할 것.",
+    "현재 untracked 파일 중 supabase/migrations/20260324* 파일이 있으므로 마이그레이션 순서와 RLS 정책 검증 필요."
+  ],
+  "test_gaps": [
+    {
+      "file": "src/app/page.tsx",
+      "suggestion": "홈페이지 렌더링 단위 테스트 (로그인 링크 존재 확인) 추가 권장."
+    },
+    {
+      "file": "src/components/common/DisclaimerBanner.tsx",
+      "suggestion": "variant별 면책 고지 텍스트 렌더링 테스트 필수 (법적 책임)."
+    },
+    {
+      "file": "src/components/common/SubscriptionGate.tsx",
+      "suggestion": "subscription_tier 기반 게이팅 동작 테스트 필수."
+    },
+    {
+      "file": "railway-api/app/core/config.py",
+      "suggestion": "환경변수 파싱 및 기본값 설정 단위 테스트 추가 (ALLOWED_ORIGINS, API_KEY 검증)."
+    }
+  ]
+}

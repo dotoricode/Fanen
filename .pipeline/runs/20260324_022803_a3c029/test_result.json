@@ -1,0 +1,60 @@
+{
+  "status": "pass",
+  "iteration": 1,
+  "qa_results": {
+    "tests_written": 12,
+    "tests_passed": 12,
+    "tests_failed": 0,
+    "failed_details": [],
+    "checklist": {
+      "use_client_directives": {
+        "result": "pass",
+        "detail": "훅(useNewsImpacts, useSectorCausalMap) 및 인터랙티브 컴포넌트(NewsImpactCard, SectorForceGraph, SectorDrilldownPanel, NewsImpactList, SectorMapSection) 전체에 'use client' 지시어 존재. 서버 컴포넌트(app/page.tsx, news/page.tsx, sector/page.tsx)에는 올바르게 미포함."
+      },
+      "disclaimer_banner": {
+        "result": "pass",
+        "detail": "분석 화면 전체(NewsImpactList, SectorMapSection, app/page.tsx, app/news/page.tsx, app/sector/page.tsx)에 DisclaimerBanner 렌더링 확인. news 화면은 variant='signal', sector/홈은 variant='default' 적용."
+      },
+      "supabase_configured_guard": {
+        "result": "pass",
+        "detail": "useNewsImpacts.ts(27행)와 useSectorCausalMap.ts(30행) 모두 isSupabaseConfigured() 선행 체크 및 createClient() null 체크(각 35행, 39행) 적용."
+      },
+      "d3_simulation_cleanup": {
+        "result": "pass",
+        "detail": "SectorForceGraph.tsx useEffect cleanup 함수에서 simulation.stop() 호출(105-107행). 메모리 누수 방지 확인."
+      },
+      "traffic_light_signal_values": {
+        "result": "pass",
+        "detail": "Signal 타입이 'buy'|'hold'|'sell'로 정의되어 있고, scoreToSignal 함수가 세 값 중 하나만 반환. TrafficLightSignal 컴포넌트의 SIGNAL_CONFIG도 세 값 모두 매핑."
+      },
+      "absolute_path_imports": {
+        "result": "pass",
+        "detail": "모든 외부 참조는 @/ 절대경로 일관 사용. feature 내부 참조는 상대경로 사용으로 적절히 구분."
+      }
+    }
+  },
+  "security_results": {
+    "critical": 0,
+    "high": 0,
+    "medium": 1,
+    "low": 1,
+    "issues": [
+      {
+        "severity": "medium",
+        "file": "src/lib/railway.ts",
+        "line": 14,
+        "description": "NEXT_PUBLIC_RAILWAY_API_URL 미설정 시 localhost:8000 폴백 사용. 프로덕션 환경에서 환경변수 미설정 시 로컬 서버로 요청이 전달될 수 있음.",
+        "recommendation": "프로덕션 배포 파이프라인에서 NEXT_PUBLIC_RAILWAY_API_URL 환경변수 설정 여부를 CI/CD 단계에서 검증 권장."
+      },
+      {
+        "severity": "low",
+        "file": "src/features/sector-map/components/SectorDrilldownPanel.tsx",
+        "line": 71,
+        "description": "relations.map에서 배열 인덱스(idx)를 React key로 사용. 리스트 재정렬 시 렌더링 오류 가능성 있음 (보안 이슈 아님, React best practice 위반).",
+        "recommendation": "rel.sector + rel.direction 조합을 key로 사용 권장."
+      }
+    ]
+  },
+  "feedback": "",
+  "summary": "14개 태스크(news-impact, sector-map feature 전체)에 대한 QA 및 보안 검증 완료. 6개 체크리스트 항목 전부 통과. Critical/High 보안 이슈 없음. Medium 1건(Railway localhost 폴백), Low 1건(React key 사용 방식)은 기능 동작에 영향 없는 개선 권장사항. 최종 판정: PASS."
+}

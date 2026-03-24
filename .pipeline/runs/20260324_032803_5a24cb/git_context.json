@@ -1,0 +1,15 @@
+{
+  "note": "git repository 아님 — git context 분석 스킵",
+  "is_git_repo": false,
+  "risk_files": [
+    "src/features/sector-map/components/SectorMapSection.tsx",
+    "src/features/sector-map/hooks/useSectorCausalMap.ts",
+    "src/features/news-impact/hooks/useNewsImpacts.ts",
+    "src/features/sector-map/index.ts",
+    "src/app/sector/page.tsx"
+  ],
+  "warnings": [
+    "SectorMapSection.tsx에 디버그 코드(console.log, try/catch) 잔존 — 반드시 제거",
+    "sector/page.tsx의 임포트가 barrel 아닌 직접 경로로 변경됨 — 정상화 필요"
+  ]
+}

@@ -1,0 +1,590 @@
+{
+  "goal": "Sprint 2 — 데이터 파이프라인 구축 및 AI 분석 엔진: FastAPI에 뉴스 임팩트 스코어링, 섹터 인과관계 분석, FinBERT 감성 분석 엔드포인트를 구현하고, Upstash Redis 캐싱 레이어와 Next.js Railway API 클라이언트를 구축한다.",
+  "requirements": "FastAPI /api/news/analyze (Gemini API 뉴스 임팩트 스코어링), /api/sector/causal (섹터 인과관계 맵), FinBERT 감성 분석 서비스, Upstash Redis 캐싱, news_impacts/sector_causal_maps 데이터 seed, Next.js Railway API 클라이언트(src/lib/railway.ts), Railway Cron 뉴스 수집 주기 설정",
+  "features": [
+    {
+      "id": "F1",
+      "title": "Upstash Redis 캐싱 레이어",
+      "description": "FastAPI에서 Upstash Redis를 사용하여 AI 분석 결과를 캐싱한다. 중복 분석 요청을 방지하고 응답 속도를 개선한다. config.py에 Redis 환경변수를 추가하고, 캐시 유틸리티 서비스를 생성한다.",
+      "priority": "P0"
+    },
+    {
+      "id": "F2",
+      "title": "FinBERT 감성 분석 서비스",
+      "description": "FinBERT 모델을 활용한 금융 뉴스 감성 분석 서비스를 구현한다. 뉴스 텍스트를 입력받아 positive/negative/neutral 감성 점수를 반환한다.",
+      "priority": "P0"
+    },
+    {
+      "id": "F3",
+      "title": "뉴스 임팩트 스코어링 API (/api/news/analyze)",
+      "description": "Gemini API를 사용하여 뉴스 헤드라인의 시장 임팩트를 스코어링하는 엔드포인트를 구현한다. FinBERT 감성 분석 결과와 결합하여 종합 임팩트 스코어를 산출하고, 결과를 news_impacts 테이블에 저장한다. Redis 캐싱을 적용한다.",
+      "priority": "P0"
+    },
+    {
+      "id": "F4",
+      "title": "섹터 인과관계 맵 API (/api/sector/causal)",
+      "description": "Gemini API를 활용하여 섹터 간 인과관계를 분석하고 맵을 생성하는 엔드포인트를 구현한다. 결과를 sector_causal_maps 테이블에 저장한다. Redis 캐싱을 적용한다.",
+      "priority": "P0"
+    },
+    {
+      "id": "F5",
+      "title": "Supabase 데이터 seed",
+      "description": "news_impacts와 sector_causal_maps 테이블에 초기 샘플 데이터를 삽입하는 seed 마이그레이션을 작성한다. 개발/테스트 환경에서 API 검증에 사용한다.",
+      "priority": "P1"
+    },
+    {
+      "id": "F6",
+      "title": "Next.js Railway API 클라이언트",
+      "description": "Next.js 프론트엔드에서 Railway FastAPI를 호출하기 위한 클라이언트 유틸리티(src/lib/railway.ts)를 구현한다. 인증 토큰 전달, 에러 핸들링, 타입 안전 호출을 지원한다.",
+      "priority": "P1"
+    },
+    {
+      "id": "F7",
+      "title": "Railway Cron 뉴스 수집 스케줄러",
+      "description": "Railway Cron을 사용하여 주기적으로 뉴스를 수집하고 /api/news/analyze를 호출하는 스케줄러 엔드포인트를 구현한다.",
+      "priority": "P2"
+    }
+  ],
+  "assumptions": [
+    "FinBERT는 HuggingFace transformers 라이브러리로 로드하며, Railway 배포 시 모델 다운로드는 Docker 빌드 단계에서 수행한다",
+    "Gemini API 호출은 google-generativeai 패키지(이미 requirements.txt에 포함)를 사용한다",
+    "Upstash Redis는 REST API 기반 upstash-redis 패키지(이미 requirements.txt에 포함)를 사용한다",
+    "뉴스 소스는 초기에는 외부 뉴스 API(공개 RSS 또는 뉴스 API)에서 수집하며, 구체적인 뉴스 소스 API는 Sprint 3에서 확정한다",
+    "Railway Cron은 별도 cron.json 설정 파일로 관리하며, 뉴스 수집은 1시간 간격으로 실행한다",
+    "news_impacts 테이블의 impact_score는 0~100 범위의 수치로, FinBERT 감성 + Gemini 임팩트 분석을 결합한 종합 점수이다"
+  ],
+  "clarification_needed": [],
+  "architecture": {
+    "tech_stack": [
+      "FastAPI 0.111.0",
+      "Pydantic v2",
+      "google-generativeai 0.8.3 (Gemini API)",
+      "upstash-redis 1.1.0",
+      "transformers + torch (FinBERT)",
+      "supabase-py 2.4.6",
+      "Next.js 14 (App Router)",
+      "TypeScript"
+    ],
+    "new_files": [
+      "railway-api/app/core/redis.py",
+      "railway-api/app/core/supabase.py",
+      "railway-api/app/core/gemini.py",
+      "railway-api/app/models/news.py",
+      "railway-api/app/models/sector.py",
+      "railway-api/app/models/__init__.py",
+      "railway-api/app/services/__init__.py",
+      "railway-api/app/services/cache.py",
+      "railway-api/app/services/finbert.py",
+      "railway-api/app/services/news_analyzer.py",
+      "railway-api/app/services/sector_analyzer.py",
+      "railway-api/app/routes/news.py",
+      "railway-api/app/routes/sector.py",
+      "railway-api/app/routes/cron.py",
+      "railway-api/cron.json",
+      "supabase/migrations/20260324000001_seed_news_impacts.sql",
+      "supabase/migrations/20260324000002_seed_sector_causal_maps.sql",
+      "src/lib/railway.ts",
+      "src/types/railway.types.ts"
+    ],
+    "modified_files": [
+      "railway-api/app/core/config.py",
+      "railway-api/app/main.py",
+      "railway-api/requirements.txt",
+      "railway-api/Dockerfile"
+    ],
+    "folder_structure": "railway-api/app/ 하위에 기존 패턴(core/, routes/, middleware/) 유지. services/ 디렉토리에 비즈니스 로직 배치, models/ 디렉토리에 Pydantic 요청/응답 모델 배치. 이는 railway-api CLAUDE.md에 명시된 구조를 따른다.",
+    "api_design": [
+      {
+        "endpoint": "/api/news/analyze",
+        "method": "POST",
+        "description": "뉴스 헤드라인을 분석하여 임팩트 스코어를 산출한다. Gemini API + FinBERT 감성 분석 결합. 결과를 news_impacts 테이블에 저장하고 Redis에 캐싱한다.",
+        "request_schema": {
+          "headlines": [
+            {
+              "headline": "string — 뉴스 헤드라인",
+              "source": "string — 뉴스 출처 (optional)",
+              "published_at": "string — ISO 8601 발행일시 (optional)"
+            }
+          ]
+        },
+        "response_schema": {
+          "results": [
+            {
+              "headline": "string",
+              "impact_score": "number (0-100)",
+              "sentiment": "positive | negative | neutral",
+              "sentiment_confidence": "number (0-1)",
+              "affected_sectors": ["string"],
+              "affected_stocks": ["string"],
+              "ai_summary": "string",
+              "source_url": "string — AI 분석 출처"
+            }
+          ],
+          "cached": "boolean — 캐시 히트 여부"
+        }
+      },
+      {
+        "endpoint": "/api/sector/causal",
+        "method": "POST",
+        "description": "뉴스 또는 이벤트를 기반으로 섹터 간 인과관계 맵을 생성한다. Gemini API로 분석 후 sector_causal_maps 테이블에 저장한다.",
+        "request_schema": {
+          "event_description": "string — 분석 대상 이벤트/뉴스",
+          "target_sectors": ["string — 분석 대상 섹터 목록 (optional, 비어있으면 전체)"]
+        },
+        "response_schema": {
+          "causal_map": [
+            {
+              "from_sector": "string",
+              "to_sector": "string",
+              "causal_strength": "number (-1 ~ 1, 음수=역방향 영향)",
+              "description": "string — 인과관계 설명"
+            }
+          ],
+          "event_description": "string",
+          "cached": "boolean"
+        }
+      },
+      {
+        "endpoint": "/api/cron/collect-news",
+        "method": "POST",
+        "description": "Railway Cron에서 호출하는 뉴스 수집 트리거 엔드포인트. 내부 시크릿 키로 인증한다. 수집된 뉴스를 /api/news/analyze로 전달한다.",
+        "request_schema": {},
+        "response_schema": {
+          "collected_count": "number",
+          "analyzed_count": "number",
+          "status": "string"
+        }
+      }
+    ],
+    "data_models": [
+      {
+        "name": "NewsHeadlineInput",
+        "fields": {
+          "headline": "str",
+          "source": "str | None",
+          "published_at": "datetime | None"
+        },
+        "description": "뉴스 분석 요청 시 개별 헤드라인 입력 모델"
+      },
+      {
+        "name": "NewsAnalyzeRequest",
+        "fields": {
+          "headlines": "list[NewsHeadlineInput]"
+        },
+        "description": "뉴스 분석 요청 모델"
+      },
+      {
+        "name": "NewsImpactResult",
+        "fields": {
+          "headline": "str",
+          "impact_score": "float",
+          "sentiment": "str",
+          "sentiment_confidence": "float",
+          "affected_sectors": "list[str]",
+          "affected_stocks": "list[str]",
+          "ai_summary": "str",
+          "source_url": "str"
+        },
+        "description": "뉴스 임팩트 분석 결과 모델"
+      },
+      {
+        "name": "SectorCausalRequest",
+        "fields": {
+          "event_description": "str",
+          "target_sectors": "list[str] | None"
+        },
+        "description": "섹터 인과관계 분석 요청 모델"
+      },
+      {
+        "name": "SectorCausalEdge",
+        "fields": {
+          "from_sector": "str",
+          "to_sector": "str",
+          "causal_strength": "float",
+          "description": "str"
+        },
+        "description": "섹터 인과관계 맵의 개별 연결(엣지) 모델"
+      }
+    ]
+  },
+  "tasks": [
+    {
+      "id": "task_1",
+      "feature_id": "F1",
+      "title": "config.py에 Redis·Supabase 서비스·Cron 환경변수 추가",
+      "description": "app/core/config.py의 Settings 클래스에 upstash_redis_rest_url, upstash_redis_rest_token, cron_secret 필드를 추가한다. 기존 supabase_url, supabase_service_role_key 필드는 유지한다.",
+      "files_to_create": [],
+      "files_to_modify": ["railway-api/app/core/config.py"],
+      "dependencies": [],
+      "priority": "P0",
+      "complexity": "low",
+      "risk": "low",
+      "agent_type": "coder",
+      "parallel_group": 1,
+      "blocking_risk": 8,
+      "done_criteria": "Settings 클래스에 upstash_redis_rest_url, upstash_redis_rest_token, cron_secret 필드가 추가되어 환경변수에서 로드된다"
+    },
+    {
+      "id": "task_2",
+      "feature_id": "F1",
+      "title": "Upstash Redis 클라이언트 초기화 모듈 생성",
+      "description": "app/core/redis.py를 생성하여 upstash-redis 패키지로 Redis 클라이언트 싱글톤 인스턴스를 초기화한다. settings에서 URL과 토큰을 읽어 연결한다.",
+      "files_to_create": ["railway-api/app/core/redis.py"],
+      "files_to_modify": [],
+      "dependencies": ["task_1"],
+      "priority": "P0",
+      "complexity": "low",
+      "risk": "low",
+      "agent_type": "coder",
+      "parallel_group": 2,
+      "blocking_risk": 5,
+      "done_criteria": "from app.core.redis import redis_client 로 임포트하여 get/set 메서드를 호출할 수 있다"
+    },
+    {
+      "id": "task_3",
+      "feature_id": "F1",
+      "title": "Supabase 서비스 클라이언트 초기화 모듈 생성",
+      "description": "app/core/supabase.py를 생성하여 supabase-py 패키지로 service_role 권한의 Supabase 클라이언트 싱글톤을 초기화한다. settings에서 URL과 service_role_key를 읽는다.",
+      "files_to_create": ["railway-api/app/core/supabase.py"],
+      "files_to_modify": [],
+      "dependencies": ["task_1"],
+      "priority": "P0",
+      "complexity": "low",
+      "risk": "low",
+      "agent_type": "coder",
+      "parallel_group": 2,
+      "blocking_risk": 4,
+      "done_criteria": "from app.core.supabase import supabase_client 로 임포트하여 테이블 CRUD가 가능하다"
+    },
+    {
+      "id": "task_4",
+      "feature_id": "F1",
+      "title": "Gemini API 클라이언트 초기화 모듈 생성",
+      "description": "app/core/gemini.py를 생성하여 google-generativeai 패키지로 Gemini 모델 인스턴스를 초기화한다. settings.gemini_api_key를 사용한다. gemini-1.5-flash 모델을 기본으로 설정한다.",
+      "files_to_create": ["railway-api/app/core/gemini.py"],
+      "files_to_modify": [],
+      "dependencies": ["task_1"],
+      "priority": "P0",
+      "complexity": "low",
+      "risk": "low",
+      "agent_type": "coder",
+      "parallel_group": 2,
+      "blocking_risk": 3,
+      "done_criteria": "from app.core.gemini import gemini_model 로 임포트하여 generate_content 호출이 가능하다"
+    },
+    {
+      "id": "task_5",
+      "feature_id": "F1",
+      "title": "Redis 캐시 서비스 생성",
+      "description": "app/services/cache.py를 생성한다. get_cached(key), set_cached(key, value, ttl) 함수를 구현한다. TTL 기본값은 3600초(1시간). JSON 직렬화/역직렬화를 처리한다. Redis 연결 실패 시 캐시 미스로 처리한다(서비스 중단 방지).",
+      "files_to_create": ["railway-api/app/services/__init__.py", "railway-api/app/services/cache.py"],
+      "files_to_modify": [],
+      "dependencies": ["task_2"],
+      "priority": "P0",
+      "complexity": "medium",
+      "risk": "low",
+      "agent_type": "coder",
+      "parallel_group": 3,
+      "blocking_risk": 4,
+      "done_criteria": "get_cached('test_key')가 캐시 미스 시 None을 반환하고, set_cached 후 get_cached가 저장된 값을 반환한다"
+    },
+    {
+      "id": "task_6",
+      "feature_id": "F2",
+      "title": "Pydantic 뉴스 요청/응답 모델 생성",
+      "description": "app/models/news.py를 생성하여 NewsHeadlineInput, NewsAnalyzeRequest, NewsImpactResult, NewsAnalyzeResponse Pydantic v2 모델을 정의한다.",
+      "files_to_create": ["railway-api/app/models/__init__.py", "railway-api/app/models/news.py"],
+      "files_to_modify": [],
+      "dependencies": [],
+      "priority": "P0",
+      "complexity": "low",
+      "risk": "low",
+      "agent_type": "coder",
+      "parallel_group": 1,
+      "blocking_risk": 3,
+      "done_criteria": "모든 Pydantic 모델이 유효한 데이터로 인스턴스화되고, model_json_schema()로 JSON 스키마가 생성된다"
+    },
+    {
+      "id": "task_7",
+      "feature_id": "F2",
+      "title": "Pydantic 섹터 요청/응답 모델 생성",
+      "description": "app/models/sector.py를 생성하여 SectorCausalRequest, SectorCausalEdge, SectorCausalResponse Pydantic v2 모델을 정의한다.",
+      "files_to_create": ["railway-api/app/models/sector.py"],
+      "files_to_modify": [],
+      "dependencies": [],
+      "priority": "P0",
+      "complexity": "low",
+      "risk": "low",
+      "agent_type": "coder",
+      "parallel_group": 1,
+      "blocking_risk": 2,
+      "done_criteria": "모든 Pydantic 모델이 유효한 데이터로 인스턴스화된다"
+    },
+    {
+      "id": "task_8",
+      "feature_id": "F2",
+      "title": "FinBERT 감성 분석 서비스 생성",
+      "description": "app/services/finbert.py를 생성한다. HuggingFace transformers의 pipeline('sentiment-analysis', model='ProsusAI/finbert')를 사용하여 금융 텍스트 감성 분석 함수 analyze_sentiment(text: str) -> SentimentResult를 구현한다. 모델 로드는 앱 시작 시 1회만 수행하고 싱글톤으로 유지한다.",
+      "files_to_create": ["railway-api/app/services/finbert.py"],
+      "files_to_modify": [],
+      "dependencies": ["task_6"],
+      "priority": "P0",
+      "complexity": "high",
+      "risk": "medium",
+      "agent_type": "coder",
+      "parallel_group": 2,
+      "blocking_risk": 2,
+      "done_criteria": "analyze_sentiment('삼성전자 실적 호조')가 {'label': 'positive', 'score': 0.xx} 형태의 결과를 반환한다"
+    },
+    {
+      "id": "task_9",
+      "feature_id": "F3",
+      "title": "뉴스 임팩트 분석 서비스 생성",
+      "description": "app/services/news_analyzer.py를 생성한다. Gemini API로 뉴스 헤드라인의 영향 섹터·종목·임팩트 수준을 분석하는 analyze_news_impact(headline) 함수를 구현한다. FinBERT 감성 점수와 결합하여 종합 impact_score(0-100)를 산출한다. 결과를 Supabase news_impacts 테이블에 저장한다. Redis 캐싱을 적용한다. AI 생성 텍스트에 출처 URL을 병기한다.",
+      "files_to_create": ["railway-api/app/services/news_analyzer.py"],
+      "files_to_modify": [],
+      "dependencies": ["task_4", "task_5", "task_8", "task_3"],
+      "priority": "P0",
+      "complexity": "high",
+      "risk": "medium",
+      "agent_type": "coder",
+      "parallel_group": 4,
+      "blocking_risk": 2,
+      "done_criteria": "analyze_news_impact 함수가 뉴스 헤드라인을 받아 impact_score, sentiment, affected_sectors, ai_summary가 포함된 결과를 반환한다"
+    },
+    {
+      "id": "task_10",
+      "feature_id": "F4",
+      "title": "섹터 인과관계 분석 서비스 생성",
+      "description": "app/services/sector_analyzer.py를 생성한다. Gemini API로 이벤트의 섹터 간 인과관계를 분석하는 analyze_sector_causality(event, sectors) 함수를 구현한다. 결과를 Supabase sector_causal_maps 테이블에 저장한다. Redis 캐싱을 적용한다.",
+      "files_to_create": ["railway-api/app/services/sector_analyzer.py"],
+      "files_to_modify": [],
+      "dependencies": ["task_4", "task_5", "task_3", "task_7"],
+      "priority": "P0",
+      "complexity": "high",
+      "risk": "medium",
+      "agent_type": "coder",
+      "parallel_group": 4,
+      "blocking_risk": 1,
+      "done_criteria": "analyze_sector_causality 함수가 이벤트 설명과 섹터 목록을 받아 인과관계 엣지 리스트를 반환한다"
+    },
+    {
+      "id": "task_11",
+      "feature_id": "F3",
+      "title": "뉴스 분석 라우터 생성 (/api/news/analyze)",
+      "description": "app/routes/news.py를 생성한다. POST /api/news/analyze 엔드포인트를 구현한다. Depends(get_current_user)로 JWT 인증을 적용한다. NewsAnalyzeRequest를 받아 news_analyzer 서비스를 호출하고 NewsAnalyzeResponse를 반환한다.",
+      "files_to_create": ["railway-api/app/routes/news.py"],
+      "files_to_modify": [],
+      "dependencies": ["task_6", "task_9"],
+      "priority": "P0",
+      "complexity": "medium",
+      "risk": "low",
+      "agent_type": "coder",
+      "parallel_group": 5,
+      "blocking_risk": 1,
+      "done_criteria": "POST /api/news/analyze에 뉴스 헤드라인 배열을 보내면 임팩트 분석 결과가 반환된다"
+    },
+    {
+      "id": "task_12",
+      "feature_id": "F4",
+      "title": "섹터 인과관계 라우터 생성 (/api/sector/causal)",
+      "description": "app/routes/sector.py를 생성한다. POST /api/sector/causal 엔드포인트를 구현한다. Depends(get_current_user)로 JWT 인증을 적용한다. SectorCausalRequest를 받아 sector_analyzer 서비스를 호출하고 SectorCausalResponse를 반환한다.",
+      "files_to_create": ["railway-api/app/routes/sector.py"],
+      "files_to_modify": [],
+      "dependencies": ["task_7", "task_10"],
+      "priority": "P0",
+      "complexity": "medium",
+      "risk": "low",
+      "agent_type": "coder",
+      "parallel_group": 5,
+      "blocking_risk": 1,
+      "done_criteria": "POST /api/sector/causal에 이벤트 설명을 보내면 섹터 인과관계 맵이 반환된다"
+    },
+    {
+      "id": "task_13",
+      "feature_id": "F3",
+      "title": "main.py에 뉴스·섹터·크론 라우터 등록",
+      "description": "app/main.py에 news_router, sector_router, cron_router를 import하고 app.include_router()로 등록한다. lifespan 함수에 FinBERT 모델 사전 로드 호출을 추가한다.",
+      "files_to_create": [],
+      "files_to_modify": ["railway-api/app/main.py"],
+      "dependencies": ["task_11", "task_12", "task_15"],
+      "priority": "P0",
+      "complexity": "low",
+      "risk": "low",
+      "agent_type": "coder",
+      "parallel_group": 6,
+      "blocking_risk": 0,
+      "done_criteria": "앱 시작 시 /api/news/analyze, /api/sector/causal, /api/cron/collect-news 라우트가 등록되고 /docs에 표시된다"
+    },
+    {
+      "id": "task_14",
+      "feature_id": "F2",
+      "title": "requirements.txt에 transformers·torch 의존성 추가",
+      "description": "railway-api/requirements.txt에 transformers==4.41.0, torch==2.3.0 (CPU 버전)을 추가한다. FinBERT 모델 실행에 필요한 패키지이다.",
+      "files_to_create": [],
+      "files_to_modify": ["railway-api/requirements.txt"],
+      "dependencies": [],
+      "priority": "P0",
+      "complexity": "low",
+      "risk": "medium",
+      "agent_type": "coder",
+      "parallel_group": 1,
+      "blocking_risk": 1,
+      "done_criteria": "pip install -r requirements.txt 실행 시 transformers와 torch가 정상 설치된다"
+    },
+    {
+      "id": "task_15",
+      "feature_id": "F7",
+      "title": "Cron 뉴스 수집 라우터 생성 (/api/cron/collect-news)",
+      "description": "app/routes/cron.py를 생성한다. POST /api/cron/collect-news 엔드포인트를 구현한다. cron_secret 헤더로 인증한다(JWT 미적용, 내부 전용). 뉴스 소스에서 헤드라인을 수집하고 news_analyzer 서비스를 호출한다.",
+      "files_to_create": ["railway-api/app/routes/cron.py"],
+      "files_to_modify": [],
+      "dependencies": ["task_9"],
+      "priority": "P2",
+      "complexity": "medium",
+      "risk": "low",
+      "agent_type": "coder",
+      "parallel_group": 5,
+      "blocking_risk": 1,
+      "done_criteria": "POST /api/cron/collect-news에 올바른 cron_secret을 보내면 뉴스 수집이 실행된다"
+    },
+    {
+      "id": "task_16",
+      "feature_id": "F7",
+      "title": "Railway cron.json 설정 파일 생성",
+      "description": "railway-api/cron.json을 생성한다. /api/cron/collect-news를 1시간 간격으로 호출하는 스케줄을 설정한다.",
+      "files_to_create": ["railway-api/cron.json"],
+      "files_to_modify": [],
+      "dependencies": ["task_15"],
+      "priority": "P2",
+      "complexity": "low",
+      "risk": "low",
+      "agent_type": "coder",
+      "parallel_group": 6,
+      "blocking_risk": 0,
+      "done_criteria": "cron.json에 유효한 cron 표현식과 엔드포인트가 설정되어 있다"
+    },
+    {
+      "id": "task_17",
+      "feature_id": "F2",
+      "title": "Dockerfile에 FinBERT 모델 사전 다운로드 단계 추가",
+      "description": "railway-api/Dockerfile에 transformers 모델 사전 다운로드 RUN 명령을 추가한다. 빌드 시 ProsusAI/finbert 모델을 캐싱하여 런타임 다운로드를 방지한다.",
+      "files_to_create": [],
+      "files_to_modify": ["railway-api/Dockerfile"],
+      "dependencies": ["task_14"],
+      "priority": "P0",
+      "complexity": "medium",
+      "risk": "medium",
+      "agent_type": "coder",
+      "parallel_group": 2,
+      "blocking_risk": 0,
+      "done_criteria": "Docker 빌드 시 FinBERT 모델이 이미지에 포함되고, 런타임에 추가 다운로드 없이 로드된다"
+    },
+    {
+      "id": "task_18",
+      "feature_id": "F5",
+      "title": "news_impacts 테이블 seed 마이그레이션 생성",
+      "description": "supabase/migrations/20260324000001_seed_news_impacts.sql을 생성한다. 5~10개의 한국 주식시장 관련 샘플 뉴스 임팩트 데이터를 INSERT한다. 반도체, 자동차, 바이오, IT 등 다양한 섹터를 포함한다.",
+      "files_to_create": ["supabase/migrations/20260324000001_seed_news_impacts.sql"],
+      "files_to_modify": [],
+      "dependencies": [],
+      "priority": "P1",
+      "complexity": "low",
+      "risk": "low",
+      "agent_type": "coder",
+      "parallel_group": 1,
+      "blocking_risk": 0,
+      "done_criteria": "마이그레이션 실행 후 news_impacts 테이블에 샘플 데이터가 존재한다"
+    },
+    {
+      "id": "task_19",
+      "feature_id": "F5",
+      "title": "sector_causal_maps 테이블 seed 마이그레이션 생성",
+      "description": "supabase/migrations/20260324000002_seed_sector_causal_maps.sql을 생성한다. 한국 주식시장 주요 섹터(반도체→IT, 금리→금융, 유가→화학 등) 간 인과관계 샘플 데이터 10~15개를 INSERT한다.",
+      "files_to_create": ["supabase/migrations/20260324000002_seed_sector_causal_maps.sql"],
+      "files_to_modify": [],
+      "dependencies": [],
+      "priority": "P1",
+      "complexity": "low",
+      "risk": "low",
+      "agent_type": "coder",
+      "parallel_group": 1,
+      "blocking_risk": 0,
+      "done_criteria": "마이그레이션 실행 후 sector_causal_maps 테이블에 샘플 데이터가 존재한다"
+    },
+    {
+      "id": "task_20",
+      "feature_id": "F6",
+      "title": "Railway API 타입 정의 생성",
+      "description": "src/types/railway.types.ts를 생성한다. NewsAnalyzeRequest, NewsAnalyzeResponse, SectorCausalRequest, SectorCausalResponse 등 Railway API의 요청/응답 TypeScript 타입을 정의한다.",
+      "files_to_create": ["src/types/railway.types.ts"],
+      "files_to_modify": [],
+      "dependencies": [],
+      "priority": "P1",
+      "complexity": "low",
+      "risk": "low",
+      "agent_type": "coder",
+      "parallel_group": 1,
+      "blocking_risk": 1,
+      "done_criteria": "TypeScript 컴파일 시 타입 에러 없이 import 가능하다"
+    },
+    {
+      "id": "task_21",
+      "feature_id": "F6",
+      "title": "Railway API 클라이언트 유틸리티 생성",
+      "description": "src/lib/railway.ts를 생성한다. Railway FastAPI 서버를 호출하는 타입 안전 클라이언트를 구현한다. NEXT_PUBLIC_RAILWAY_API_URL 환경변수 사용. Supabase 세션 토큰을 Authorization 헤더에 자동 전달. analyzeNews(), getSectorCausalMap() 등 메서드 제공. 에러 핸들링과 타임아웃 처리 포함.",
+      "files_to_create": ["src/lib/railway.ts"],
+      "files_to_modify": [],
+      "dependencies": ["task_20"],
+      "priority": "P1",
+      "complexity": "medium",
+      "risk": "low",
+      "agent_type": "coder",
+      "parallel_group": 2,
+      "blocking_risk": 0,
+      "done_criteria": "analyzeNews()와 getSectorCausalMap() 함수가 Railway API를 호출하고 타입이 지정된 응답을 반환한다"
+    }
+  ],
+  "tracking": {
+    "checkpoints": [
+      "CP1: config.py 환경변수 + Redis/Supabase/Gemini 클라이언트 초기화 완료 (task_1~4) — 외부 서비스 연결 기반 확보",
+      "CP2: Pydantic 모델 + FinBERT 서비스 완료 (task_6~8) — AI 분석 기반 확보",
+      "CP3: 뉴스 분석 + 섹터 분석 서비스 완료 (task_9~10) — 핵심 비즈니스 로직 확보",
+      "CP4: 라우터 등록 + main.py 통합 완료 (task_11~13) — API 엔드포인트 가동",
+      "CP5: Next.js 클라이언트 + seed 데이터 완료 (task_18~21) — 프론트엔드 연동 준비 완료"
+    ],
+    "risk_factors": [
+      {
+        "task_id": "task_8",
+        "risk": "FinBERT 모델(~420MB)이 Railway 무료 플랜 메모리 제한에 걸릴 수 있음",
+        "mitigation": "torch CPU 전용 빌드 사용, 또는 FinBERT를 ONNX 경량 모델로 대체. 최악의 경우 Gemini API로 감성 분석까지 통합"
+      },
+      {
+        "task_id": "task_17",
+        "risk": "Docker 이미지 크기가 torch 포함 시 2GB 이상 증가하여 빌드/배포 시간 급증",
+        "mitigation": "python:3.11-slim 기반 + pip install --no-cache-dir + torch CPU only wheel 사용. 또는 multi-stage 빌드 적용"
+      },
+      {
+        "task_id": "task_9",
+        "risk": "Gemini API 응답 형식이 비정형이라 파싱 실패 가능",
+        "mitigation": "Gemini에 JSON 응답을 강제하는 system instruction 적용. 파싱 실패 시 재시도 로직(최대 3회) 구현"
+      }
+    ],
+    "replan_triggers": [
+      "Railway 메모리 제한으로 FinBERT 로드가 불가능한 경우 → F2를 Gemini 기반 감성 분석으로 변경",
+      "Gemini API rate limit에 도달하는 경우 → 분석 요청 큐잉 시스템 도입 검토",
+      "Docker 이미지 크기가 5GB를 초과하는 경우 → FinBERT를 별도 마이크로서비스로 분리"
+    ]
+  },
+  "documentation_plan": {
+    "readme_update": "구현 완료 후",
+    "api_docs": true,
+    "architecture_diagram": true,
+    "changelog": true
+  },
+  "non_functional": {
+    "performance": "뉴스 분석 API 응답시간 목표: 캐시 히트 시 < 200ms, 캐시 미스 시 < 5s. Redis TTL 1시간. FinBERT 추론은 CPU에서 단일 헤드라인 기준 < 500ms",
+    "security": "모든 분석 엔드포인트에 JWT 인증 적용. Cron 엔드포인트는 cron_secret 헤더로 별도 인증. service_role 키는 서버 사이드에서만 사용. CORS 오리진 제한 유지",
+    "scalability": "Redis 캐싱으로 중복 분석 방지. FinBERT 싱글톤 모델로 메모리 효율화. Gemini API 호출은 배치 처리 가능하도록 설계. 향후 작업 큐(Celery/ARQ) 도입 가능한 서비스 레이어 구조"
+  }
+}

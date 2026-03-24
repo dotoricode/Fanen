@@ -1,0 +1,110 @@
+{
+  "status": "approved_with_comments",
+  "verdict": "아키텍처 구조와 CLAUDE.md 절대 원칙은 잘 준수되었으나, 라우터 레이어에서 캐시 키 로직 중복 구현(레이어 경계 위반) 및 news 라우터의 cached 플래그 로직 혼란 등 minor 이슈 존재",
+  "reviewed_files": [
+    "railway-api/app/core/config.py",
+    "railway-api/app/core/redis.py",
+    "railway-api/app/core/supabase.py",
+    "railway-api/app/core/gemini.py",
+    "railway-api/app/models/news.py",
+    "railway-api/app/models/sector.py",
+    "railway-api/app/models/__init__.py",
+    "railway-api/app/services/__init__.py",
+    "railway-api/app/services/cache.py",
+    "railway-api/app/services/sentiment.py",
+    "railway-api/app/services/news_analyzer.py",
+    "railway-api/app/services/sector_analyzer.py",
+    "railway-api/app/routes/news.py",
+    "railway-api/app/routes/sector.py",
+    "railway-api/app/routes/cron.py",
+    "railway-api/cron.json",
+    "src/lib/railway.ts",
+    "src/types/railway.types.ts"
+  ],
+  "critical_count": 0,
+  "major_count": 0,
+  "minor_count": 4,
+  "info_count": 2,
+  "issues": [
+    {
+      "severity": "minor",
+      "category": "architecture",
+      "file": "railway-api/app/routes/sector.py",
+      "line": 32,
+      "description": "routes 레이어가 services/cache.py를 직접 임포트하고 hashlib를 사용해 캐시 키를 재계산하고 있음. sector_analyzer.py의 _make_cache_key() 함수와 동일한 로직이 중복되며, 라우터가 캐시 구현 세부사항을 알아야 하는 레이어 경계 위반임.",
+      "suggestion": "sector_analyzer.py에 캐시 히트 여부를 포함한 반환값을 제공하는 방식으로 개선. 예: analyze_sector_causality()가 (edges, is_cached) 튜플을 반환하거나, 별도 is_cached 파라미터를 SectorCausalResponse에 직접 서비스 레이어에서 채워 반환."
+    },
+    {
+      "severity": "minor",
+      "category": "duplication",
+      "file": "railway-api/app/services/news_analyzer.py",
+      "line": 118,
+      "description": "마크다운 코드 블록 제거 로직(```블록 분리 후 'json' prefix 제거)이 news_analyzer.py, sector_analyzer.py, sentiment.py 세 파일에 동일하게 반복됨. DRY 원칙 위반.",
+      "suggestion": "services/cache.py 또는 별도 utils.py에 extract_json_from_llm_response(raw_text: str) -> str 유틸 함수로 분리하여 세 서비스가 공유."
+    },
+    {
+      "severity": "minor",
+      "category": "other",
+      "file": "railway-api/app/routes/news.py",
+      "line": 32,
+      "description": "all_cached = True로 초기화한 후 루프 내에서 무조건 all_cached = False로 덮어씀(데드 코드). 이후 cached_flag = len(results) == 0이라는 별개 로직을 사용함. 의도가 불명확하고 코드 흐름을 이해하기 어려움.",
+      "suggestion": "all_cached 변수를 제거하고 cached_flag = False로 직접 설정하거나, 서비스 레이어에서 캐시 히트 여부를 반환받아 정확히 반영."
+    },
+    {
+      "severity": "minor",
+      "category": "other",
+      "file": "railway-api/app/services/news_analyzer.py",
+      "line": 112,
+      "description": "주석 '최대 2회 재시도'와 실제 for attempt in range(3) (3회 시도) 불일치. 동일 패턴이 sector_analyzer.py(94번 줄), sentiment.py(50번 줄)에도 반복됨.",
+      "suggestion": "range(3)을 range(MAX_RETRY_COUNT)로 상수화하고 주석을 '최대 3회 시도(최초 1회 + 재시도 2회)'로 통일."
+    },
+    {
+      "severity": "info",
+      "category": "architecture",
+      "file": "railway-api/app/core/redis.py",
+      "line": 40,
+      "description": "모듈 최상위에서 redis_client = get_redis_client()를 실행하면 모듈 임포트 시점에 환경변수를 읽음. 테스트 환경에서 환경변수 패치가 어려울 수 있음.",
+      "suggestion": "FastAPI lifespan 이벤트에서 싱글톤 초기화를 수행하면 테스트 가능성이 높아짐. 현재 패턴도 graceful fallback이 있으므로 운영에는 문제없음."
+    },
+    {
+      "severity": "info",
+      "category": "other",
+      "file": "railway-api/app/services/sector_analyzer.py",
+      "line": 140,
+      "description": "sector_causal_maps 테이블 upsert 시 from_sector + to_sector 복합 유니크 제약이 없으면 중복 삽입될 수 있음. implementation_notes에도 언급된 known_limitation.",
+      "suggestion": "Sprint 3 DB 마이그레이션에서 UNIQUE(from_sector, to_sector) 제약 추가 및 ON CONFLICT DO UPDATE 패턴 적용 권장."
+    }
+  ],
+  "positive_findings": [
+    "CLAUDE.md 절대 원칙 완전 준수: news_analyzer.py에서 AI 출처 URL 병기('[AI 분석] ... 출처: https://ai.google.dev/gemini-api')와 source_url 필드가 모델에 포함되어 있음",
+    "AI 환각 방지 원칙 준수: 프롬프트에 '주가 수치 직접 생성 금지', '수치 예측 금지' 규칙을 명시하고, affected_stocks에 종목명만 반환(수치 없음)",
+    "모든 보호 엔드포인트(news, sector)에 Depends(get_current_user) JWT 인증이 정확히 적용됨",
+    "cron 엔드포인트는 내부 전용으로 분리되어 X-Cron-Secret 헤더 인증 사용, JWT와 적절히 구분됨",
+    "core/ 클라이언트(redis, supabase, gemini) 모두 graceful fallback 패턴 일관성 있게 구현 — 환경변수 미설정 시 앱 기동 보장",
+    "Python snake_case/PascalCase/UPPER_SNAKE_CASE 컨벤션과 한국어 주석이 전체 코드베이스에서 일관되게 준수됨",
+    "TypeScript 타입 정의(railway.types.ts)가 Python Pydantic 모델과 1:1 정확히 대응되어 타입 안전성 확보",
+    "services/ → core/ 단방향 의존성이 명확히 유지되고 순환 참조 없음"
+  ],
+  "completeness_check": {
+    "applicable": true,
+    "features_implemented": [
+      "F1: Upstash Redis 캐싱 레이어 — core/redis.py, services/cache.py 구현 완료",
+      "F2: 감성 분석 서비스 — services/sentiment.py에 Gemini 기반으로 구현 완료 (FinBERT 대신 Gemini 사용, plan.json design_decisions 반영)",
+      "F3: 뉴스 임팩트 스코어링 API (/api/news/analyze) — routes/news.py + services/news_analyzer.py 구현 완료",
+      "F4: 섹터 인과관계 맵 API (/api/sector/causal) — routes/sector.py + services/sector_analyzer.py 구현 완료",
+      "F5: Supabase 데이터 seed — migrations/20260324000001_seed_news_impacts.sql, migrations/20260324000002_seed_sector_causal_maps.sql 구현 완료",
+      "F6: Next.js Railway API 클라이언트 — src/lib/railway.ts + src/types/railway.types.ts 구현 완료",
+      "F7: Railway Cron 뉴스 수집 스케줄러 — routes/cron.py + cron.json (1시간 간격) 구현 완료"
+    ],
+    "features_missing": []
+  },
+  "next_iteration_recommendations": [
+    "routes/sector.py의 캐시 키 중복 로직을 서비스 레이어로 이동하여 레이어 경계 명확화",
+    "LLM 응답 JSON 추출 유틸 함수(extract_json_from_llm_response) 공통화로 중복 코드 제거",
+    "재시도 횟수를 MAX_RETRY_COUNT 상수로 통일하고 세 서비스 파일 간 일관성 확보",
+    "sector_causal_maps 테이블에 UNIQUE(from_sector, to_sector) DB 제약 추가 (Sprint 3)",
+    "Sprint 3에서 cron.py의 샘플 헤드라인을 실제 KRX/DART/뉴스 RSS API로 교체",
+    "news 라우터의 cached 플래그를 서비스 레이어에서 정확히 반환받아 응답에 반영"
+  ],
+  "summary": "Sprint 2 구현은 CLAUDE.md 절대 원칙(AI 환각 방지, 출처 병기, JWT 인증, Railway 금융 데이터 처리)을 충실히 준수했으며, 7개 기능 요구사항(F1~F7)이 모두 구현되었습니다. 아키텍처 레이어 분리(core → services → routes)도 대체로 올바르게 유지되었습니다. 다만 routes/sector.py에서 캐시 키 로직을 라우터가 직접 재구현하는 레이어 경계 위반, 3개 서비스 파일에 걸친 JSON 추출 로직 중복, news 라우터의 cached 플래그 데드 코드 등 minor 품질 이슈가 있습니다. critical/major 이슈가 없으므로 조건부 승인(approved_with_comments)으로 판정하며, 다음 이터레이션에서 minor 이슈들을 정리할 것을 권고합니다."
+}

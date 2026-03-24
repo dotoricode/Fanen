@@ -1,0 +1,517 @@
+{
+  "goal": "뉴스 임팩트 UI(Feature 01)와 섹터 인과관계 UI(Feature 02)를 구현하여 홈 페이지에 통합하고, 전용 뉴스/섹터 페이지를 제공한다",
+  "sprint": "Sprint 3",
+  "created_at": "2026-03-24T02:28:03Z",
+  "run_id": "20260324_022803_a3c029",
+
+  "requirements": "Feature 01: news-impact 카드 목록, LanguageToggle(전문가↔쉬운언어), TrafficLightSignal, AiBadge+출처URL, railway.ts 연동, news_impacts 테이블 직접 조회. Feature 02: D3.js 섹터 인과관계 포스 그래프, 섹터 클릭→드릴다운 패널, UiModeSwitch(Standard↔Senior), sector_causal_maps 테이블 직접 조회. 공통: 홈 통합, DisclaimerBanner 적용, /news 전용 페이지, /sector 전용 페이지",
+
+  "features": [
+    {
+      "id": "F1",
+      "title": "뉴스 임팩트 UI",
+      "description": "news_impacts Supabase 테이블을 직접 조회하고 Railway AI API(/api/news/analyze) 응답을 합쳐 뉴스 임팩트 카드 목록을 렌더링한다. LanguageToggle로 general/expert 언어 모드 전환, TrafficLightSignal로 buy/hold/sell 신호 표시, AiBadge+source_url로 AI 분석 출처 표시를 포함한다.",
+      "priority": "P0"
+    },
+    {
+      "id": "F2",
+      "title": "섹터 인과관계 UI",
+      "description": "sector_causal_maps Supabase 테이블을 직접 조회하여 D3.js ForceSimulation 기반 포스 그래프를 렌더링한다. 섹터 노드 클릭 시 관련 종목 드릴다운 패널이 우측에 표시되고, UiModeSwitch로 Standard/Senior UI를 분기한다.",
+      "priority": "P0"
+    },
+    {
+      "id": "F3",
+      "title": "홈 페이지 통합 및 전용 페이지",
+      "description": "src/app/page.tsx 홈에 F1·F2 Feature를 통합하고 DisclaimerBanner를 적용한다. /news 전용 페이지(src/app/news/page.tsx)와 /sector 전용 페이지(src/app/sector/page.tsx)를 별도로 생성한다.",
+      "priority": "P0"
+    }
+  ],
+
+  "assumptions": [
+    "news_impacts 테이블은 RLS 정책이 공개 읽기(anon 포함)로 설정되어 있다고 가정한다",
+    "sector_causal_maps 테이블도 동일하게 공개 읽기 가능하다고 가정한다",
+    "TrafficLightSignal의 signal 값은 news_impacts.impact_score를 기준으로 매핑한다: 0~33=sell, 34~66=hold, 67~100=buy",
+    "섹터 드릴다운 패널의 종목 데이터는 affected_stocks 배열에서 추출한다 (별도 API 없음)",
+    "Senior 모드는 폰트 크기 확대 + 단순화된 설명 텍스트로 처리한다",
+    "Railway API 분석 결과가 없을 경우 Supabase news_impacts 데이터만으로 표시한다 (폴백 처리)",
+    "d3 패키지는 package.json에 이미 설치되어 있음 (v7.9.0 확인됨)",
+    "checkSubscription 미들웨어는 현재 구현되지 않았으므로, SubscriptionGate 컴포넌트를 직접 활용하여 플랜 체크를 구현한다",
+    "뉴스 임팩트는 pro 플랜 이상, 섹터 인과관계 맵도 pro 플랜 이상에서 접근 가능하다 (plans.ts FEATURE_PLAN_MAP 기준)"
+  ],
+
+  "clarification_needed": [],
+
+  "context_analysis": {
+    "existing_components": {
+      "DisclaimerBanner": {
+        "props": "variant?: 'default'|'pack'|'tax'|'signal'",
+        "notes": "분석 화면 필수. 'signal' variant가 뉴스 임팩트에 적합"
+      },
+      "AiBadge": {
+        "props": "label?: string, variant?: 'info'|'warning', source?: string",
+        "notes": "source prop으로 출처 URL 링크 자동 생성"
+      },
+      "LanguageToggle": {
+        "props": "onChange: (level: 'general'|'expert') => void, defaultLevel?: 'general'|'expert'",
+        "notes": "localStorage 'fanen-lang' 키로 상태 저장, 'use client' 필수"
+      },
+      "TrafficLightSignal": {
+        "props": "signal: 'buy'|'hold'|'sell', confidence: number, reason?: string",
+        "notes": "DisclaimerBanner와 반드시 함께 사용"
+      },
+      "UiModeSwitch": {
+        "props": "onToggle?: (mode: 'standard'|'senior') => void",
+        "notes": "localStorage 'fanen-ui-mode', document.documentElement.classList 토글"
+      },
+      "SubscriptionGate": {
+        "props": "requiredPlan: PlanTier, currentPlan: PlanTier, children: ReactNode, onUpgradeClick?: () => void",
+        "notes": "플랜 미달 시 잠금 UI 표시"
+      }
+    },
+    "existing_api_clients": {
+      "railway.ts": {
+        "analyzeNews": "POST /api/news/analyze → NewsAnalyzeResponse",
+        "getSectorCausalMap": "POST /api/sector/causal → SectorCausalResponse"
+      },
+      "supabase/client.ts": {
+        "createClient": "싱글톤 브라우저 클라이언트, null 반환 가능 (환경변수 미설정 시)"
+      }
+    },
+    "database_tables": {
+      "news_impacts": {
+        "key_fields": "id, headline, source, published_at, impact_score(0~100), affected_sectors[], affected_stocks[], ai_summary",
+        "access": "공개 읽기"
+      },
+      "sector_causal_maps": {
+        "key_fields": "id, from_sector, to_sector, causal_strength(-1~1), description",
+        "access": "공개 읽기"
+      }
+    },
+    "d3_available": true,
+    "d3_version": "^7.9.0",
+    "import_alias": "@/* → ./src/*"
+  },
+
+  "architecture": {
+    "tech_stack": [
+      "Next.js 14 App Router",
+      "TypeScript",
+      "TailwindCSS",
+      "D3.js v7 (ForceSimulation, forceLink, forceManyBody, forceCenter)",
+      "Supabase JS v2 (브라우저 클라이언트)",
+      "Railway FastAPI 클라이언트 (기존 railway.ts)"
+    ],
+    "new_files": [
+      "src/features/news-impact/types.ts",
+      "src/features/news-impact/hooks/useNewsImpacts.ts",
+      "src/features/news-impact/components/NewsImpactCard.tsx",
+      "src/features/news-impact/components/NewsImpactList.tsx",
+      "src/features/news-impact/index.ts",
+      "src/features/sector-map/types.ts",
+      "src/features/sector-map/hooks/useSectorCausalMap.ts",
+      "src/features/sector-map/components/SectorForceGraph.tsx",
+      "src/features/sector-map/components/SectorDrilldownPanel.tsx",
+      "src/features/sector-map/components/SectorMapSection.tsx",
+      "src/features/sector-map/index.ts",
+      "src/app/news/page.tsx",
+      "src/app/sector/page.tsx"
+    ],
+    "modified_files": [
+      "src/app/page.tsx"
+    ],
+    "folder_structure": "features/news-impact/ (types, hooks, components, index.ts) + features/sector-map/ (types, hooks, components, index.ts) + app/news/page.tsx + app/sector/page.tsx",
+    "api_design": [
+      {
+        "endpoint": "Supabase: news_impacts",
+        "method": "SELECT (공개)",
+        "description": "뉴스 임팩트 목록 조회 — order by published_at desc, limit 20",
+        "request_schema": {},
+        "response_schema": {
+          "id": "string",
+          "headline": "string",
+          "source": "string|null",
+          "published_at": "string|null",
+          "impact_score": "number|null",
+          "affected_sectors": "string[]|null",
+          "affected_stocks": "string[]|null",
+          "ai_summary": "string|null"
+        }
+      },
+      {
+        "endpoint": "Supabase: sector_causal_maps",
+        "method": "SELECT (공개)",
+        "description": "섹터 인과관계 전체 조회 — causal_strength 기준 필터링",
+        "request_schema": {},
+        "response_schema": {
+          "id": "string",
+          "from_sector": "string",
+          "to_sector": "string",
+          "causal_strength": "number|null",
+          "description": "string|null"
+        }
+      },
+      {
+        "endpoint": "Railway: POST /api/news/analyze",
+        "method": "POST",
+        "description": "뉴스 헤드라인 AI 분석 — 폴백 가능 (실패 시 Supabase 데이터만 사용)",
+        "request_schema": { "headlines": "[{ headline, source?, published_at? }]" },
+        "response_schema": { "results": "[NewsImpactResult]", "cached": "boolean" }
+      }
+    ],
+    "data_models": [
+      {
+        "name": "NewsImpactCardData",
+        "fields": {
+          "id": "string",
+          "headline": "string",
+          "source": "string|null",
+          "published_at": "string|null",
+          "impact_score": "number",
+          "signal": "'buy'|'hold'|'sell'",
+          "confidence": "number",
+          "affected_sectors": "string[]",
+          "affected_stocks": "string[]",
+          "ai_summary_general": "string",
+          "ai_summary_expert": "string",
+          "source_url": "string|null"
+        },
+        "description": "뉴스 임팩트 카드 렌더링용 통합 데이터 모델"
+      },
+      {
+        "name": "SectorNode",
+        "fields": {
+          "id": "string",
+          "name": "string",
+          "x": "number (D3 ForceSimulation 주입)",
+          "y": "number (D3 ForceSimulation 주입)"
+        },
+        "description": "D3 포스 그래프 노드"
+      },
+      {
+        "name": "SectorLink",
+        "fields": {
+          "source": "string (SectorNode.id)",
+          "target": "string (SectorNode.id)",
+          "causal_strength": "number",
+          "description": "string"
+        },
+        "description": "D3 포스 그래프 엣지"
+      }
+    ]
+  },
+
+  "tasks": [
+    {
+      "id": "T1",
+      "feature_id": "F1",
+      "title": "news-impact feature 타입 정의",
+      "description": "src/features/news-impact/types.ts 생성. NewsImpactCardData 인터페이스, impact_score → signal 변환 함수 scoreToSignal(score: number): Signal를 정의한다. Signal 타입은 'buy'|'hold'|'sell'. 0~33=sell, 34~66=hold, 67~100=buy 매핑. ai_summary를 general/expert 모드로 분리하는 splitSummary 유틸도 포함한다.",
+      "files_to_create": ["src/features/news-impact/types.ts"],
+      "files_to_modify": [],
+      "dependencies": [],
+      "priority": "P0",
+      "complexity": "low",
+      "risk": "low",
+      "agent_type": "coder",
+      "parallel_group": 1,
+      "blocking_risk": 3,
+      "done_criteria": "NewsImpactCardData 인터페이스와 scoreToSignal 함수가 정의되어 있고 TypeScript 컴파일 에러 없음"
+    },
+    {
+      "id": "T2",
+      "feature_id": "F2",
+      "title": "sector-map feature 타입 정의",
+      "description": "src/features/sector-map/types.ts 생성. SectorNode, SectorLink 인터페이스 정의. D3 SimulationNodeDatum 확장 타입도 포함한다. causal_strength 값을 링크 색상(양수=파랑, 음수=빨강)으로 변환하는 getEdgeColor 유틸 함수 정의.",
+      "files_to_create": ["src/features/sector-map/types.ts"],
+      "files_to_modify": [],
+      "dependencies": [],
+      "priority": "P0",
+      "complexity": "low",
+      "risk": "low",
+      "agent_type": "coder",
+      "parallel_group": 1,
+      "blocking_risk": 3,
+      "done_criteria": "SectorNode, SectorLink 인터페이스와 getEdgeColor 함수 정의, @types/d3 타입 활용 확인"
+    },
+    {
+      "id": "T3",
+      "feature_id": "F1",
+      "title": "useNewsImpacts 훅 구현",
+      "description": "src/features/news-impact/hooks/useNewsImpacts.ts 생성. 'use client'. Supabase 브라우저 클라이언트로 news_impacts 테이블 조회(published_at desc, limit 20). Railway analyzeNews API 폴백 호출. NewsImpactCardData[]로 변환하여 반환. loading/error 상태 포함. Supabase 클라이언트가 null인 경우 빈 배열 반환(환경변수 미설정 대응).",
+      "files_to_create": ["src/features/news-impact/hooks/useNewsImpacts.ts"],
+      "files_to_modify": [],
+      "dependencies": ["T1"],
+      "priority": "P0",
+      "complexity": "medium",
+      "risk": "medium",
+      "agent_type": "coder",
+      "parallel_group": 2,
+      "blocking_risk": 2,
+      "done_criteria": "useNewsImpacts 훅이 loading/error/data 상태를 반환하고, Supabase null 케이스를 처리하며 TypeScript 에러 없음"
+    },
+    {
+      "id": "T4",
+      "feature_id": "F2",
+      "title": "useSectorCausalMap 훅 구현",
+      "description": "src/features/sector-map/hooks/useSectorCausalMap.ts 생성. 'use client'. Supabase 브라우저 클라이언트로 sector_causal_maps 전체 조회. SectorNode[]와 SectorLink[]로 변환(중복 섹터 노드 dedup). loading/error 상태 포함. selectedSector state와 setSelectedSector도 함께 반환하여 드릴다운 연동 지원.",
+      "files_to_create": ["src/features/sector-map/hooks/useSectorCausalMap.ts"],
+      "files_to_modify": [],
+      "dependencies": ["T2"],
+      "priority": "P0",
+      "complexity": "medium",
+      "risk": "medium",
+      "agent_type": "coder",
+      "parallel_group": 2,
+      "blocking_risk": 2,
+      "done_criteria": "useSectorCausalMap 훅이 nodes/links/selectedSector/setSelectedSector/loading/error를 반환하고 노드 dedup 로직 정상 동작"
+    },
+    {
+      "id": "T5",
+      "feature_id": "F1",
+      "title": "NewsImpactCard 컴포넌트 구현",
+      "description": "src/features/news-impact/components/NewsImpactCard.tsx 생성. 'use client'. Props: { item: NewsImpactCardData, languageLevel: 'general'|'expert' }. 내부에 TrafficLightSignal(signal, confidence), AiBadge(label='핀이 분석', source=source_url), 언어 레벨에 따른 ai_summary 표시. 카드 스타일은 TailwindCSS border/rounded-lg/p-4 패턴 사용. DisclaimerBanner는 List 레벨에서 처리하므로 카드에는 불포함.",
+      "files_to_create": ["src/features/news-impact/components/NewsImpactCard.tsx"],
+      "files_to_modify": [],
+      "dependencies": ["T1"],
+      "priority": "P0",
+      "complexity": "medium",
+      "risk": "low",
+      "agent_type": "coder",
+      "parallel_group": 2,
+      "blocking_risk": 1,
+      "done_criteria": "NewsImpactCard가 languageLevel에 따라 다른 summary를 표시하고, TrafficLightSignal과 AiBadge가 올바르게 렌더링됨"
+    },
+    {
+      "id": "T6",
+      "feature_id": "F1",
+      "title": "NewsImpactList 컴포넌트 구현",
+      "description": "src/features/news-impact/components/NewsImpactList.tsx 생성. 'use client'. useNewsImpacts 훅 호출. LanguageToggle 포함(onChange로 languageLevel 상태 관리). 상단에 DisclaimerBanner variant='signal'. 로딩 스켈레톤(3개 카드 플레이스홀더), 에러 메시지, 빈 데이터 처리 포함. NewsImpactCard 목록 렌더링. SubscriptionGate requiredPlan='pro' 적용(currentPlan prop 또는 기본값 'free').",
+      "files_to_create": ["src/features/news-impact/components/NewsImpactList.tsx"],
+      "files_to_modify": [],
+      "dependencies": ["T3", "T5"],
+      "priority": "P0",
+      "complexity": "medium",
+      "risk": "low",
+      "agent_type": "coder",
+      "parallel_group": 3,
+      "blocking_risk": 2,
+      "done_criteria": "NewsImpactList가 로딩/에러/데이터 상태를 올바르게 표시하고 DisclaimerBanner와 SubscriptionGate가 포함됨"
+    },
+    {
+      "id": "T7",
+      "feature_id": "F2",
+      "title": "SectorForceGraph 컴포넌트 구현",
+      "description": "src/features/sector-map/components/SectorForceGraph.tsx 생성. 'use client'. Props: { nodes: SectorNode[], links: SectorLink[], onSectorClick: (sectorId: string) => void, uiMode: 'standard'|'senior' }. D3 forceSimulation + forceLink + forceManyBody + forceCenter 사용. SVG 기반 렌더링(useRef+useEffect 패턴). 노드: 원(circle) + 섹터명 텍스트. 엣지: 선(line) + causal_strength 기반 색상(getEdgeColor). Senior 모드: 노드 크기 1.5배, 폰트 크기 확대. 클릭 이벤트로 onSectorClick 호출. width/height는 container 기반 반응형.",
+      "files_to_create": ["src/features/sector-map/components/SectorForceGraph.tsx"],
+      "files_to_modify": [],
+      "dependencies": ["T2"],
+      "priority": "P0",
+      "complexity": "high",
+      "risk": "high",
+      "agent_type": "coder",
+      "parallel_group": 2,
+      "blocking_risk": 2,
+      "done_criteria": "D3 포스 그래프가 SVG로 렌더링되고, 노드 클릭 시 onSectorClick이 호출되며, Senior 모드에서 시각적 차이가 있음"
+    },
+    {
+      "id": "T8",
+      "feature_id": "F2",
+      "title": "SectorDrilldownPanel 컴포넌트 구현",
+      "description": "src/features/sector-map/components/SectorDrilldownPanel.tsx 생성. 'use client'. Props: { sectorId: string|null, links: SectorLink[], uiMode: 'standard'|'senior' }. sectorId가 null이면 '섹터를 클릭하세요' 안내 텍스트 표시. 선택 섹터의 from/to 인과관계 링크 목록 표시. 관련 종목은 해당 섹터가 포함된 news_impacts.affected_stocks에서 추출(훅 prop으로 전달). Senior 모드: 텍스트 크기 확대, 간결한 설명 표시.",
+      "files_to_create": ["src/features/sector-map/components/SectorDrilldownPanel.tsx"],
+      "files_to_modify": [],
+      "dependencies": ["T2"],
+      "priority": "P0",
+      "complexity": "medium",
+      "risk": "low",
+      "agent_type": "coder",
+      "parallel_group": 2,
+      "blocking_risk": 1,
+      "done_criteria": "SectorDrilldownPanel이 선택된 섹터의 인과관계 링크를 표시하고, null 상태와 Senior 모드를 처리함"
+    },
+    {
+      "id": "T9",
+      "feature_id": "F2",
+      "title": "SectorMapSection 통합 컴포넌트 구현",
+      "description": "src/features/sector-map/components/SectorMapSection.tsx 생성. 'use client'. useSectorCausalMap 훅 호출. UiModeSwitch 포함(onToggle으로 uiMode 상태 관리). DisclaimerBanner variant='default'. SectorForceGraph + SectorDrilldownPanel를 좌우 레이아웃(lg:grid-cols-3, graph:2 / panel:1)으로 배치. SubscriptionGate requiredPlan='pro' 적용. 로딩/에러 처리.",
+      "files_to_create": ["src/features/sector-map/components/SectorMapSection.tsx"],
+      "files_to_modify": [],
+      "dependencies": ["T4", "T7", "T8"],
+      "priority": "P0",
+      "complexity": "medium",
+      "risk": "low",
+      "agent_type": "coder",
+      "parallel_group": 3,
+      "blocking_risk": 2,
+      "done_criteria": "SectorMapSection이 UiModeSwitch, DisclaimerBanner, ForceGraph, DrilldownPanel을 통합하여 렌더링됨"
+    },
+    {
+      "id": "T10",
+      "feature_id": "F1",
+      "title": "news-impact feature index.ts 생성",
+      "description": "src/features/news-impact/index.ts 생성. NewsImpactList를 default 및 named export로 내보낸다. 외부에서 import { NewsImpactList } from '@/features/news-impact' 패턴으로 사용 가능하게 한다.",
+      "files_to_create": ["src/features/news-impact/index.ts"],
+      "files_to_modify": [],
+      "dependencies": ["T6"],
+      "priority": "P0",
+      "complexity": "low",
+      "risk": "low",
+      "agent_type": "coder",
+      "parallel_group": 4,
+      "blocking_risk": 1,
+      "done_criteria": "index.ts에서 NewsImpactList export 확인"
+    },
+    {
+      "id": "T11",
+      "feature_id": "F2",
+      "title": "sector-map feature index.ts 생성",
+      "description": "src/features/sector-map/index.ts 생성. SectorMapSection을 default 및 named export로 내보낸다. import { SectorMapSection } from '@/features/sector-map' 패턴 지원.",
+      "files_to_create": ["src/features/sector-map/index.ts"],
+      "files_to_modify": [],
+      "dependencies": ["T9"],
+      "priority": "P0",
+      "complexity": "low",
+      "risk": "low",
+      "agent_type": "coder",
+      "parallel_group": 4,
+      "blocking_risk": 1,
+      "done_criteria": "index.ts에서 SectorMapSection export 확인"
+    },
+    {
+      "id": "T12",
+      "feature_id": "F3",
+      "title": "홈 페이지(page.tsx) 통합 수정",
+      "description": "src/app/page.tsx 수정. 서버 컴포넌트 유지. NewsImpactList와 SectorMapSection을 import하여 홈에 배치. DisclaimerBanner variant='default'를 상단에 배치. 섹션 구조: 헤더(기존 파낸 타이틀) → DisclaimerBanner → '뉴스 임팩트' 섹션(NewsImpactList) → '섹터 인과관계' 섹션(SectorMapSection) → '더 보기' 링크(/news, /sector). 레이아웃은 TailwindCSS max-w-7xl mx-auto px-4 py-8 패턴.",
+      "files_to_create": [],
+      "files_to_modify": ["src/app/page.tsx"],
+      "dependencies": ["T10", "T11"],
+      "priority": "P0",
+      "complexity": "low",
+      "risk": "medium",
+      "agent_type": "coder",
+      "parallel_group": 5,
+      "blocking_risk": 0,
+      "done_criteria": "홈 페이지에 뉴스 임팩트와 섹터 인과관계 섹션이 렌더링되고 DisclaimerBanner가 표시됨"
+    },
+    {
+      "id": "T13",
+      "feature_id": "F3",
+      "title": "뉴스 전용 페이지 생성",
+      "description": "src/app/news/page.tsx 생성. 서버 컴포넌트. 메타데이터(title: '뉴스 임팩트 — 파낸'). DisclaimerBanner variant='signal' 상단 배치. NewsImpactList 렌더링(풀페이지 레이아웃). 페이지 제목 '뉴스 임팩트'. max-w-4xl mx-auto px-4 py-8 레이아웃.",
+      "files_to_create": ["src/app/news/page.tsx"],
+      "files_to_modify": [],
+      "dependencies": ["T10"],
+      "priority": "P0",
+      "complexity": "low",
+      "risk": "low",
+      "agent_type": "coder",
+      "parallel_group": 5,
+      "blocking_risk": 0,
+      "done_criteria": "/news 페이지 접근 시 NewsImpactList와 DisclaimerBanner가 렌더링됨"
+    },
+    {
+      "id": "T14",
+      "feature_id": "F3",
+      "title": "섹터 전용 페이지 생성",
+      "description": "src/app/sector/page.tsx 생성. 서버 컴포넌트. 메타데이터(title: '섹터 인과관계 — 파낸'). DisclaimerBanner variant='default' 상단 배치. SectorMapSection 렌더링(풀페이지 레이아웃). 페이지 제목 '섹터 인과관계 맵'. max-w-7xl mx-auto px-4 py-8 레이아웃.",
+      "files_to_create": ["src/app/sector/page.tsx"],
+      "files_to_modify": [],
+      "dependencies": ["T11"],
+      "priority": "P0",
+      "complexity": "low",
+      "risk": "low",
+      "agent_type": "coder",
+      "parallel_group": 5,
+      "blocking_risk": 0,
+      "done_criteria": "/sector 페이지 접근 시 SectorMapSection과 DisclaimerBanner가 렌더링됨"
+    }
+  ],
+
+  "execution_plan": {
+    "parallel_groups": [
+      {
+        "group": 1,
+        "tasks": ["T1", "T2"],
+        "description": "타입 정의 — 의존성 없음, 완전 병렬",
+        "estimated_complexity": "low"
+      },
+      {
+        "group": 2,
+        "tasks": ["T3", "T4", "T5", "T7", "T8"],
+        "description": "훅 + 기본 컴포넌트 — T1/T2 완료 후 병렬 실행",
+        "estimated_complexity": "medium-high",
+        "notes": "T7(SectorForceGraph)이 D3 복잡도 highest, 우선 시작 권장"
+      },
+      {
+        "group": 3,
+        "tasks": ["T6", "T9"],
+        "description": "통합 컴포넌트 — 각 훅+카드 완료 후 병렬 실행",
+        "estimated_complexity": "medium"
+      },
+      {
+        "group": 4,
+        "tasks": ["T10", "T11"],
+        "description": "index.ts export — 통합 컴포넌트 완료 후 병렬 실행",
+        "estimated_complexity": "low"
+      },
+      {
+        "group": 5,
+        "tasks": ["T12", "T13", "T14"],
+        "description": "페이지 통합 — 모든 feature export 완료 후 병렬 실행",
+        "estimated_complexity": "low"
+      }
+    ],
+    "total_groups": 5,
+    "total_tasks": 14,
+    "critical_path": ["T1", "T3", "T5", "T6", "T10", "T12"]
+  },
+
+  "tracking": {
+    "checkpoints": [
+      "[Group 1 완료] 타입 정의 검토: NewsImpactCardData.signal 매핑, SectorNode D3 확장 타입 확인",
+      "[Group 2 완료] 훅 동작 검토: Supabase null 폴백, D3 ForceSimulation 렌더링 확인",
+      "[Group 3 완료] 통합 컴포넌트 검토: DisclaimerBanner/SubscriptionGate 포함 여부 확인",
+      "[Group 5 완료] 페이지 검토: /news, /sector, 홈 모두 접근 확인"
+    ],
+    "risk_factors": [
+      {
+        "task_id": "T7",
+        "risk": "D3 ForceSimulation과 React useEffect 통합 시 메모리 누수 또는 re-render 루프 발생 가능",
+        "mitigation": "useEffect cleanup에서 simulation.stop() 호출, dependency array 정확히 설정"
+      },
+      {
+        "task_id": "T3",
+        "risk": "Railway API 타임아웃(30s) 으로 인한 UX 저하",
+        "mitigation": "Supabase 데이터만으로 폴백 렌더링 먼저 표시, Railway 응답 도착 시 업데이트"
+      },
+      {
+        "task_id": "T12",
+        "risk": "page.tsx를 서버 컴포넌트로 유지하면서 클라이언트 컴포넌트(NewsImpactList, SectorMapSection) import 시 hydration 이슈",
+        "mitigation": "서버 컴포넌트에서 클라이언트 컴포넌트를 직접 import하는 것은 허용됨(Next.js App Router 정상 패턴), 문제 없음"
+      },
+      {
+        "task_id": "T7",
+        "risk": "SVG 반응형 처리 — 고정 width/height 시 모바일 레이아웃 깨짐",
+        "mitigation": "ResizeObserver 또는 viewBox 기반 반응형 SVG 사용"
+      }
+    ],
+    "replan_triggers": [
+      "D3 ForceSimulation이 SSR 환경에서 오류 발생 시 — 'use client' 확인 및 dynamic import 적용",
+      "Supabase news_impacts/sector_causal_maps RLS가 anon 읽기 차단인 경우 — 서버 컴포넌트로 전환하여 service role key 사용",
+      "Railway API URL 환경변수(NEXT_PUBLIC_RAILWAY_API_URL)가 미설정인 경우 — Supabase 단독 폴백으로 전체 기능 동작"
+    ]
+  },
+
+  "documentation_plan": {
+    "readme_update": "불필요",
+    "api_docs": false,
+    "architecture_diagram": false,
+    "changelog": false
+  },
+
+  "non_functional": {
+    "performance": "뉴스 임팩트: Supabase limit 20으로 초기 로딩 최적화. 섹터 그래프: D3 simulation.alphaDecay 조정으로 60fps 유지. Railway API 응답 전 Supabase 데이터 선행 표시(폴백 패턴).",
+    "security": "금융 개인정보(포트폴리오·거래내역) 미사용. news_impacts, sector_causal_maps는 공개 데이터이므로 Vercel에서 직접 Supabase 조회 허용. Railway API 접근 시 accessToken은 옵션(공개 분석). SubscriptionGate는 클라이언트 측 UI 잠금만 담당(서버 측 검증 불필요).",
+    "scalability": "Supabase 공개 테이블 조회는 CDN 캐시 가능. D3 그래프는 노드 50개 이하 기준으로 설계(현재 섹터 수 고려). 추후 실시간 업데이트 필요 시 Supabase Realtime 구독 추가 가능."
+  }
+}

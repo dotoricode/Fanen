@@ -1,0 +1,278 @@
+{
+  "is_git_repo": true,
+  "branch": "main",
+  "commit_hash": "f5347aa714de85e611add3c395f8ed933318df83",
+  "analysis_timestamp": "2026-03-24T01:31:00Z",
+  "recent_commits": [
+    {
+      "hash": "f5347aa",
+      "message": "docs: add AGPL-3.0 license for open source with SaaS protection",
+      "date": "2026-03-24",
+      "files_changed": [
+        "LICENSE",
+        "README.md"
+      ]
+    },
+    {
+      "hash": "011c65d",
+      "message": "docs: add pipeline progress reporting guidelines to CLAUDE.md",
+      "date": "2026-03-24",
+      "files_changed": [
+        "CLAUDE.md"
+      ]
+    },
+    {
+      "hash": "29812d4",
+      "message": "fix: change allowed_origins from list[str] to str for pydantic-settings",
+      "date": "2026-03-24",
+      "files_changed": [
+        "railway-api/app/core/config.py",
+        "railway-api/app/main.py"
+      ]
+    },
+    {
+      "hash": "ffe7f25",
+      "message": "fix: handle comma-separated ALLOWED_ORIGINS in env and add defaults",
+      "date": "2026-03-24",
+      "files_changed": [
+        "railway-api/app/core/config.py"
+      ]
+    },
+    {
+      "hash": "6a3bdb7",
+      "message": "refactor: replace Anthropic Claude API with Google Gemini API",
+      "date": "2026-03-24",
+      "files_changed": [
+        "CLAUDE.md",
+        "README.md",
+        "railway-api/.env.example",
+        "railway-api/app/core/config.py",
+        "railway-api/requirements.txt"
+      ]
+    },
+    {
+      "hash": "f1e0cd5",
+      "message": "fix: prevent crash when Supabase env vars contain placeholder values",
+      "date": "2026-03-24",
+      "files_changed": [
+        "src/app/(auth)/login/page.tsx",
+        "src/lib/supabase/client.ts",
+        "src/middleware.ts"
+      ]
+    },
+    {
+      "hash": "2252c25",
+      "message": "fix: handle missing Supabase env vars gracefully in middleware",
+      "date": "2026-03-24",
+      "files_changed": [
+        "src/lib/supabase/client.ts",
+        "src/lib/supabase/server.ts",
+        "src/middleware.ts"
+      ]
+    },
+    {
+      "hash": "b895373",
+      "message": "feat: initialize Sprint 1 foundation for Fanen project",
+      "date": "2026-03-24",
+      "files_changed": [
+        ".env.example",
+        ".env.local.example",
+        ".gitignore",
+        "CLAUDE.md",
+        "README.md",
+        "next-env.d.ts",
+        "next.config.mjs",
+        "package-lock.json",
+        "package.json",
+        "postcss.config.js",
+        "railway-api/.env.example",
+        "railway-api/.gitignore",
+        "railway-api/CLAUDE.md",
+        "railway-api/Dockerfile",
+        "railway-api/app/__init__.py",
+        "railway-api/app/core/__init__.py",
+        "railway-api/app/core/config.py",
+        "railway-api/app/main.py",
+        "railway-api/app/middleware/__init__.py",
+        "railway-api/app/middleware/auth.py",
+        "railway-api/app/routes/__init__.py",
+        "railway-api/app/routes/health.py",
+        "railway-api/requirements.txt",
+        "src/CLAUDE.md",
+        "src/app/(auth)/login/page.tsx",
+        "src/app/api/auth/callback/route.ts",
+        "src/app/globals.css",
+        "src/app/layout.tsx",
+        "src/app/page.tsx",
+        "src/components/common/AiBadge.tsx",
+        "src/components/common/CLAUDE.md",
+        "src/components/common/DisclaimerBanner.tsx",
+        "src/components/common/LanguageToggle.tsx",
+        "src/components/common/SubscriptionGate.tsx",
+        "src/components/common/TrafficLightSignal.tsx",
+        "src/components/common/UiModeSwitch.tsx",
+        "src/components/common/index.ts",
+        "src/features/CLAUDE.md",
+        "src/lib/plans.ts",
+        "src/lib/supabase/client.ts",
+        "src/lib/supabase/server.ts",
+        "src/middleware.ts",
+        "src/types/database.types.ts",
+        "src/types/index.ts",
+        "supabase/CLAUDE.md",
+        "supabase/config.toml",
+        "supabase/migrations/20260323000001_create_profiles.sql",
+        "supabase/migrations/20260323000002_create_portfolios.sql",
+        "supabase/migrations/20260323000003_create_dividend_simulations.sql",
+        "supabase/migrations/20260323000004_create_news_impacts.sql",
+        "supabase/migrations/20260323000005_create_sector_causal_maps.sql",
+        "supabase/migrations/20260323000006_create_mock_seasons.sql",
+        "supabase/migrations/20260323000007_create_mock_accounts.sql",
+        "supabase/migrations/20260323000008_create_mock_trades.sql",
+        "supabase/migrations/20260323000009_create_mock_rankings.sql",
+        "supabase/migrations/20260323000010_create_trade_journals.sql",
+        "supabase/migrations/20260323000011_create_dividend_calendar.sql",
+        "tailwind.config.ts",
+        "tsconfig.json"
+      ]
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "railway-api/app/core/config.py",
+      "change_type": "modified",
+      "risk_level": "high",
+      "dependents": [
+        "railway-api/app/main.py",
+        "railway-api/app/middleware/auth.py"
+      ],
+      "has_tests": false,
+      "impact_description": "Configuration module with critical CORS, Supabase, and Gemini API settings. Changed 3 times in last 5 commits (hotspot). Any changes to environment variable parsing affect app initialization and authentication."
+    },
+    {
+      "path": "railway-api/app/main.py",
+      "change_type": "modified",
+      "risk_level": "high",
+      "dependents": [],
+      "has_tests": false,
+      "impact_description": "Main FastAPI application entry point. Imports config and sets up CORS middleware. Router registration point for new endpoints. Recent fix to CORS handling requires verification."
+    },
+    {
+      "path": "railway-api/requirements.txt",
+      "change_type": "modified",
+      "risk_level": "medium",
+      "dependents": [],
+      "has_tests": false,
+      "impact_description": "Python dependencies file. Updated once in last 5 commits (Gemini API migration). Dependencies: fastapi, uvicorn, google-generativeai, supabase, upstash-redis."
+    },
+    {
+      "path": "railway-api/app/middleware/auth.py",
+      "change_type": "modified",
+      "risk_level": "medium",
+      "dependents": [],
+      "has_tests": false,
+      "impact_description": "JWT authentication middleware using Supabase JWT secret. Depends on settings from config.py. Will be used in all protected routes in Sprint 2."
+    },
+    {
+      "path": "railway-api/app/routes/health.py",
+      "change_type": "modified",
+      "risk_level": "low",
+      "dependents": [
+        "railway-api/app/main.py"
+      ],
+      "has_tests": false,
+      "impact_description": "Health check endpoint. Currently registered. Minimal changes expected."
+    },
+    {
+      "path": "src/middleware.ts",
+      "change_type": "modified",
+      "risk_level": "medium",
+      "dependents": [
+        "src/app/layout.tsx",
+        "src/lib/supabase/client.ts"
+      ],
+      "has_tests": false,
+      "impact_description": "Supabase environment variable validation middleware. Handles graceful failures. Modified 3 times in recent commits to handle missing env vars."
+    }
+  ],
+  "hotspot_files": [
+    {
+      "path": "railway-api/app/core/config.py",
+      "change_frequency": 3,
+      "note": "Critical configuration file changed in last 3 commits (CORS handling fixes + Gemini API migration)"
+    },
+    {
+      "path": "src/middleware.ts",
+      "change_frequency": 3,
+      "note": "Middleware validation logic for Supabase env vars, changed in last 3 commits"
+    },
+    {
+      "path": "README.md",
+      "change_frequency": 2,
+      "note": "Documentation updates"
+    },
+    {
+      "path": "CLAUDE.md",
+      "change_frequency": 2,
+      "note": "Project guidelines and pipeline documentation"
+    }
+  ],
+  "risk_summary": {
+    "high_risk_count": 2,
+    "medium_risk_count": 3,
+    "low_risk_count": 1,
+    "overall_risk": "medium",
+    "main_concern": "railway-api/app/core/config.py and main.py are hotspots with recent CORS and environment variable handling changes. No test coverage exists. Sprint 2 will require new route handlers that depend on these modules."
+  },
+  "past_failures": [
+    {
+      "pattern": "CORS misconfiguration causing frontend requests to fail",
+      "affected_files": [
+        "railway-api/app/core/config.py",
+        "railway-api/app/main.py"
+      ],
+      "avoidance": "Recent commits fixed CORS string handling. When adding new routes, verify CORSMiddleware settings are preserved and test with actual frontend."
+    },
+    {
+      "pattern": "Missing or placeholder environment variables causing app crashes",
+      "affected_files": [
+        "railway-api/app/core/config.py",
+        "src/middleware.ts"
+      ],
+      "avoidance": "Latest changes add graceful handling. For Sprint 2, ensure all new Supabase/Gemini API calls have default fallbacks."
+    }
+  ],
+  "recommendations_for_planner": [
+    "HIGH PRIORITY: Add unit tests for railway-api/app/core/config.py to prevent future CORS/environment variable regressions. Current test coverage is 0%.",
+    "When implementing Sprint 2 routes (portfolio, analysis endpoints), test CORS headers explicitly with curl/Postman from frontend domain.",
+    "Review recent CORS string parsing fix (commit 29812d4) to understand comma-separated origins handling before adding new origins.",
+    "railway-api/requirements.txt includes google-generativeai (version 0.8.3). Verify Gemini API integration during Sprint 2 implementation.",
+    "Note: No test files exist in railway-api/. Consider creating tests/ directory structure and conftest.py for FastAPI testing.",
+    "Frontend middleware (src/middleware.ts) now has graceful Supabase var handling. Verify matching error handling in FastAPI routes.",
+    "All protected routes in Sprint 2 should use Depends(get_current_user) from auth.py middleware. Document this requirement in route implementation guidelines."
+  ],
+  "test_gaps": [
+    {
+      "file": "railway-api/app/core/config.py",
+      "suggestion": "Add pytest tests for: CORS origins parsing (single, multiple, edge cases), all environment variable loading paths, default values"
+    },
+    {
+      "file": "railway-api/app/main.py",
+      "suggestion": "Add integration tests for: app startup/shutdown, CORS headers in responses, router inclusion"
+    },
+    {
+      "file": "railway-api/app/middleware/auth.py",
+      "suggestion": "Add JWT verification tests with: valid tokens, expired tokens, malformed headers, missing Authorization header"
+    }
+  ],
+  "current_working_state": {
+    "unstaged_changes": [
+      ".claude/",
+      ".pipeline/",
+      "railway-api/venv/",
+      "tsconfig.tsbuildinfo"
+    ],
+    "staged_changes": [],
+    "no_uncommitted_file_changes": true
+  }
+}

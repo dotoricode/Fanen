@@ -1,0 +1,72 @@
+{
+  "is_git_repo": true,
+  "is_greenfield": true,
+  "branch": "main",
+  "commit_hash": "d51c6a486295736fc88984ab3d02958a751757eb",
+  "analysis_timestamp": "2026-03-23T23:16:00+0900",
+  "recent_commits": [
+    {
+      "hash": "d51c6a4",
+      "message": "Initial commit",
+      "date": "2026-03-23",
+      "timestamp": "2026-03-23T23:15:00+0900",
+      "author": "dotori <high0408@gmail.com>",
+      "files_changed": [
+        "README.md"
+      ]
+    }
+  ],
+  "changed_files": [
+    {
+      "path": ".pipeline/",
+      "change_type": "untracked",
+      "status": "??",
+      "risk_level": "low",
+      "note": "Pipeline configuration and execution artifacts (spec.json, state.json, etc.)"
+    }
+  ],
+  "hotspot_files": [],
+  "uncommitted_changes": {
+    "untracked_files": [
+      ".pipeline/"
+    ],
+    "staged_files": [],
+    "unstaged_modifications": []
+  },
+  "risk_summary": {
+    "high_risk_count": 0,
+    "medium_risk_count": 0,
+    "low_risk_count": 1,
+    "overall_risk": "low",
+    "main_concern": "Greenfield project: only initial commit present. No breaking changes detected. .pipeline/ directory is untracked but contains only metadata."
+  },
+  "past_failures": [],
+  "test_coverage": {
+    "tests_present": false,
+    "test_directories": []
+  },
+  "project_context": {
+    "project_name": "Fanen",
+    "description": "AI-based investment intelligence web app — Sprint 1 foundational setup",
+    "tech_stack": {
+      "frontend": "Next.js 14 (App Router) + TypeScript 5 + TailwindCSS 3",
+      "backend": "FastAPI (Python 3.11) on Railway",
+      "database": "Supabase (PostgreSQL 15)",
+      "ai": "Claude API + FinBERT"
+    }
+  },
+  "recommendations_for_planner": [
+    "Initialize git for regular version control of generated files",
+    "Create .gitignore to exclude: node_modules/, .env.local, .next/, __pycache__/, .venv/, .pytest_cache/, *.pyc, build/, dist/",
+    "Verify that .pipeline/ directory should be tracked or excluded from git",
+    "Establish initial branch strategy and commit hygiene (conventional commits recommended)",
+    "Set up pre-commit hooks for code quality (TypeScript, Python linting)",
+    "Only one file (README.md) currently committed — expect significant file additions in Sprint 1"
+  ],
+  "deployment_notes": {
+    "frontend_deployment": "Vercel",
+    "backend_deployment": "Railway (Seoul region)",
+    "database": "Supabase cloud",
+    "sensitive_data": "Financial/personal info should only be handled by Railway FastAPI, not Vercel frontend"
+  }
+}

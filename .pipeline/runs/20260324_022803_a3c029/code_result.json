@@ -1,0 +1,81 @@
+{
+  "tasks_completed": [
+    "task_1", "task_2", "task_3", "task_4", "task_5",
+    "task_6", "task_7", "task_8", "task_9", "task_10",
+    "task_11", "task_12", "task_13", "task_14"
+  ],
+  "files_modified": [
+    {
+      "path": "src/features/news-impact/types.ts",
+      "action": "created",
+      "summary": "Signal 타입, scoreToSignal 함수, NewsImpactCardData 인터페이스, splitSummary 함수 정의"
+    },
+    {
+      "path": "src/features/sector-map/types.ts",
+      "action": "created",
+      "summary": "SectorNode(D3 SimulationNodeDatum 확장), SectorLink(D3 SimulationLinkDatum 확장), getEdgeColor 함수, SectorRelation 인터페이스 정의"
+    },
+    {
+      "path": "src/features/news-impact/hooks/useNewsImpacts.ts",
+      "action": "created",
+      "summary": "Supabase news_impacts 조회 후 즉시 렌더링, 비동기 Railway analyzeNews source_url 병합. isSupabaseConfigured 가드 적용"
+    },
+    {
+      "path": "src/features/sector-map/hooks/useSectorCausalMap.ts",
+      "action": "created",
+      "summary": "Supabase sector_causal_maps 조회, 노드 dedup(Set), SectorLink 변환. isSupabaseConfigured 가드 적용"
+    },
+    {
+      "path": "src/features/news-impact/components/NewsImpactCard.tsx",
+      "action": "created",
+      "summary": "뉴스 임팩트 카드 UI — TrafficLightSignal, AiBadge, 섹터 태그 포함. general/expert 언어 레벨 분기"
+    },
+    {
+      "path": "src/features/sector-map/components/SectorForceGraph.tsx",
+      "action": "created",
+      "summary": "D3 ForceSimulation SVG 그래프. useEffect cleanup에서 simulation.stop() 호출, Senior 모드 nodeRadius/fontSize 확대"
+    },
+    {
+      "path": "src/features/sector-map/components/SectorDrilldownPanel.tsx",
+      "action": "created",
+      "summary": "선택 섹터의 from/to 인과관계 필터링 표시. getNodeId 헬퍼로 string|SectorNode 처리. Senior 모드 폰트 확대"
+    },
+    {
+      "path": "src/features/news-impact/components/NewsImpactList.tsx",
+      "action": "created",
+      "summary": "DisclaimerBanner(signal), LanguageToggle, SubscriptionGate(pro) 통합. 로딩 스켈레톤, 에러, 빈 데이터 처리"
+    },
+    {
+      "path": "src/features/sector-map/components/SectorMapSection.tsx",
+      "action": "created",
+      "summary": "DisclaimerBanner(default), UiModeSwitch, SubscriptionGate(pro) 통합. SectorForceGraph + SectorDrilldownPanel grid 레이아웃"
+    },
+    {
+      "path": "src/features/news-impact/index.ts",
+      "action": "created",
+      "summary": "news-impact feature 배럴 익스포트"
+    },
+    {
+      "path": "src/features/sector-map/index.ts",
+      "action": "created",
+      "summary": "sector-map feature 배럴 익스포트"
+    },
+    {
+      "path": "src/app/page.tsx",
+      "action": "modified",
+      "summary": "홈 페이지에 NewsImpactList, SectorMapSection 통합. DisclaimerBanner 렌더링. 서버 컴포넌트 유지"
+    },
+    {
+      "path": "src/app/news/page.tsx",
+      "action": "created",
+      "summary": "뉴스 임팩트 전용 페이지. Metadata, DisclaimerBanner(signal), NewsImpactList 포함"
+    },
+    {
+      "path": "src/app/sector/page.tsx",
+      "action": "created",
+      "summary": "섹터 인과관계 전용 페이지. Metadata, DisclaimerBanner(default), SectorMapSection 포함"
+    }
+  ],
+  "implementation_notes": "- failure-patterns.json 파일 미존재로 과거 실패 패턴 경고 없이 진행\n- plan.json의 task_6 파일명이 SectorDrilldown.tsx로 명시되어 있으나 task_8 instructions에 SectorDrilldownPanel.tsx로 통일 (plan의 task_8 files_to_create 기준 적용)\n- useNewsImpacts에서 Railway analyzeNews 요청 시 NewsAnalyzeRequest 타입에 맞춰 { headlines: [...] } 형태로 전달\n- D3 ForceGraph: nodeRadius와 fontSize를 useEffect dependency array에 포함하여 Senior 모드 전환 시 재렌더링 보장",
+  "known_limitations": "- Railway analyzeNews 응답 스키마(results[].source_url)는 @/types/railway.types.ts 정의에 따라 다를 수 있음 — 실제 API 응답 구조 확인 필요\n- SectorForceGraph는 'use client'이므로 SSR 불가. 서버 컴포넌트 tree에서 Next.js dynamic import가 필요한 경우 별도 처리 필요\n- SubscriptionGate에 전달하는 currentPlan은 실제 사용자 프로파일 조회 후 주입 필요 (현재 기본값 'free' 사용)"
+}
