@@ -20,6 +20,12 @@ class Settings(BaseSettings):
     upstash_redis_rest_url: str = ""
     upstash_redis_rest_token: str = ""
 
+    # KRX (한국거래소) API 키 — 공공데이터포털에서 발급
+    KRX_API_KEY: str = ""
+
+    # DART (전자공시시스템) API 키 — opendart.fss.or.kr에서 발급
+    DART_API_KEY: str = ""
+
     # Cron 작업 인증 시크릿
     cron_secret: str = ""
 

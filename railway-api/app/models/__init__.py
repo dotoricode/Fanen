@@ -12,6 +12,13 @@ from app.models.sector import (
     SectorCausalRequest,
     SectorCausalResponse,
 )
+from app.models.market import (
+    OHLCVPoint,
+    StockIndexResponse,
+    StockPriceResponse,
+    DisclosureItem,
+    DisclosureResponse,
+)
 
 __all__ = [
     "NewsHeadlineInput",
@@ -21,4 +28,9 @@ __all__ = [
     "SectorCausalRequest",
     "SectorCausalEdge",
     "SectorCausalResponse",
+    "OHLCVPoint",
+    "StockIndexResponse",
+    "StockPriceResponse",
+    "DisclosureItem",
+    "DisclosureResponse",
 ]

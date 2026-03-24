@@ -76,3 +76,38 @@ async def collect_news(
         "analyzed_results": analyzed_results,
         "note": "Sprint 3에서 실제 뉴스 소스(KRX/DART) 연결 예정",
     }
+
+
+@router.post("/sector-refresh")
+async def sector_refresh(
+    x_cron_secret: str | None = Header(None),
+) -> dict:
+    """
+    섹터 인과관계 맵 일별 갱신 트리거 (내부 전용)
+
+    - 평일 오전 8시(KST) 실행 예정 (schedule: 0 8 * * 1-5)
+    - X-Cron-Secret 헤더로 인증
+    - 실제 갱신 로직은 sector_analyzer 서비스 호출
+    """
+    # cron_secret 인증 (빈 문자열이면 403)
+    if not settings.cron_secret:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Cron 시크릿이 설정되지 않았습니다",
+        )
+
+    if x_cron_secret != settings.cron_secret:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="유효하지 않은 Cron 시크릿입니다",
+        )
+
+    logger.info("Cron 섹터 갱신 작업 시작")
+
+    # TODO: sector_analyzer 서비스 연결 (Sprint 8에서 구현 예정)
+    # from app.services.sector_analyzer import refresh_sector_map
+    # result = await refresh_sector_map()
+
+    logger.info("Cron 섹터 갱신 트리거 완료")
+
+    return {"status": "triggered", "job": "sector-refresh"}

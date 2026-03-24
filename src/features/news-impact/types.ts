@@ -32,6 +32,8 @@ export interface NewsImpactCardData {
   /** 전문가 모드 요약 (원본 텍스트) */
   ai_summary_expert: string;
   source_url: string | null;
+  /** 관련 종목 코드 (KRX 차트 연동용, 선택) */
+  stock_code?: string | null;
 }
 
 /**

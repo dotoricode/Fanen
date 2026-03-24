@@ -14,6 +14,8 @@ from app.routes.health import router as health_router
 from app.routes.news import router as news_router
 from app.routes.sector import router as sector_router
 from app.routes.cron import router as cron_router
+from app.routes.krx import router as krx_router
+from app.routes.dart import router as dart_router
 
 
 @asynccontextmanager
@@ -48,6 +50,8 @@ app.include_router(health_router)
 app.include_router(news_router)
 app.include_router(sector_router)
 app.include_router(cron_router)
+app.include_router(krx_router)
+app.include_router(dart_router)
 
 
 if __name__ == "__main__":

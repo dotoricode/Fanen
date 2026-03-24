@@ -8,6 +8,7 @@ import type {
   SectorCausalRequest,
   SectorCausalResponse,
 } from "@/types/railway.types";
+import type { StockIndexResponse, StockPriceResponse } from "@/types/market.types";
 
 // Railway API 기본 URL (환경변수에서 읽기)
 const RAILWAY_API_URL =
@@ -145,4 +146,24 @@ export async function getSectorCausalMap(
   );
 
   return response.json() as Promise<SectorCausalResponse>;
+}
+
+/**
+ * KRX 시장 지수 조회 (공개 엔드포인트 — 인증 불필요)
+ * @param market 'KOSPI' | 'KOSDAQ'
+ */
+export async function getKrxIndex(
+  market: 'KOSPI' | 'KOSDAQ'
+): Promise<StockIndexResponse> {
+  const response = await railwayFetch(`/api/krx/index?market=${market}`);
+  return response.json() as Promise<StockIndexResponse>;
+}
+
+/**
+ * KRX 개별 종목 주가 조회 (공개 엔드포인트 — 인증 불필요)
+ * @param code 종목코드 (6자리)
+ */
+export async function getKrxStock(code: string): Promise<StockPriceResponse> {
+  const response = await railwayFetch(`/api/krx/stock?code=${code}`);
+  return response.json() as Promise<StockPriceResponse>;
 }
