@@ -13,8 +13,9 @@ const DEV_UNLOCK = process.env.NEXT_PUBLIC_DEV_UNLOCK_PRO === 'true';
  * 실 환경에서는 Supabase profiles 조회
  */
 export function useSubscription() {
-  const [plan, setPlan] = useState<PlanTier>('free');
-  const [loading, setLoading] = useState(true);
+  // DEV_UNLOCK 시 초기값을 premium으로 설정 → 첫 렌더부터 게이트 통과
+  const [plan, setPlan] = useState<PlanTier>(DEV_UNLOCK ? 'premium' : 'free');
+  const [loading, setLoading] = useState(!DEV_UNLOCK && !USE_MOCK);
 
   useEffect(() => {
     if (USE_MOCK || DEV_UNLOCK) {

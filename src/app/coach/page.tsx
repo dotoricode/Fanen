@@ -13,8 +13,8 @@ export default function CoachPage() {
   return (
     <main className="mx-auto max-w-2xl px-4 py-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">AI 코치 핀이</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-slate-100">AI 코치 핀이</h1>
+        <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">
           투자 궁금증을 편하게 물어보세요. KRX·DART 데이터를 기반으로 답변합니다.
         </p>
       </div>

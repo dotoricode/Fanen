@@ -7,6 +7,7 @@
 import { useState, useMemo } from 'react';
 import { LanguageToggle, SubscriptionGate } from '@/components/common';
 import { useNewsImpacts } from '../hooks/useNewsImpacts';
+import { useSubscription } from '@/hooks/useSubscription';
 import NewsImpactCard from './NewsImpactCard';
 import type { NewsImpactCardData } from '../types';
 
@@ -19,26 +20,31 @@ const SECTOR_OPTIONS = [
 /** 영향도 필터 레벨 */
 type ImpactLevel = '전체' | '높음' | '중간' | '낮음';
 
-interface NewsImpactListProps {
-  currentPlan?: 'free' | 'pro' | 'premium';
-}
-
-export default function NewsImpactList({ currentPlan }: NewsImpactListProps) {
+export default function NewsImpactList() {
+  // 플랜 조회 (prop 대신 훅 직접 사용)
+  const { plan } = useSubscription();
   // 언어 레벨 상태 (일반인/전문가 모드)
   const [languageLevel, setLanguageLevel] = useState<'general' | 'expert'>('general');
   const { data, loading, error } = useNewsImpacts();
 
-  // 필터 상태
-  const [sectorFilter, setSectorFilter] = useState<string>('전체');
+  // 섹터 다중 선택 필터 (빈 배열 = 전체)
+  const [selectedSectors, setSelectedSectors] = useState<string[]>([]);
   const [impactFilter, setImpactFilter] = useState<ImpactLevel>('전체');
+
+  // 섹터 토글 — 이미 선택됐으면 제거, 없으면 추가
+  const toggleSector = (sector: string) => {
+    setSelectedSectors((prev) =>
+      prev.includes(sector) ? prev.filter((s) => s !== sector) : [...prev, sector]
+    );
+  };
 
   // 필터링된 데이터
   const filteredData = useMemo(() => {
     return data.filter((item: NewsImpactCardData) => {
-      // 섹터 필터
-      if (sectorFilter !== '전체') {
-        const matchesSector = item.affected_sectors.some(
-          (s) => s.includes(sectorFilter) || sectorFilter.includes(s)
+      // 섹터 다중 필터 — 선택된 섹터 중 하나라도 포함되면 통과
+      if (selectedSectors.length > 0) {
+        const matchesSector = selectedSectors.some((sel) =>
+          item.affected_sectors.some((s) => s.includes(sel) || sel.includes(s))
         );
         if (!matchesSector) return false;
       }
@@ -48,21 +54,21 @@ export default function NewsImpactList({ currentPlan }: NewsImpactListProps) {
       if (impactFilter === '낮음' && item.impact_score >= 34) return false;
       return true;
     });
-  }, [data, sectorFilter, impactFilter]);
+  }, [data, selectedSectors, impactFilter]);
 
   // 필터 초기화
   const resetFilters = () => {
-    setSectorFilter('전체');
+    setSelectedSectors([]);
     setImpactFilter('전체');
   };
 
-  const hasActiveFilter = sectorFilter !== '전체' || impactFilter !== '전체';
+  const hasActiveFilter = selectedSectors.length > 0 || impactFilter !== '전체';
 
   return (
     <section className="space-y-4">
       {/* 상단: 타이틀 + LanguageToggle */}
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-gray-900">뉴스 임팩트</h2>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-slate-100">뉴스 임팩트</h2>
         <LanguageToggle
           onChange={(level) => setLanguageLevel(level)}
           defaultLevel="general"
@@ -70,27 +76,33 @@ export default function NewsImpactList({ currentPlan }: NewsImpactListProps) {
       </div>
 
       {/* 필터 바 */}
-      <div className="flex flex-wrap items-center gap-3 rounded-lg border border-gray-200 bg-white p-3">
-        {/* 섹터 필터 */}
-        <div className="flex items-center gap-2">
-          <label htmlFor="sector-filter" className="text-xs font-medium text-gray-600">
-            섹터
-          </label>
-          <select
-            id="sector-filter"
-            value={sectorFilter}
-            onChange={(e) => setSectorFilter(e.target.value)}
-            className="rounded-md border border-gray-300 bg-white px-2 py-1 text-sm text-gray-700 focus:border-blue-500 focus:outline-none"
-          >
-            {SECTOR_OPTIONS.map((s) => (
-              <option key={s} value={s}>{s}</option>
+      <div className="rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-3 space-y-3">
+        {/* 섹터 다중 선택 태그 */}
+        <div>
+          <span className="text-xs font-medium text-gray-600 dark:text-slate-400 mb-2 block">
+            섹터 {selectedSectors.length > 0 && <span className="text-blue-600">({selectedSectors.length}개 선택)</span>}
+          </span>
+          <div className="flex flex-wrap gap-1.5">
+            {SECTOR_OPTIONS.filter((s) => s !== '전체').map((sector) => (
+              <button
+                key={sector}
+                type="button"
+                onClick={() => toggleSector(sector)}
+                className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                  selectedSectors.includes(sector)
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-600'
+                }`}
+              >
+                {sector}
+              </button>
             ))}
-          </select>
+          </div>
         </div>
 
-        {/* 영향도 필터 */}
-        <div className="flex items-center gap-1">
-          <span className="text-xs font-medium text-gray-600 mr-1">영향도</span>
+        {/* 영향도 필터 + 초기화 */}
+        <div className="flex items-center gap-1 flex-wrap">
+          <span className="text-xs font-medium text-gray-600 dark:text-slate-400 mr-1">영향도</span>
           {(['전체', '높음', '중간', '낮음'] as ImpactLevel[]).map((level) => (
             <button
               key={level}
@@ -99,28 +111,26 @@ export default function NewsImpactList({ currentPlan }: NewsImpactListProps) {
               className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
                 impactFilter === level
                   ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-600'
               }`}
             >
               {level === '높음' ? '높음(7+)' : level === '중간' ? '중간(4~7)' : level === '낮음' ? '낮음(~4)' : level}
             </button>
           ))}
+          {hasActiveFilter && (
+            <button
+              type="button"
+              onClick={resetFilters}
+              className="ml-auto text-xs text-gray-500 dark:text-slate-400 hover:text-gray-700 underline"
+            >
+              초기화
+            </button>
+          )}
         </div>
-
-        {/* 필터 초기화 */}
-        {hasActiveFilter && (
-          <button
-            type="button"
-            onClick={resetFilters}
-            className="ml-auto text-xs text-gray-500 hover:text-gray-700 underline"
-          >
-            필터 초기화
-          </button>
-        )}
       </div>
 
       {/* 구독 게이트 — Pro 이상 필요 */}
-      <SubscriptionGate requiredPlan="pro" currentPlan={currentPlan ?? 'free'}>
+      <SubscriptionGate requiredPlan="pro" currentPlan={plan}>
         {/* 로딩 스켈레톤 */}
         {loading && (
           <div className="space-y-3">

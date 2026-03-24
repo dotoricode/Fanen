@@ -39,17 +39,17 @@ export default function ChatMessage({ message, isLoading = false }: ChatMessageP
       </div>
 
       {/* 말풍선 */}
-      <div className="max-w-[75%] rounded-2xl rounded-tl-sm border border-gray-200 bg-white px-4 py-3">
+      <div className="max-w-[75%] rounded-2xl rounded-tl-sm border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-700 px-4 py-3">
         {isLoading ? (
           /* 로딩 점 애니메이션 */
           <div className="flex items-center gap-1 py-1">
-            <span className="h-2 w-2 animate-bounce rounded-full bg-gray-400 [animation-delay:-0.3s]" />
-            <span className="h-2 w-2 animate-bounce rounded-full bg-gray-400 [animation-delay:-0.15s]" />
-            <span className="h-2 w-2 animate-bounce rounded-full bg-gray-400" />
+            <span className="h-2 w-2 animate-bounce rounded-full bg-gray-400 dark:bg-slate-400 [animation-delay:-0.3s]" />
+            <span className="h-2 w-2 animate-bounce rounded-full bg-gray-400 dark:bg-slate-400 [animation-delay:-0.15s]" />
+            <span className="h-2 w-2 animate-bounce rounded-full bg-gray-400 dark:bg-slate-400" />
           </div>
         ) : (
           <>
-            <p className="whitespace-pre-wrap text-sm leading-relaxed text-gray-800">
+            <p className="whitespace-pre-wrap text-sm leading-relaxed text-gray-800 dark:text-slate-200">
               {message.content}
             </p>
 
@@ -72,7 +72,7 @@ export default function ChatMessage({ message, isLoading = false }: ChatMessageP
 
             {/* 면책 고지 텍스트 */}
             {message.disclaimer && (
-              <p className="mt-2 text-xs leading-relaxed text-gray-400">{message.disclaimer}</p>
+              <p className="mt-2 text-xs leading-relaxed text-gray-400 dark:text-slate-500">{message.disclaimer}</p>
             )}
           </>
         )}

@@ -16,11 +16,11 @@ export default function MockTradingPage() {
   const router = useRouter();
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-gray-50 dark:bg-slate-900">
       <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
         <header>
-          <h1 className="text-3xl font-bold text-gray-900">모의투자</h1>
-          <p className="mt-2 text-gray-600">가상 자산으로 안전하게 투자를 연습하세요</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-slate-100">모의투자</h1>
+          <p className="mt-2 text-gray-600 dark:text-slate-400">가상 자산으로 안전하게 투자를 연습하세요</p>
         </header>
         <DisclaimerBanner variant="default" />
         <SubscriptionGate

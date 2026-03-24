@@ -79,24 +79,24 @@ function StockChartModal({
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4 p-4"
+        className="bg-white dark:bg-slate-800 rounded-lg shadow-xl w-full max-w-lg mx-4 p-4"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-base font-semibold text-gray-900">
+          <h3 className="text-base font-semibold text-gray-900 dark:text-slate-100">
             {stockName} ({stockCode})
           </h3>
           <button
             type="button"
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-xl leading-none"
+            className="text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-300 text-xl leading-none"
             aria-label="닫기"
           >
             &times;
           </button>
         </div>
         {loading && (
-          <div className="rounded-lg border border-gray-200 bg-gray-100 animate-pulse h-48" />
+          <div className="rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-100 dark:bg-slate-700 animate-pulse h-48" />
         )}
         {!loading && chartData && (
           <StockChart
@@ -107,7 +107,7 @@ function StockChartModal({
           />
         )}
         {!loading && !chartData && (
-          <div className="rounded-lg border border-gray-200 bg-gray-50 p-6 text-sm text-gray-400 text-center">
+          <div className="rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900 p-6 text-sm text-gray-400 dark:text-slate-500 text-center">
             차트 데이터를 불러올 수 없습니다
           </div>
         )}
@@ -146,10 +146,10 @@ export default function NewsImpactCard({ item, languageLevel }: NewsImpactCardPr
 
   return (
     <>
-      <article className="rounded-lg border border-gray-200 p-4 bg-white shadow-sm hover:shadow-md transition-shadow">
+      <article className="rounded-lg border border-gray-200 dark:border-slate-700 p-4 bg-white dark:bg-slate-800 shadow-sm hover:shadow-md transition-shadow">
         {/* 헤드라인 + 즐겨찾기 */}
         <div className="flex items-start justify-between gap-2 mb-2">
-          <h3 className="text-base font-semibold text-gray-900 line-clamp-2">{item.headline}</h3>
+          <h3 className="text-base font-semibold text-gray-900 dark:text-slate-100 line-clamp-2">{item.headline}</h3>
           <button
             type="button"
             onClick={toggleFavorite}
@@ -166,7 +166,7 @@ export default function NewsImpactCard({ item, languageLevel }: NewsImpactCardPr
         </div>
 
         {/* 메타 정보: 출처, 발행일 */}
-        <div className="flex items-center gap-3 text-xs text-gray-500 mb-3">
+        <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-slate-500 mb-3">
           {item.source && <span>{item.source}</span>}
           {item.published_at && (
             <span>{new Date(item.published_at).toLocaleDateString('ko-KR')}</span>
@@ -207,7 +207,7 @@ export default function NewsImpactCard({ item, languageLevel }: NewsImpactCardPr
             {item.affected_sectors.slice(0, 3).map((sector) => (
               <span
                 key={sector}
-                className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full"
+                className="text-xs bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-400 px-2 py-0.5 rounded-full"
               >
                 {sector}
               </span>

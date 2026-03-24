@@ -35,7 +35,7 @@ export default function PricingPage() {
   const tiers: PlanTier[] = ['free', 'pro', 'premium'];
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-gray-50 dark:bg-slate-900">
       <div className="max-w-6xl mx-auto px-4 py-12">
         {/* 베타 안내 배너 */}
         <div className="mb-8 rounded-lg bg-blue-50 border border-blue-200 p-4 text-center">
@@ -46,8 +46,8 @@ export default function PricingPage() {
 
         {/* 페이지 제목 */}
         <header className="text-center mb-10">
-          <h1 className="text-3xl font-bold text-gray-900">요금제</h1>
-          <p className="mt-2 text-gray-600">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-slate-100">요금제</h1>
+          <p className="mt-2 text-gray-600 dark:text-slate-400">
             나에게 맞는 플랜을 선택하세요
           </p>
         </header>
@@ -63,7 +63,7 @@ export default function PricingPage() {
             return (
               <div
                 key={tier}
-                className={`relative flex flex-col rounded-xl border-2 bg-white p-6 shadow-sm ${styles.border}`}
+                className={`relative flex flex-col rounded-xl border-2 bg-white dark:bg-slate-800 p-6 shadow-sm ${styles.border}`}
               >
                 {/* 현재 플랜 표시 */}
                 {isCurrent && !loading && (
@@ -76,19 +76,19 @@ export default function PricingPage() {
 
                 {/* 플랜 이름 + 뱃지 */}
                 <div className="flex items-center gap-2 mb-2">
-                  <h2 className="text-xl font-bold text-gray-900">{planInfo.name}</h2>
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-slate-100">{planInfo.name}</h2>
                   <PlanBadge plan={tier} size="sm" />
                 </div>
 
                 {/* 가격 */}
-                <p className="text-3xl font-extrabold text-gray-900 mb-6">
+                <p className="text-3xl font-extrabold text-gray-900 dark:text-slate-100 mb-6">
                   {formatPrice(planInfo.priceMonthly)}
                 </p>
 
                 {/* 기능 목록 */}
                 <ul className="flex-1 space-y-3 mb-6">
                   {planInfo.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-2 text-sm text-gray-700">
+                    <li key={feature} className="flex items-start gap-2 text-sm text-gray-700 dark:text-slate-300">
                       <svg
                         className="mt-0.5 h-4 w-4 shrink-0 text-green-500"
                         fill="none"
@@ -114,7 +114,7 @@ export default function PricingPage() {
                   }}
                   className={`w-full rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors ${
                     isCurrent
-                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      ? 'bg-gray-100 dark:bg-slate-700 text-gray-400 dark:text-slate-500 cursor-not-allowed'
                       : styles.button
                   }`}
                 >
