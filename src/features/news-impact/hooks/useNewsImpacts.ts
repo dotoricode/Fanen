@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * useNewsImpacts 훅
  * Supabase에서 뉴스 임팩트 데이터를 조회하고 Railway AI 분석 결과를 병합

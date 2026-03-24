@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * useSectorCausalMap 훅
  * Supabase sector_causal_maps 테이블에서 섹터 인과관계 데이터 조회
