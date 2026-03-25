@@ -2,11 +2,11 @@
 
 /**
  * BinahMapLite — 대시보드용 경량 세계지도
- * D3 equirectangular 투영으로 이벤트 마커를 SVG에 렌더링
- * topojson 불필요 — 마커 + 격자선만 표시
+ * topojson으로 세계 지도 실루엣 렌더링 + 이벤트 마커 + 툴팁
  */
-import { useRef, useEffect, useCallback } from 'react';
+import { useRef, useEffect, useCallback, useState } from 'react';
 import * as d3 from 'd3';
+import * as topojson from 'topojson-client';
 import type { GeoEvent } from '../types';
 
 interface Props {
@@ -34,8 +34,76 @@ function latToY(lat: number, h: number) {
   return ((90 - lat) / 180) * h;
 }
 
+/** GeoJSON → SVG path 문자열 배열 변환 */
+function geoFeatureToSvgPaths(
+  geojson: {
+    type: string;
+    features: Array<{
+      geometry: {
+        type: string;
+        coordinates: number[][][] | number[][][][];
+      };
+    }>;
+  },
+  w: number,
+  h: number
+): string[] {
+  const paths: string[] = [];
+  for (const feature of geojson.features) {
+    const geom = feature.geometry;
+    if (!geom) continue;
+    const polygons =
+      geom.type === 'Polygon'
+        ? [geom.coordinates as number[][][]]
+        : geom.type === 'MultiPolygon'
+        ? (geom.coordinates as number[][][][])
+        : [];
+    for (const polygon of polygons) {
+      let d = '';
+      for (const ring of polygon) {
+        if (ring.length < 2) continue;
+        d +=
+          ring
+            .map((pt, i) => {
+              const x = ((pt[0] + 180) / 360) * w;
+              const y = ((90 - pt[1]) / 180) * h;
+              return (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + y.toFixed(1);
+            })
+            .join(' ') + 'Z ';
+      }
+      if (d) paths.push(d.trim());
+    }
+  }
+  return paths;
+}
+
 export function BinahMapLite({ events, selectedId, onSelect, height = 200 }: Props) {
   const svgRef = useRef<SVGSVGElement>(null);
+  const [worldPaths, setWorldPaths] = useState<string[]>([]);
+  const [tooltip, setTooltip] = useState<{
+    x: number;
+    y: number;
+    title: string;
+    summary: string;
+  } | null>(null);
+  const [svgSize, setSvgSize] = useState({ w: 400, h: height });
+
+  /* 세계 지도 데이터 로드 */
+  useEffect(() => {
+    fetch('/world-110m.json')
+      .then((res) => res.json())
+      .then((topo) => {
+        const w = svgRef.current?.clientWidth || 400;
+        const h = height;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const geojson = topojson.feature(topo, topo.objects.countries) as any;
+        const paths = geoFeatureToSvgPaths(geojson, w, h);
+        setWorldPaths(paths);
+      })
+      .catch(() => {
+        // 로드 실패 시 빈 배열 유지
+      });
+  }, [height]);
 
   const draw = useCallback(() => {
     if (!svgRef.current) return;
@@ -44,13 +112,8 @@ export function BinahMapLite({ events, selectedId, onSelect, height = 200 }: Pro
     const w = svgRef.current.clientWidth || 400;
     const h = height;
 
+    setSvgSize({ w, h });
     svg.attr('viewBox', `0 0 ${w} ${h}`);
-
-    /* 배경 */
-    svg.selectAll('.bg-rect').data([null]).join('rect')
-      .attr('class', 'bg-rect')
-      .attr('width', w).attr('height', h)
-      .attr('fill', '#0F1923');
 
     /* 위도선 */
     const lats = [-60, -30, 0, 30, 60];
@@ -138,6 +201,80 @@ export function BinahMapLite({ events, selectedId, onSelect, height = 200 }: Pro
       ref={svgRef}
       className="w-full rounded-lg"
       style={{ height }}
-    />
+    >
+      {/* 배경 — 최하단 레이어 (D3 렌더링보다 먼저 위치해야 함) */}
+      <rect width="100%" height={svgSize.h} fill="#0F1923" />
+
+      {/* 세계 지도 실루엣 — 배경 위, 핀 아래 레이어 */}
+      {worldPaths.map((d, i) => (
+        <path
+          key={i}
+          d={d}
+          className="fill-zinc-200 stroke-zinc-300 dark:fill-zinc-800/50 dark:stroke-zinc-700"
+          strokeWidth={0.3}
+          fillRule="evenodd"
+        />
+      ))}
+
+      {/* 이벤트 핀 — React로 렌더링 (d3 마커 위에 오버레이) */}
+      {events.map((event) => {
+        const pinX = lonToX(event.lon, svgSize.w);
+        const pinY = latToY(event.lat, svgSize.h);
+        return (
+          <circle
+            key={`pin-hover-${event.id}`}
+            cx={pinX}
+            cy={pinY}
+            r={6}
+            fill="transparent"
+            style={{ cursor: 'pointer' }}
+            onMouseEnter={() => {
+              setTooltip({
+                x: pinX + 8,
+                y: pinY - 8,
+                title: event.title,
+                summary: event.summary || '',
+              });
+            }}
+            onMouseLeave={() => setTooltip(null)}
+            onClick={() => onSelect?.(event)}
+          />
+        );
+      })}
+
+      {/* 툴팁 — 최상단 레이어 */}
+      {tooltip && (
+        <g style={{ pointerEvents: 'none' }}>
+          <rect
+            x={tooltip.x}
+            y={tooltip.y - 28}
+            width={160}
+            height={tooltip.summary ? 44 : 22}
+            rx={4}
+            className="fill-zinc-900/90 dark:fill-zinc-100/90"
+          />
+          <text
+            x={tooltip.x + 8}
+            y={tooltip.y - 12}
+            fontSize={10}
+            fontWeight={700}
+            className="fill-white dark:fill-zinc-900"
+          >
+            {tooltip.title}
+          </text>
+          {tooltip.summary && (
+            <text
+              x={tooltip.x + 8}
+              y={tooltip.y + 2}
+              fontSize={9}
+              className="fill-zinc-300 dark:fill-zinc-600"
+            >
+              {tooltip.summary.slice(0, 38)}
+              {tooltip.summary.length > 38 ? '…' : ''}
+            </text>
+          )}
+        </g>
+      )}
+    </svg>
   );
 }
