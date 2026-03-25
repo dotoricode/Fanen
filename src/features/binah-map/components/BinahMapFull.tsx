@@ -20,7 +20,7 @@ export function BinahMapFull() {
   return (
     <div className="space-y-4">
       {/* 지도 영역 */}
-      <div className="rounded-xl border border-[#1E3448] overflow-hidden">
+      <div className="rounded-xl border border-slate-200 dark:border-[#1E3448] overflow-hidden">
         <BinahMapLite
           events={events}
           selectedId={selectedEvent?.id}
@@ -36,7 +36,7 @@ export function BinahMapFull() {
 
       {/* 이벤트 목록 */}
       <div className="space-y-2">
-        <h3 className="text-sm font-semibold text-slate-400">현재 모니터링 이벤트 ({events.length}건)</h3>
+        <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-400">현재 모니터링 이벤트 ({events.length}건)</h3>
         {events.map((event) => {
           const isSelected = selectedEvent?.id === event.id;
           return (
@@ -47,7 +47,7 @@ export function BinahMapFull() {
               className={`w-full text-left rounded-lg border p-3 transition-colors ${
                 isSelected
                   ? 'border-teal-500 bg-teal-900/20'
-                  : 'border-[#1E3448] bg-[#162032] hover:border-teal-700'
+                  : 'border-slate-200 bg-white dark:border-[#1E3448] dark:bg-[#162032] hover:border-teal-500 dark:hover:border-teal-700'
               }`}
             >
               <div className="flex items-start gap-2">
@@ -55,12 +55,12 @@ export function BinahMapFull() {
                   {EVENT_TYPE_ICON[event.eventType] ?? '🌐'}
                 </span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-200 truncate">{event.title}</p>
-                  <p className="text-xs text-slate-500 mt-0.5">{event.region}</p>
+                  <p className="text-sm font-medium text-slate-800 dark:text-slate-200 truncate">{event.title}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-500 mt-0.5">{event.region}</p>
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
                   <div
-                    className="h-1.5 w-10 rounded-full overflow-hidden bg-[#0F1923]"
+                    className="h-1.5 w-10 rounded-full overflow-hidden bg-slate-200 dark:bg-[#0F1923]"
                   >
                     <div
                       className="h-full rounded-full"
@@ -70,7 +70,7 @@ export function BinahMapFull() {
                       }}
                     />
                   </div>
-                  <span className="text-xs text-slate-500">{event.riskScore}</span>
+                  <span className="text-xs text-slate-500 dark:text-slate-500">{event.riskScore}</span>
                 </div>
               </div>
             </button>
