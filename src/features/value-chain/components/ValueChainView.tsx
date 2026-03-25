@@ -279,7 +279,7 @@ function TierList({
             <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
               {TIER_LABELS[tier]}
             </span>
-            <span className="ml-2 text-xs text-slate-500">({nodes.length}개)</span>
+            <span className="ml-2 text-xs text-slate-500 dark:text-slate-500">({nodes.length}개)</span>
           </div>
           <div className="border-x border-b border-slate-200 dark:border-slate-700 rounded-b-lg space-y-1 p-2">
             {nodes.map((node) => (
