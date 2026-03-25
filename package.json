@@ -11,8 +11,10 @@
   "dependencies": {
     "@supabase/ssr": "^0.5.1",
     "@supabase/supabase-js": "^2.45.0",
+    "@types/d3-sankey": "^0.12.5",
     "@upstash/redis": "^1.34.0",
     "d3": "^7.9.0",
+    "d3-sankey": "^0.12.3",
     "lightweight-charts": "^5.1.0",
     "next": "^14.2.35",
     "react": "^18.3.1",
