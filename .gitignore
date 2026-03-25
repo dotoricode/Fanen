@@ -39,3 +39,7 @@ __pycache__/
 .vscode/
 *.swp
 *.swo
+
+# Playwright 스크린샷 (로컬 QA용, 공유 불필요)
+screenshots/
+tsconfig.tsbuildinfo
