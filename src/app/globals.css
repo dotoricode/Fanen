@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* BINAH 브랜드 CSS 변수 */
+/* 파낸(Fanen) 브랜드 CSS 변수 */
 :root {
   --color-primary: #0D9488;
   --color-secondary: #A3E635;
@@ -77,7 +77,7 @@ body {
 @import '../styles/senior.css';
 @import '../styles/zoom.css';
 
-/* ── BinahMapLite: 테마별 지도 색상 변수 ── */
+/* ── 세계 정세 맵: 테마별 지도 색상 변수 ── */
 :root {
   --map-bg: rgba(241,245,249,0.5);
   --globe-fill: #f0f4f8;
@@ -99,7 +99,7 @@ body {
   --map-lat-label: rgba(255,255,255,0.2);
 }
 
-/* ── BinahMapLite: 홀로그램 와이어프레임 펄스 애니메이션 ── */
+/* ── 세계 정세 맵: 핑 펄스 애니메이션 ── */
 @keyframes map-pulse {
   0% {
     transform: scale(1);
@@ -143,7 +143,7 @@ body {
 
 /* ── Hot Zone 라이트모드: SVG 배경 투명 처리 ── */
 .hot-zone-map .bg-rect { fill: transparent; }
-.dark .hot-zone-map .bg-rect { fill: #0F1923; }
+.dark .hot-zone-map .bg-rect { fill: #09090b; }
 
 /* ── AiBadge live variant: 핑 애니메이션 ── */
 @keyframes ai-badge-ping {

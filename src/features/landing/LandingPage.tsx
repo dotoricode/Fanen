@@ -10,12 +10,12 @@ import { BandiAvatar } from '@/features/ai-coach/components/BandiAvatar';
 
 /* ── 기능 카드 데이터 ── */
 const FEATURE_CARDS = [
-  { title: '비나 맵', desc: '세계 정세를 지도 위에 시각화하고 수혜 기업을 자동 발굴합니다.', href: '/binah-map', icon: '🌍' },
+  { title: '세계 정세 맵', desc: '세계 정세를 지도 위에 시각화하고 수혜 기업을 자동 발굴합니다.', href: '/binah-map', icon: '🌍' },
   { title: 'AI 뉴스 분석', desc: 'AI가 뉴스를 읽고 투자 영향도를 실시간 분석합니다.', href: '/news', icon: '📰' },
   { title: '섹터 인과관계', desc: '산업 간 연결고리를 시각화하여 투자 기회를 포착합니다.', href: '/sector', icon: '📊' },
-  { title: '포트폴리오 관리', desc: '내 투자 현황을 한눈에 파악하고 관리합니다.', href: '/portfolio', icon: '💼' },
+  { title: '내 포트폴리오', desc: '내 투자 현황을 한눈에 파악하고 관리합니다.', href: '/portfolio', icon: '💼' },
   { title: 'AI 코치 반디', desc: '궁금한 것은 반디에게 물어보세요. 친절하게 알려드려요.', href: '/coach', icon: '✨' },
-  { title: '배당 허브', desc: '불로소득 목표 계산기와 월배당 ETF 시뮬레이터를 제공합니다.', href: '/dividend', icon: '💰' },
+  { title: '배당 수익률 계산기', desc: '불로소득 목표 계산기와 월배당 ETF 시뮬레이터를 제공합니다.', href: '/dividend', icon: '💰' },
 ] as const;
 
 /* ── Hero Section ── */
@@ -24,7 +24,7 @@ function HeroSection() {
     <section className="relative overflow-hidden bg-gradient-to-br from-teal-600 via-teal-700 to-cyan-800 text-white">
       <div className="mx-auto max-w-7xl px-4 py-20 text-center sm:py-28">
         <p className="text-sm font-semibold uppercase tracking-widest text-teal-200 mb-4">
-          BINAH · 비나 · Deep Insight, Smart Investment
+          파낸 · Fanen · 세상이 움직이면, 파낸이 먼저 압니다
         </p>
         <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
           반디가 찾은 오늘의 기회,
@@ -46,12 +46,12 @@ function HeroSection() {
             href="/binah-map"
             className="rounded-lg border border-white/30 px-8 py-3 text-base font-semibold text-white transition-colors hover:bg-white/10"
           >
-            비나 맵 보기
+            세계 정세 보기
           </Link>
         </div>
       </div>
       {/* 배경 장식 */}
-      <div className="absolute -bottom-4 left-0 right-0 h-8 bg-gray-50 dark:bg-[#0F1923] rounded-t-[2rem]" />
+      <div className="absolute -bottom-4 left-0 right-0 h-8 bg-gray-50 dark:bg-zinc-950 rounded-t-[2rem]" />
     </section>
   );
 }
@@ -60,18 +60,18 @@ function HeroSection() {
 function FeatureCards() {
   return (
     <section className="mx-auto max-w-7xl px-4 py-16">
-      <h2 className="mb-8 text-center text-2xl font-bold text-gray-900 dark:text-slate-100 sm:text-3xl">
-        BINAH가 제공하는 기능
+      <h2 className="mb-8 text-center text-2xl font-bold text-gray-900 dark:text-zinc-100 sm:text-3xl">
+        파낸이 제공하는 기능
       </h2>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {FEATURE_CARDS.map((card) => (
           <Link key={card.href} href={card.href} className="group">
             <Card className="h-full p-6 transition-shadow group-hover:shadow-md">
               <div className="mb-3 text-3xl">{card.icon}</div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-slate-100 group-hover:text-teal-600 transition-colors">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-zinc-100 group-hover:text-teal-600 transition-colors">
                 {card.title}
               </h3>
-              <p className="mt-2 text-sm text-gray-600 dark:text-slate-400">{card.desc}</p>
+              <p className="mt-2 text-sm text-gray-600 dark:text-zinc-400">{card.desc}</p>
             </Card>
           </Link>
         ))}
@@ -83,11 +83,11 @@ function FeatureCards() {
 /* ── 반디 소개 ── */
 function BandiIntro() {
   return (
-    <section className="bg-teal-50 dark:bg-[#0D1F2D] py-16">
+    <section className="bg-teal-50 dark:bg-zinc-950 py-16">
       <div className="mx-auto max-w-3xl px-4 text-center">
         <BandiAvatar size={80} mood="happy" animate />
-        <h2 className="mt-4 text-2xl font-bold text-gray-900 dark:text-slate-100">AI 코치 반디를 만나보세요</h2>
-        <p className="mt-2 text-gray-600 dark:text-slate-400">
+        <h2 className="mt-4 text-2xl font-bold text-gray-900 dark:text-zinc-100">AI 코치 반디를 만나보세요</h2>
+        <p className="mt-2 text-gray-600 dark:text-zinc-400">
           궁금한 종목, 시장 동향, 불로소득 전략 — 무엇이든 반디에게 물어보세요.
         </p>
         {/* 예시 대화 */}
@@ -101,8 +101,8 @@ function BandiIntro() {
             <div className="flex-shrink-0 mt-1">
               <BandiAvatar size={32} mood="excited" />
             </div>
-            <div className="max-w-sm rounded-2xl rounded-bl-md bg-white dark:bg-[#162032] px-4 py-2.5 text-sm text-gray-800 dark:text-slate-200 shadow-sm">
-              반짝이는 기회를 찾았어요! 한화에어로스페이스가 Tier 0 메이저이고, HSD엔진이 Tier 1 직접 납품사예요. 비나 맵에서 Value Chain 전체를 확인해볼까요? 🌍
+            <div className="max-w-sm rounded-2xl rounded-bl-md bg-white dark:bg-zinc-950 px-4 py-2.5 text-sm text-gray-800 dark:text-zinc-200 shadow-sm">
+              반짝이는 기회를 찾았어요! 한화에어로스페이스가 Tier 0 메이저이고, HSD엔진이 Tier 1 직접 납품사예요. 세계 정세 맵에서 수혜 기업 연결망 전체를 확인해볼까요? 🌍
             </div>
           </div>
         </div>
@@ -114,24 +114,24 @@ function BandiIntro() {
 /* ── 완전 무료 안내 ── */
 function FreeSection() {
   const FREE_FEATURES = [
-    '비나 맵 — 세계 정세 + 수혜 기업 자동 발굴',
+    '세계 정세 맵 — 글로벌 이슈 + 수혜 기업 자동 발굴',
     'AI 뉴스 분석 — 무제한',
-    'Value Chain 분석 (Tier 1~3)',
+    '수혜 기업 연결망 분석 (Tier 1~3)',
     '반디 AI 코치 — 무제한',
     '불로소득 목표 계산기',
-    '배당 허브 + 월배당 ETF 시뮬레이터',
+    '배당 수익률 계산기 + 월배당 ETF 시뮬레이터',
   ];
   return (
     <section className="mx-auto max-w-3xl px-4 py-16">
-      <h2 className="mb-8 text-center text-2xl font-bold text-gray-900 dark:text-slate-100 sm:text-3xl">
-        BINAH는 완전 무료입니다
+      <h2 className="mb-8 text-center text-2xl font-bold text-gray-900 dark:text-zinc-100 sm:text-3xl">
+        파낸은 완전 무료입니다
       </h2>
       <Card className="p-6 text-center">
         <p className="text-4xl font-extrabold text-teal-600 dark:text-teal-400 mb-2">₩0</p>
-        <p className="text-gray-500 dark:text-slate-400 text-sm mb-6">영원히 무료 · 신용카드 불필요</p>
+        <p className="text-gray-500 dark:text-zinc-400 text-sm mb-6">영원히 무료 · 신용카드 불필요</p>
         <ul className="space-y-3 text-left">
           {FREE_FEATURES.map((f) => (
-            <li key={f} className="flex items-start gap-2 text-sm text-gray-700 dark:text-slate-300">
+            <li key={f} className="flex items-start gap-2 text-sm text-gray-700 dark:text-zinc-300">
               <span className="mt-0.5 text-teal-500 font-bold">✓</span>
               {f}
             </li>
@@ -177,7 +177,7 @@ function CtaSection() {
 /* ── 메인 랜딩 페이지 ── */
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#0F1923]">
+    <div className="min-h-screen bg-gray-50 dark:bg-zinc-950">
       <HeroSection />
       <FeatureCards />
       <BandiIntro />
