@@ -30,7 +30,9 @@
       "Bash(find /d/00_work/Fanen/node_modules/@supabase -name *.d.ts -path */types*)",
       "Bash(find /d/00_work/Fanen/node_modules/@supabase/supabase-js -name *.d.mts)",
       "Bash(ls /d/00_work/Fanen/src/app/\\\\\\(auth\\\\\\)/)",
-      "Bash(ls /d/00_work/Fanen/src/app/\\\\\\(auth\\\\\\)/login/)"
+      "Bash(ls /d/00_work/Fanen/src/app/\\\\\\(auth\\\\\\)/login/)",
+      "Bash(mkdir -p docs/01-plan/features docs/02-design/features docs/03-analysis docs/04-report/features)",
+      "Bash(mv docs/archive/2026-03 docs/archive/fanen)"
     ]
   }
 }
