@@ -1,32 +1,57 @@
 'use client';
 
+import { useState } from 'react';
 import { DisclaimerBanner } from '@/components/common';
-import { DividendCalendar, DividendSimulator } from '@/features/dividend';
+import DividendCalendar from '@/features/dividend/components/DividendCalendar';
+import PassiveIncomeCalculator from '@/features/dividend/components/PassiveIncomeCalculator';
+import MonthlyETFSimulator from '@/features/dividend/components/MonthlyETFSimulator';
 
-/** 배당 허브 페이지 */
+type Tab = 'calculator' | 'simulator' | 'calendar';
+
+/** 탭 메뉴 정의 */
+const TABS: { id: Tab; label: string }[] = [
+  { id: 'calculator', label: '불로소득 계산기' },
+  { id: 'simulator', label: 'ETF 시뮬레이터' },
+  { id: 'calendar', label: '배당 캘린더' },
+];
+
+/** 불로소득 & 배당 허브 페이지 — 3탭 구조 */
 export default function DividendPage() {
+  const [activeTab, setActiveTab] = useState<Tab>('calculator');
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-slate-900">
-      <div className="max-w-4xl mx-auto px-4 py-8 space-y-10">
-        <header>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-slate-100">배당 허브</h1>
-          <p className="mt-2 text-gray-600 dark:text-slate-400">배당 일정과 수익 시뮬레이션으로 현금흐름을 계획하세요</p>
-        </header>
+    <div className="min-h-screen bg-[#0A1628] text-slate-100 p-4 md:p-6 max-w-3xl mx-auto">
+      {/* 면책 고지 — 모든 분석 화면 필수 */}
+      <DisclaimerBanner variant="default" />
 
-        <DisclaimerBanner variant="default" />
-
-        {/* 배당 캘린더 섹션 — 무료 */}
-        <section>
-          <DividendCalendar />
-        </section>
-
-        {/* 배당 시뮬레이터 섹션 */}
-        <section>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-slate-100 mb-6">배당 시뮬레이터</h2>
-          <DividendSimulator />
-        </section>
+      {/* 헤더 */}
+      <div className="mb-6">
+        <h1 className="text-xl font-bold text-slate-100">불로소득 &amp; 배당 허브</h1>
+        <p className="text-sm text-slate-400 mt-1">월 목표 수입을 역산해 투자 경로를 설계하세요</p>
       </div>
-    </main>
+
+      {/* 탭 네비게이션 */}
+      <div className="flex border-b border-slate-700 mb-6">
+        {TABS.map(({ id, label }) => (
+          <button
+            key={id}
+            type="button"
+            onClick={() => setActiveTab(id)}
+            className={`px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px ${
+              activeTab === id
+                ? 'border-teal-500 text-teal-400'
+                : 'border-transparent text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {/* 탭 콘텐츠 */}
+      {activeTab === 'calculator' && <PassiveIncomeCalculator />}
+      {activeTab === 'simulator' && <MonthlyETFSimulator />}
+      {activeTab === 'calendar' && <DividendCalendar />}
+    </div>
   );
 }

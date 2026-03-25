@@ -130,6 +130,53 @@ export const MOCK_DIVIDEND_CALENDAR: DividendCalendarRow[] = [
   },
 ];
 
+import type { PortfolioType, PortfolioItem, ETFMockData } from '@/features/dividend/types';
+
+// ─── 불로소득 허브 Mock 데이터 (v0.0.1) ───────────────────────────
+
+/** ETF 5종 mock — KRX 기준 참고 데이터 (실제 수치 아님) */
+export const MOCK_ETF_LIST: ETFMockData[] = [
+  { ticker: '458730', name: 'TIGER 미국배당다우존스', annualYield: 3.8, monthlyDividend: 55, sourceUrl: 'https://www.krx.co.kr' },
+  { ticker: '441680', name: 'KODEX 미국배당프리미엄', annualYield: 8.2, monthlyDividend: 130, sourceUrl: 'https://www.krx.co.kr' },
+  { ticker: '395160', name: 'TIGER 리츠부동산인프라', annualYield: 5.1, monthlyDividend: 42, sourceUrl: 'https://www.krx.co.kr' },
+  { ticker: '329200', name: 'TIGER 미국채10년선물', annualYield: 3.2, monthlyDividend: 28, sourceUrl: 'https://www.krx.co.kr' },
+  { ticker: '148020', name: 'KBSTAR 고배당', annualYield: 4.5, monthlyDividend: 60, sourceUrl: 'https://www.krx.co.kr' },
+];
+
+const KRX_URL = 'https://www.krx.co.kr';
+
+/** 투자 성향별 추천 포트폴리오 mock */
+export const MOCK_PORTFOLIOS: Record<PortfolioType, PortfolioItem[]> = {
+  dividend: [
+    { name: 'KBSTAR 고배당', ticker: '148020', weight: 40, expectedYield: 4.5, type: 'dividend' },
+    { name: 'TIGER 리츠부동산인프라', ticker: '395160', weight: 30, expectedYield: 5.1, type: 'dividend' },
+    { name: 'KB금융', ticker: '105560', weight: 20, expectedYield: 5.2, type: 'dividend' },
+    { name: '신한지주', ticker: '055550', weight: 10, expectedYield: 4.8, type: 'dividend' },
+  ],
+  value: [
+    { name: 'POSCO홀딩스', ticker: '005490', weight: 35, expectedYield: 3.2, type: 'value' },
+    { name: '현대차', ticker: '005380', weight: 30, expectedYield: 3.5, type: 'value' },
+    { name: '기아', ticker: '000270', weight: 20, expectedYield: 4.5, type: 'value' },
+    { name: 'LG전자', ticker: '066570', weight: 15, expectedYield: 1.8, type: 'value' },
+  ],
+  growth: [
+    { name: 'TIGER 미국배당다우존스', ticker: '458730', weight: 50, expectedYield: 3.8, type: 'growth' },
+    { name: 'SK텔레콤', ticker: '017670', weight: 30, expectedYield: 4.3, type: 'growth' },
+    { name: 'LG', ticker: '003550', weight: 20, expectedYield: 2.8, type: 'growth' },
+  ],
+  theme: [
+    { name: 'KODEX 미국배당프리미엄', ticker: '441680', weight: 40, expectedYield: 8.2, type: 'theme' },
+    { name: '삼성생명', ticker: '032830', weight: 30, expectedYield: 3.9, type: 'theme' },
+    { name: '하나금융지주', ticker: '086790', weight: 30, expectedYield: 5.0, type: 'theme' },
+  ],
+  etf: [
+    { name: 'TIGER 미국배당다우존스', ticker: '458730', weight: 30, expectedYield: 3.8, type: 'etf' },
+    { name: 'KODEX 미국배당프리미엄', ticker: '441680', weight: 30, expectedYield: 8.2, type: 'etf' },
+    { name: 'TIGER 리츠부동산인프라', ticker: '395160', weight: 20, expectedYield: 5.1, type: 'etf' },
+    { name: 'KBSTAR 고배당', ticker: '148020', weight: 20, expectedYield: 4.5, type: 'etf' },
+  ],
+};
+
 /** 배당 시뮬레이션 결과 예시 (1,000만원 투자, 연 4%, 10년, 재투자) */
 export const MOCK_SIMULATOR_RESULT: SimulatorResult = {
   monthlyIncome: 33_333,

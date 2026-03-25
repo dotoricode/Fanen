@@ -65,3 +65,43 @@ export function incrementSimulatorCount(): number {
   localStorage.setItem(SIMULATOR_KEY, String(next));
   return next;
 }
+
+// ─── 불로소득 허브 타입 (v0.0.1) ───────────────────────────
+
+export type PortfolioType = 'dividend' | 'value' | 'growth' | 'theme' | 'etf';
+
+export interface PortfolioTypeConfig {
+  type: PortfolioType;
+  label: string;
+  icon: string;
+  description: string;
+}
+
+export interface PassiveIncomeInput {
+  targetMonthlyIncome: number;  // 목표 월 불로소득 (원)
+  annualYieldPercent: number;   // 예상 연 배당수익률 (%)
+  portfolioType: PortfolioType;
+}
+
+export interface PassiveIncomeResult {
+  requiredInvestment: number;        // 필요 투자금 (원)
+  recommendedPortfolio: PortfolioItem[];
+  bandiComment: string;              // 반디 멘트
+  sourceUrl: string;                 // KRX 출처 URL
+}
+
+export interface PortfolioItem {
+  name: string;
+  ticker: string;
+  weight: number;          // 비중 (%)
+  expectedYield: number;   // 예상 배당수익률 (%)
+  type: PortfolioType;
+}
+
+export interface ETFMockData {
+  ticker: string;
+  name: string;
+  annualYield: number;     // 연 분배율 (%)
+  monthlyDividend: number; // 주당 월 분배금 (원)
+  sourceUrl: string;       // KRX URL
+}
