@@ -148,7 +148,7 @@ export function HubMenu() {
         transition={{ duration: 0.5, ease: 'backOut' }}
         style={{ originX: `${CENTER.x}px`, originY: `${CENTER.y}px` }}
       >
-        {/* 외부 pulse 링 */}
+        {/* 외부 pulse 링 — scale 로 애니메이션 (r 직접 조작 시 NaN 발생) */}
         <motion.circle
           cx={CENTER.x}
           cy={CENTER.y}
@@ -156,7 +156,8 @@ export function HubMenu() {
           fill="none"
           className="stroke-zinc-300 dark:stroke-zinc-600"
           strokeWidth={1}
-          animate={{ r: [36, 40, 36], opacity: [0.6, 0.2, 0.6] }}
+          style={{ originX: `${CENTER.x}px`, originY: `${CENTER.y}px` }}
+          animate={{ scale: [1, 1.11, 1], opacity: [0.6, 0.2, 0.6] }}
           transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
         />
         {/* 내부 원 */}
@@ -195,11 +196,9 @@ export function HubMenu() {
           key={sat.href}
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.5 + i * 0.15, ease: 'backOut' }}
           style={{ originX: `${sat.cx}px`, originY: `${sat.cy}px` }}
           whileHover={{ scale: 1.15 }}
-          // @ts-expect-error framer-motion whileHover transition
-          whileHoverTransition={{ type: 'spring', stiffness: 400, damping: 20 }}
+          transition={{ type: 'spring', stiffness: 350, damping: 22, delay: 0.5 + i * 0.15 }}
         >
           <Link href={sat.href}>
             {/* 배경 원 */}
