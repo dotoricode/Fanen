@@ -40,14 +40,14 @@ export default function JournalCard({ journal, onEdit, onDelete }: JournalCardPr
   };
 
   return (
-    <article className="rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 shadow-sm">
+    <article className="rounded-lg border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-4 shadow-sm">
       {/* 상단 헤더: 날짜 + 감정 + 버튼 */}
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-3 flex-wrap">
           {/* 날짜 */}
           <time
             dateTime={journal.created_at}
-            className="text-sm text-gray-500 dark:text-slate-500"
+            className="text-sm text-gray-500 dark:text-zinc-500"
           >
             {formatDate(journal.created_at)}
           </time>
@@ -60,10 +60,10 @@ export default function JournalCard({ journal, onEdit, onDelete }: JournalCardPr
 
           {/* 종목명 */}
           {journal.stock_name && (
-            <span className="inline-flex items-center rounded-md bg-gray-100 dark:bg-slate-700 px-2.5 py-0.5 text-xs font-medium text-gray-700 dark:text-slate-300">
+            <span className="inline-flex items-center rounded-md bg-gray-100 dark:bg-zinc-800 px-2.5 py-0.5 text-xs font-medium text-gray-700 dark:text-zinc-300">
               {journal.stock_name}
               {journal.stock_code && (
-                <span className="ml-1 text-gray-400 dark:text-slate-500">({journal.stock_code})</span>
+                <span className="ml-1 text-gray-400 dark:text-zinc-500">({journal.stock_code})</span>
               )}
             </span>
           )}
@@ -74,7 +74,7 @@ export default function JournalCard({ journal, onEdit, onDelete }: JournalCardPr
           <button
             type="button"
             onClick={() => onEdit(journal)}
-            className="rounded-md px-2.5 py-1.5 text-xs font-medium text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+            className="rounded-md px-2.5 py-1.5 text-xs font-medium text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors"
             aria-label="일지 수정"
           >
             수정
@@ -92,7 +92,7 @@ export default function JournalCard({ journal, onEdit, onDelete }: JournalCardPr
 
       {/* 노트 내용 */}
       {journal.note && (
-        <p className="mt-3 text-sm text-gray-700 dark:text-slate-300 line-clamp-3 whitespace-pre-wrap">
+        <p className="mt-3 text-sm text-gray-700 dark:text-zinc-300 line-clamp-3 whitespace-pre-wrap">
           {journal.note}
         </p>
       )}

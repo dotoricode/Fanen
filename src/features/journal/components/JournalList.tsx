@@ -23,7 +23,7 @@ const EMOTION_FILTERS: { key: EmotionType | 'all'; label: string }[] = [
 
 /** 스켈레톤 로딩 카드 */
 function SkeletonCard() {
-  return <div className="animate-pulse bg-gray-100 dark:bg-slate-700 rounded-lg h-24" aria-hidden="true" />;
+  return <div className="animate-pulse bg-gray-100 dark:bg-zinc-800 rounded-lg h-24" aria-hidden="true" />;
 }
 
 /** 투자 일지 목록 (생성/수정/삭제 포함) */
@@ -37,9 +37,9 @@ export default function JournalList() {
   /** Supabase 미설정 시 안내 */
   if (!isSupabaseConfigured()) {
     return (
-      <div className="rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-8 text-center shadow-sm">
-        <p className="text-gray-500 dark:text-slate-500">로그인이 필요합니다.</p>
-        <p className="mt-1 text-sm text-gray-400 dark:text-slate-500">투자 일지를 작성하려면 먼저 로그인해 주세요.</p>
+      <div className="rounded-lg border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-8 text-center shadow-sm">
+        <p className="text-gray-500 dark:text-zinc-500">로그인이 필요합니다.</p>
+        <p className="mt-1 text-sm text-gray-400 dark:text-zinc-500">투자 일지를 작성하려면 먼저 로그인해 주세요.</p>
       </div>
     );
   }
@@ -87,7 +87,7 @@ export default function JournalList() {
     <section>
       {/* 목록 헤더 */}
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-slate-100">투자 일지</h2>
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-zinc-100">투자 일지</h2>
         <button
           type="button"
           onClick={handleNewJournal}
@@ -107,7 +107,7 @@ export default function JournalList() {
             className={`rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
               emotionFilter === filter.key
                 ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-slate-600'
+                : 'bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-zinc-400 hover:bg-gray-200 dark:hover:bg-slate-600'
             }`}
           >
             {filter.label}
@@ -136,9 +136,9 @@ export default function JournalList() {
 
       {/* 빈 상태 */}
       {!loading && !error && journals.length === 0 && (
-        <div className="rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-8 text-center shadow-sm">
-          <p className="text-gray-500 dark:text-slate-500">아직 작성된 일지가 없습니다.</p>
-          <p className="mt-1 text-sm text-gray-400 dark:text-slate-500">
+        <div className="rounded-lg border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-8 text-center shadow-sm">
+          <p className="text-gray-500 dark:text-zinc-500">아직 작성된 일지가 없습니다.</p>
+          <p className="mt-1 text-sm text-gray-400 dark:text-zinc-500">
             투자 기록과 감정을 남기고 성장 과정을 돌아보세요.
           </p>
           <button
@@ -169,8 +169,8 @@ export default function JournalList() {
             ))}
           </ul>
         ) : (
-          <div className="rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-8 text-center shadow-sm">
-            <p className="text-gray-500 dark:text-slate-500">해당 감정의 일지가 없습니다.</p>
+          <div className="rounded-lg border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-8 text-center shadow-sm">
+            <p className="text-gray-500 dark:text-zinc-500">해당 감정의 일지가 없습니다.</p>
           </div>
         );
       })()}
