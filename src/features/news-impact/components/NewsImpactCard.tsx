@@ -197,7 +197,7 @@ export default function NewsImpactCard({ item, languageLevel }: NewsImpactCardPr
                     name: stock,
                   })
                 }
-                className="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full hover:bg-blue-100 cursor-pointer transition-colors"
+                className="text-xs bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 px-2 py-0.5 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/50 cursor-pointer transition-colors"
                 title={`${stock} 차트 보기`}
               >
                 {stock}
