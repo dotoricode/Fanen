@@ -15,14 +15,14 @@ export default function NotificationList() {
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
 
   if (notifications.length === 0) {
-    return <p className="text-center text-gray-500 dark:text-slate-500 py-8">알림이 없습니다.</p>;
+    return <p className="text-center text-gray-500 dark:text-zinc-500 py-8">알림이 없습니다.</p>;
   }
 
   return (
     <div className="space-y-3">
       {/* 헤더 */}
       <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-500 dark:text-slate-500">
+        <p className="text-sm text-gray-500 dark:text-zinc-500">
           안읽은 알림 <span className="font-bold text-blue-600">{unreadCount}</span>건
         </p>
         {unreadCount > 0 && (
@@ -41,7 +41,7 @@ export default function NotificationList() {
         {notifications.map((notification) => (
           <li
             key={notification.id}
-            className={`flex items-start gap-3 rounded-lg p-3 transition-colors cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-700 ${
+            className={`flex items-start gap-3 rounded-lg p-3 transition-colors cursor-pointer hover:bg-gray-50 dark:hover:bg-zinc-700 ${
               !notification.isRead ? 'bg-blue-50/50 dark:bg-blue-900/20' : ''
             }`}
             onClick={() => markAsRead(notification.id)}
@@ -56,15 +56,15 @@ export default function NotificationList() {
 
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
-                <p className={`text-sm truncate ${!notification.isRead ? 'font-bold text-gray-900 dark:text-slate-100' : 'font-medium text-gray-700 dark:text-slate-300'}`}>
+                <p className={`text-sm truncate ${!notification.isRead ? 'font-bold text-gray-900 dark:text-zinc-100' : 'font-medium text-gray-700 dark:text-zinc-300'}`}>
                   {notification.title}
                 </p>
                 {!notification.isRead && (
                   <span className="h-2 w-2 flex-shrink-0 rounded-full bg-blue-500" />
                 )}
               </div>
-              <p className="text-xs text-gray-500 dark:text-slate-500 mt-0.5 line-clamp-1">{notification.message}</p>
-              <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">
+              <p className="text-xs text-gray-500 dark:text-zinc-500 mt-0.5 line-clamp-1">{notification.message}</p>
+              <p className="text-xs text-gray-400 dark:text-zinc-500 mt-1">
                 {new Date(notification.createdAt).toLocaleString('ko-KR')}
               </p>
             </div>
