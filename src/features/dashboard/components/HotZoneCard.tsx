@@ -18,7 +18,7 @@ export function HotZoneCard({ className }: { className?: string }) {
 
       {/* Header */}
       <div className="relative z-10 flex items-center justify-between px-5 pt-4 pb-2">
-        <p className="text-xs font-medium uppercase tracking-widest text-slate-500 dark:text-slate-400">
+        <p className="text-xs font-medium uppercase tracking-widest text-slate-500 dark:text-slate-300">
           비나 맵 — Hot Zone
         </p>
         <Link href="/binah-map" className="text-xs text-primary hover:underline transition-colors">
@@ -26,8 +26,8 @@ export function HotZoneCard({ className }: { className?: string }) {
         </Link>
       </div>
 
-      {/* Map */}
-      <div className="relative z-10">
+      {/* Map — hot-zone-map: 라이트모드에서 SVG bg-rect 투명 처리 (globals.css) */}
+      <div className="relative z-10 hot-zone-map">
         <BinahMapLite
           events={events}
           selectedId={selectedEvent?.id}
