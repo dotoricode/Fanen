@@ -68,9 +68,9 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
     <div className="relative">
       {/* Premium 기능 안내 모달 */}
       {showVoiceGate && (
-        <div className="absolute bottom-full left-0 right-0 mb-2 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 shadow-lg">
-          <p className="mb-1 text-sm font-semibold text-gray-700 dark:text-slate-300">Premium 기능입니다</p>
-          <p className="mb-3 text-xs text-gray-500 dark:text-slate-500">
+        <div className="absolute bottom-full left-0 right-0 mb-2 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-4 shadow-lg">
+          <p className="mb-1 text-sm font-semibold text-gray-700 dark:text-zinc-300">Premium 기능입니다</p>
+          <p className="mb-3 text-xs text-gray-500 dark:text-zinc-500">
             음성 입력은 Premium 플랜에서 사용할 수 있습니다.
           </p>
           <div className="flex gap-2">
@@ -84,7 +84,7 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
             <button
               type="button"
               onClick={() => setShowVoiceGate(false)}
-              className="rounded-lg px-4 py-1.5 text-xs text-gray-500 dark:text-slate-500 hover:bg-gray-100 dark:hover:bg-slate-700"
+              className="rounded-lg px-4 py-1.5 text-xs text-gray-500 dark:text-zinc-500 hover:bg-gray-100 dark:hover:bg-zinc-700"
             >
               닫기
             </button>
@@ -92,13 +92,13 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
         </div>
       )}
 
-    <div className="flex items-end gap-2 rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 shadow-sm focus-within:border-blue-400 focus-within:ring-1 focus-within:ring-blue-400">
+    <div className="flex items-end gap-2 rounded-2xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 shadow-sm focus-within:border-blue-400 focus-within:ring-1 focus-within:ring-blue-400">
       {/* 음성 입력 버튼 (마이크 아이콘) */}
       <button
         type="button"
         onClick={handleVoiceClick}
         aria-label="음성 입력"
-        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-gray-400 dark:text-slate-500 transition-colors hover:bg-gray-100 dark:hover:bg-slate-700 hover:text-gray-600 dark:hover:text-slate-300"
+        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-gray-400 dark:text-zinc-500 transition-colors hover:bg-gray-100 dark:hover:bg-zinc-700 hover:text-gray-600 dark:hover:text-slate-300"
       >
         <svg
           className="h-4 w-4"
@@ -124,7 +124,7 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
         disabled={disabled}
         placeholder="반디에게 투자 질문을 입력하세요…"
         rows={1}
-        className="max-h-40 flex-1 resize-none bg-transparent text-sm leading-relaxed text-gray-800 dark:text-slate-200 placeholder-gray-400 dark:placeholder-slate-500 outline-none disabled:opacity-50"
+        className="max-h-40 flex-1 resize-none bg-transparent text-sm leading-relaxed text-gray-800 dark:text-zinc-200 placeholder-gray-400 dark:placeholder-slate-500 outline-none disabled:opacity-50"
         aria-label="채팅 입력"
       />
 
@@ -137,7 +137,7 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
         className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors ${
           canSend
             ? 'bg-blue-600 text-white hover:bg-blue-700'
-            : 'bg-gray-100 dark:bg-slate-700 text-gray-300 dark:text-slate-500 cursor-not-allowed'
+            : 'bg-gray-100 dark:bg-zinc-800 text-gray-300 dark:text-zinc-500 cursor-not-allowed'
         }`}
       >
         {/* 위쪽 화살표 아이콘 */}

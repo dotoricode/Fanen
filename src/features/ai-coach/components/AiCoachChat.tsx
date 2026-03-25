@@ -29,15 +29,15 @@ export default function AiCoachChat() {
   const showQuickQuestions = messages.length === 1;
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-2xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900 shadow-sm">
+    <div className="flex flex-col overflow-hidden rounded-2xl border border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-950 shadow-sm">
       {/* 헤더 */}
-      <div className="flex items-center justify-between border-b border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-3">
+      <div className="flex items-center justify-between border-b border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-3">
         <div className="flex items-center gap-3">
           {/* 반디 SVG 아바타 */}
           <BandiAvatar size={40} mood="happy" animate />
           <div>
-            <p className="text-sm font-semibold text-gray-900 dark:text-slate-100">반디 (Bandi)</p>
-            <p className="text-xs text-gray-500 dark:text-slate-500">AI 투자 코치</p>
+            <p className="text-sm font-semibold text-gray-900 dark:text-zinc-100">반디 (Bandi)</p>
+            <p className="text-xs text-gray-500 dark:text-zinc-500">AI 투자 코치</p>
           </div>
         </div>
 
@@ -46,7 +46,7 @@ export default function AiCoachChat() {
           <button
             type="button"
             onClick={clearHistory}
-            className="rounded-lg px-3 py-1.5 text-xs text-gray-500 dark:text-slate-500 transition-colors hover:bg-gray-100 dark:hover:bg-slate-700 hover:text-gray-700 dark:hover:text-slate-300"
+            className="rounded-lg px-3 py-1.5 text-xs text-gray-500 dark:text-zinc-500 transition-colors hover:bg-gray-100 dark:hover:bg-zinc-700 hover:text-gray-700 dark:hover:text-slate-300"
             aria-label="대화 초기화"
           >
             대화 초기화
@@ -108,8 +108,8 @@ export default function AiCoachChat() {
 
       {/* 빠른 질문 버튼 — 환영 메시지만 있을 때 표시 */}
       {showQuickQuestions && (
-        <div className="border-t border-gray-100 dark:border-slate-700 px-4 py-3">
-          <p className="mb-2 text-xs font-medium text-gray-500 dark:text-slate-500">자주 묻는 질문</p>
+        <div className="border-t border-gray-100 dark:border-zinc-700 px-4 py-3">
+          <p className="mb-2 text-xs font-medium text-gray-500 dark:text-zinc-500">자주 묻는 질문</p>
           <div className="flex flex-wrap gap-2">
             {QUICK_QUESTIONS.map((question) => (
               <button
@@ -117,7 +117,7 @@ export default function AiCoachChat() {
                 type="button"
                 onClick={() => sendMessage(question)}
                 disabled={loading}
-                className="rounded-full border border-blue-200 dark:border-blue-700 bg-white dark:bg-slate-800 px-3 py-1.5 text-xs text-blue-700 dark:text-blue-400 transition-colors hover:bg-blue-50 dark:hover:bg-slate-700 disabled:opacity-50"
+                className="rounded-full border border-blue-200 dark:border-blue-700 bg-white dark:bg-zinc-900 px-3 py-1.5 text-xs text-blue-700 dark:text-blue-400 transition-colors hover:bg-blue-50 dark:hover:bg-zinc-700 disabled:opacity-50"
               >
                 {question}
               </button>
@@ -127,7 +127,7 @@ export default function AiCoachChat() {
       )}
 
       {/* 입력창 */}
-      <div className="border-t border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-3">
+      <div className="border-t border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-3">
         <ChatInput onSend={sendMessage} disabled={loading} />
       </div>
     </div>
