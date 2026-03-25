@@ -25,13 +25,13 @@ function formatDate(dateStr: string): string {
 
 export default function PortfolioCard({ portfolio, onEdit, onDelete }: PortfolioCardProps) {
   return (
-    <div className="rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 shadow-sm">
+    <div className="rounded-lg border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-4 shadow-sm">
       {/* 포트폴리오명 */}
-      <h3 className="text-lg font-bold text-gray-900 dark:text-slate-100">{portfolio.name}</h3>
+      <h3 className="text-lg font-bold text-gray-900 dark:text-zinc-100">{portfolio.name}</h3>
 
       {/* 설명 (있으면 표시) */}
       {portfolio.description && (
-        <p className="mt-1 text-sm text-gray-500 dark:text-slate-500">{portfolio.description}</p>
+        <p className="mt-1 text-sm text-gray-500 dark:text-zinc-500">{portfolio.description}</p>
       )}
 
       {/* 평가금액 */}
@@ -48,20 +48,20 @@ export default function PortfolioCard({ portfolio, onEdit, onDelete }: Portfolio
           { name: '카카오', weight: 15, color: 'bg-yellow-500' },
         ].map((stock) => (
           <div key={stock.name} className="flex items-center gap-2 text-sm">
-            <span className="w-20 text-gray-600 dark:text-slate-400 truncate">{stock.name}</span>
-            <div className="flex-1 h-2 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
+            <span className="w-20 text-gray-600 dark:text-zinc-400 truncate">{stock.name}</span>
+            <div className="flex-1 h-2 bg-gray-100 dark:bg-zinc-800 rounded-full overflow-hidden">
               <div
                 className={`h-full rounded-full ${stock.color}`}
                 style={{ width: `${stock.weight}%` }}
               />
             </div>
-            <span className="w-10 text-right text-gray-500 dark:text-slate-500">{stock.weight}%</span>
+            <span className="w-10 text-right text-gray-500 dark:text-zinc-500">{stock.weight}%</span>
           </div>
         ))}
       </div>
 
       {/* 생성일 */}
-      <p className="mt-1 text-xs text-gray-400 dark:text-slate-500">
+      <p className="mt-1 text-xs text-gray-400 dark:text-zinc-500">
         생성일: {formatDate(portfolio.created_at)}
       </p>
 

@@ -23,9 +23,9 @@ export default function PortfolioList() {
   /* Supabase 미설정 안내 */
   if (!isSupabaseConfigured()) {
     return (
-      <div className="rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-8 text-center shadow-sm">
-        <p className="text-gray-500 dark:text-slate-500">로그인이 필요합니다.</p>
-        <p className="mt-1 text-sm text-gray-400 dark:text-slate-500">
+      <div className="rounded-lg border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-8 text-center shadow-sm">
+        <p className="text-gray-500 dark:text-zinc-500">로그인이 필요합니다.</p>
+        <p className="mt-1 text-sm text-gray-400 dark:text-zinc-500">
           포트폴리오 기능을 이용하려면 로그인해주세요.
         </p>
       </div>
@@ -67,7 +67,7 @@ export default function PortfolioList() {
     <div>
       {/* 헤더 */}
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-slate-100">내 포트폴리오</h2>
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-zinc-100">내 포트폴리오</h2>
         <button
           type="button"
           onClick={handleAddClick}
@@ -88,16 +88,16 @@ export default function PortfolioList() {
       {loading && (
         <div className="grid gap-4 sm:grid-cols-2">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="animate-pulse bg-gray-100 dark:bg-slate-700 rounded-lg h-24" />
+            <div key={i} className="animate-pulse bg-gray-100 dark:bg-zinc-800 rounded-lg h-24" />
           ))}
         </div>
       )}
 
       {/* 빈 상태 */}
       {!loading && !error && portfolios.length === 0 && (
-        <div className="rounded-lg border border-dashed border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 p-10 text-center">
-          <p className="text-gray-500 dark:text-slate-500">아직 포트폴리오가 없습니다.</p>
-          <p className="mt-1 text-sm text-gray-400 dark:text-slate-500">
+        <div className="rounded-lg border border-dashed border-gray-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 p-10 text-center">
+          <p className="text-gray-500 dark:text-zinc-500">아직 포트폴리오가 없습니다.</p>
+          <p className="mt-1 text-sm text-gray-400 dark:text-zinc-500">
             위 버튼을 눌러 첫 포트폴리오를 추가해보세요.
           </p>
         </div>
