@@ -17,6 +17,11 @@ export async function middleware(request: NextRequest) {
     request,
   });
 
+  // 테스트 모드: NEXT_PUBLIC_BYPASS_AUTH=true 설정 시 인증 전체 스킵
+  if (process.env.NEXT_PUBLIC_BYPASS_AUTH === 'true') {
+    return supabaseResponse;
+  }
+
   // Supabase 환경변수 미설정 또는 플레이스홀더인 경우 미들웨어 스킵
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '';
