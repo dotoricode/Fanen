@@ -80,13 +80,13 @@ function StockChartModal({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${RAILWAY_API_URL}/api/krx/stock?code=${stockCode}`)
+    fetch(`${RAILWAY_API_URL}/api/krx/stock?code=${encodeURIComponent(stockCode)}`)
       .then((res) => {
         if (!res.ok) throw new Error('종목 데이터 조회 실패');
         return res.json() as Promise<StockPriceResponse>;
       })
       .then((data) => setChartData(data))
-      .catch(() => {})
+      .catch((err) => console.error('[StockChartModal] 차트 로드 실패:', err))
       .finally(() => setLoading(false));
   }, [stockCode]);
 

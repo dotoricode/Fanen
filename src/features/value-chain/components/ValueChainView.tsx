@@ -441,13 +441,13 @@ function SVGMindMap({
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<SVGGElement>) => {
-      if (!containerRef.current || !tooltip) return;
+      if (!containerRef.current) return;
       const rect = containerRef.current.getBoundingClientRect();
       const x = e.clientX - rect.left + 12;
       const y = e.clientY - rect.top - 20;
       setTooltip((prev) => (prev ? { ...prev, x, y } : prev));
     },
-    [tooltip]
+    []
   );
 
   const handleMouseLeave = useCallback(() => {

@@ -17,7 +17,9 @@ export default function PortfolioPageClient() {
 
   /* 요약 계산 (mock 데이터 기반) */
   const totalValue = MOCK_PORTFOLIOS.reduce((sum, p) => sum + p.total_value, 0);
-  const investedCost = 63_000_000; // Mock 투자 원금
+  const investedCost = MOCK_PORTFOLIOS.reduce(
+    (sum, p) => sum + (p.total_value * 0.9), 0
+  ); // Mock 투자 원금 (평가금액의 90% 역산)
   const profitLoss = totalValue - investedCost;
   const profitRate = ((profitLoss / investedCost) * 100).toFixed(1);
   const isPositive = profitLoss >= 0;

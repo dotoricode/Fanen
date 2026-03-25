@@ -34,29 +34,28 @@ export default function SideNav() {
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
+  const [supabaseClient] = useState(() => createClient());
 
   /* 클라이언트에서 로그인 상태 조회 */
   useEffect(() => {
-    const supabase = createClient();
-    if (!supabase) return;
+    if (!supabaseClient) return;
 
-    supabase.auth.getUser().then(({ data }) => {
+    supabaseClient.auth.getUser().then(({ data }) => {
       setUser(data.user);
     });
 
     /* 인증 상태 변경 구독 */
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: listener } = supabaseClient.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
 
     return () => listener.subscription.unsubscribe();
-  }, []);
+  }, [supabaseClient]);
 
   /* 로그아웃 처리 */
   const handleSignOut = async () => {
-    const supabase = createClient();
-    if (!supabase) return;
-    await supabase.auth.signOut();
+    if (!supabaseClient) return;
+    await supabaseClient.auth.signOut();
     router.push('/login');
     router.refresh();
   };
@@ -70,7 +69,7 @@ export default function SideNav() {
       </div>
 
       {/* 메뉴 내비게이션 */}
-      <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-0.5">
+      <nav aria-label="사이드 메뉴" className="flex-1 overflow-y-auto py-4 px-2 space-y-0.5">
         {NAV_ITEMS.map((item) => {
           const isActive = item.href === '/'
             ? pathname === '/'

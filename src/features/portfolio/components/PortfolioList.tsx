@@ -23,9 +23,9 @@ export default function PortfolioList() {
   /* Supabase 미설정 안내 */
   if (!isSupabaseConfigured()) {
     return (
-      <div className="rounded-lg border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-8 text-center shadow-sm">
-        <p className="text-gray-500 dark:text-zinc-500">로그인이 필요합니다.</p>
-        <p className="mt-1 text-sm text-gray-400 dark:text-zinc-500">
+      <div className="rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-8 text-center shadow-sm">
+        <p className="text-zinc-500 dark:text-zinc-400">로그인이 필요합니다.</p>
+        <p className="mt-1 text-sm text-zinc-400 dark:text-zinc-500">
           포트폴리오 기능을 이용하려면 로그인해주세요.
         </p>
       </div>
@@ -67,11 +67,11 @@ export default function PortfolioList() {
     <div>
       {/* 헤더 */}
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-zinc-100">내 포트폴리오</h2>
+        <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">내 포트폴리오</h2>
         <button
           type="button"
           onClick={handleAddClick}
-          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
+          className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 dark:hover:bg-teal-500 transition-colors"
         >
           + 새 포트폴리오 추가
         </button>
@@ -79,7 +79,7 @@ export default function PortfolioList() {
 
       {/* 에러 */}
       {error && (
-        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+        <div className="mb-4 rounded-lg border border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-950/20 p-4 text-sm text-rose-700 dark:text-rose-400">
           {error}
         </div>
       )}
@@ -88,16 +88,16 @@ export default function PortfolioList() {
       {loading && (
         <div className="grid gap-4 sm:grid-cols-2">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="animate-pulse bg-gray-100 dark:bg-zinc-800 rounded-lg h-24" />
+            <div key={i} className="animate-pulse bg-zinc-100 dark:bg-zinc-800 rounded-lg h-24" />
           ))}
         </div>
       )}
 
       {/* 빈 상태 */}
       {!loading && !error && portfolios.length === 0 && (
-        <div className="rounded-lg border border-dashed border-gray-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 p-10 text-center">
-          <p className="text-gray-500 dark:text-zinc-500">아직 포트폴리오가 없습니다.</p>
-          <p className="mt-1 text-sm text-gray-400 dark:text-zinc-500">
+        <div className="rounded-lg border border-dashed border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 p-10 text-center">
+          <p className="text-zinc-500 dark:text-zinc-400">아직 포트폴리오가 없습니다.</p>
+          <p className="mt-1 text-sm text-zinc-400 dark:text-zinc-500">
             위 버튼을 눌러 첫 포트폴리오를 추가해보세요.
           </p>
         </div>

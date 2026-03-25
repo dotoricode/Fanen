@@ -79,15 +79,15 @@ export default function PortfolioForm({ initial, onSubmit, onClose }: PortfolioF
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
       {/* 모달 카드 */}
       <div className="w-full max-w-md rounded-xl bg-white dark:bg-zinc-900 p-6 shadow-xl">
-        <h2 className="mb-5 text-xl font-bold text-gray-900 dark:text-zinc-100">
+        <h2 className="mb-5 text-xl font-bold text-zinc-900 dark:text-zinc-100">
           {isEdit ? '포트폴리오 수정' : '새 포트폴리오'}
         </h2>
 
         <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
           {/* 포트폴리오명 */}
           <div>
-            <label htmlFor="pf-name" className="mb-1 block text-sm font-medium text-gray-700 dark:text-zinc-300">
-              포트폴리오명 <span className="text-red-500">*</span>
+            <label htmlFor="pf-name" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              포트폴리오명 <span className="text-rose-500">*</span>
             </label>
             <input
               id="pf-name"
@@ -95,7 +95,7 @@ export default function PortfolioForm({ initial, onSubmit, onClose }: PortfolioF
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="예: 배당주 포트폴리오"
-              className="w-full rounded-lg border border-gray-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-gray-900 dark:text-zinc-100 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 px-3 py-2 text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
               required
             />
           </div>
@@ -104,7 +104,7 @@ export default function PortfolioForm({ initial, onSubmit, onClose }: PortfolioF
           <div>
             <label
               htmlFor="pf-description"
-              className="mb-1 block text-sm font-medium text-gray-700 dark:text-zinc-300"
+              className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
             >
               설명 (선택)
             </label>
@@ -114,7 +114,7 @@ export default function PortfolioForm({ initial, onSubmit, onClose }: PortfolioF
               onChange={(e) => setDescription(e.target.value)}
               placeholder="포트폴리오에 대한 간단한 설명을 입력하세요"
               rows={2}
-              className="w-full rounded-lg border border-gray-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-gray-900 dark:text-zinc-100 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none"
+              className="w-full rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 px-3 py-2 text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500 resize-none"
             />
           </div>
 
@@ -122,9 +122,9 @@ export default function PortfolioForm({ initial, onSubmit, onClose }: PortfolioF
           <div>
             <label
               htmlFor="pf-total-value"
-              className="mb-1 block text-sm font-medium text-gray-700 dark:text-zinc-300"
+              className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
             >
-              평가금액 (만원) <span className="text-red-500">*</span>
+              평가금액 (만원) <span className="text-rose-500">*</span>
             </label>
             <div className="flex items-center gap-2">
               <input
@@ -135,13 +135,13 @@ export default function PortfolioForm({ initial, onSubmit, onClose }: PortfolioF
                 value={totalValueMan}
                 onChange={(e) => setTotalValueMan(e.target.value)}
                 placeholder="예: 1000"
-                className="w-full rounded-lg border border-gray-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-gray-900 dark:text-zinc-100 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="w-full rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 px-3 py-2 text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
                 required
               />
-              <span className="shrink-0 text-sm text-gray-500 dark:text-zinc-500">만원</span>
+              <span className="shrink-0 text-sm text-zinc-500 dark:text-zinc-400">만원</span>
             </div>
             {totalValueMan && !isNaN(Number(totalValueMan)) && (
-              <p className="mt-1 text-xs text-gray-400 dark:text-zinc-500">
+              <p className="mt-1 text-xs text-zinc-400 dark:text-zinc-500">
                 = {(Number(totalValueMan) * 10000).toLocaleString('ko-KR')}원
               </p>
             )}
@@ -149,7 +149,7 @@ export default function PortfolioForm({ initial, onSubmit, onClose }: PortfolioF
 
           {/* 폼 에러 */}
           {formError && (
-            <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            <p className="rounded-lg border border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-950/20 px-3 py-2 text-sm text-rose-700 dark:text-rose-400">
               {formError}
             </p>
           )}
@@ -159,7 +159,7 @@ export default function PortfolioForm({ initial, onSubmit, onClose }: PortfolioF
             <button
               type="submit"
               disabled={submitting}
-              className="flex-1 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors disabled:opacity-50"
+              className="flex-1 rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 dark:hover:bg-teal-500 transition-colors disabled:opacity-50"
             >
               {submitting ? '저장 중...' : isEdit ? '수정 완료' : '포트폴리오 추가'}
             </button>
@@ -167,7 +167,7 @@ export default function PortfolioForm({ initial, onSubmit, onClose }: PortfolioF
               type="button"
               onClick={onClose}
               disabled={submitting}
-              className="rounded-lg border border-gray-300 dark:border-zinc-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-zinc-300 hover:bg-gray-50 dark:hover:bg-zinc-700 transition-colors disabled:opacity-50"
+              className="rounded-lg border border-zinc-300 dark:border-zinc-600 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors disabled:opacity-50"
             >
               취소
             </button>
