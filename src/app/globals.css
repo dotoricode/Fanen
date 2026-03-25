@@ -54,3 +54,22 @@ body {
 /* 시니어 모드 — 별도 파일로 분리 */
 @import '../styles/senior.css';
 @import '../styles/zoom.css';
+
+/* ── Dashboard Redesign: BinahMapLite ping animation ── */
+@keyframes map-ping {
+  75%, 100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+.map-ping-ring {
+  animation: map-ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* ── Dashboard Redesign: Hot Zone dot pattern ── */
+.bg-dot-pattern {
+  background-image: radial-gradient(circle, rgba(45, 212, 191, 0.12) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
