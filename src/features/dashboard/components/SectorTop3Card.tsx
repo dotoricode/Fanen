@@ -2,9 +2,13 @@
 
 /**
  * SectorTop3Card — 오늘 반디가 주목한 섹터 Top3
+ * shadcn Progress + Badge 기반 디자인
  */
 import Link from 'next/link';
+import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
 import { MOCK_GEO_EVENTS } from '@/lib/mock/mockBinahMap';
+import { cn } from '@/lib/utils';
 
 /** 이벤트에서 섹터별 최고 riskScore 집계 */
 function deriveTopSectors() {
@@ -23,44 +27,41 @@ function deriveTopSectors() {
 
 const TOP_SECTORS = deriveTopSectors();
 
-function riskBg(score: number) {
-  if (score >= 70) return 'bg-red-900/30 text-red-300';
-  if (score >= 45) return 'bg-amber-900/30 text-amber-300';
-  return 'bg-emerald-900/30 text-emerald-300';
-}
-
-export function SectorTop3Card() {
+export function SectorTop3Card({ className }: { className?: string }) {
   return (
-    <div className="rounded-xl border border-slate-200 dark:border-[#1E3448] bg-white dark:bg-[#162032] p-4 space-y-3">
+    <div className={cn(
+      'rounded-2xl border border-slate-100 dark:border-white/5',
+      'bg-white dark:bg-white/5 shadow-sm p-6 space-y-3',
+      className
+    )}>
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-slate-600 dark:text-slate-400">오늘 반디 주목 섹터</h2>
-        <Link href="/binah-map" className="text-xs text-teal-600 dark:text-teal-400 hover:underline">
+        <p className="text-xs font-medium uppercase tracking-widest text-slate-500 dark:text-slate-400">
+          오늘 반디 주목 섹터
+        </p>
+        <Link href="/binah-map" className="text-xs text-primary hover:underline transition-colors">
           지도 보기 →
         </Link>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-3">
         {TOP_SECTORS.map((s, idx) => (
           <div key={s.name} className="flex items-center gap-3">
-            <span className="text-xs font-bold text-slate-600 w-4 text-center">
+            {/* 순위 Badge — 원형 */}
+            <Badge
+              variant="outline"
+              className="w-5 h-5 rounded-full flex items-center justify-center p-0 text-[10px] font-bold"
+            >
               {idx + 1}
-            </span>
+            </Badge>
             <div className="flex-1">
-              <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center justify-between mb-1.5">
                 <span className="text-sm font-medium text-slate-800 dark:text-slate-200">{s.name}</span>
-                <span className={`text-xs font-semibold rounded-full px-2 py-0.5 ${riskBg(s.score)}`}>
+                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
                   {s.score}
                 </span>
               </div>
-              <div className="h-1 rounded-full bg-slate-200 dark:bg-[#0F1923] overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all"
-                  style={{
-                    width: `${s.score}%`,
-                    background: s.score >= 70 ? '#F87171' : s.score >= 45 ? '#FBBF24' : '#34D399',
-                  }}
-                />
-              </div>
+              {/* teal primary 단색 Progress */}
+              <Progress value={s.score} className="h-1.5" />
             </div>
           </div>
         ))}
