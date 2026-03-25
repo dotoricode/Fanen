@@ -18,12 +18,12 @@ export default function MockTradingDashboard() {
 
   if (loading) {
     return (
-      <div className="rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
+      <div className="rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-6 shadow-sm">
         <div className="animate-pulse space-y-4">
-          <div className="h-5 w-40 rounded bg-gray-200 dark:bg-slate-700" />
+          <div className="h-5 w-40 rounded bg-gray-200 dark:bg-zinc-800" />
           <div className="grid grid-cols-2 gap-4">
-            <div className="h-20 rounded-lg bg-gray-100 dark:bg-slate-700" />
-            <div className="h-20 rounded-lg bg-gray-100 dark:bg-slate-700" />
+            <div className="h-20 rounded-lg bg-gray-100 dark:bg-zinc-800" />
+            <div className="h-20 rounded-lg bg-gray-100 dark:bg-zinc-800" />
           </div>
         </div>
       </div>
@@ -40,8 +40,8 @@ export default function MockTradingDashboard() {
 
   if (!account || !season) {
     return (
-      <div className="rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
-        <p className="text-sm text-gray-500 dark:text-slate-500">
+      <div className="rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-6 shadow-sm">
+        <p className="text-sm text-gray-500 dark:text-zinc-500">
           활성 시즌이 없거나 로그인이 필요합니다. 로그인 후 자동으로 계좌가 생성됩니다.
         </p>
       </div>
@@ -52,28 +52,28 @@ export default function MockTradingDashboard() {
   const isPositive = profitRate >= 0;
 
   return (
-    <div className="rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm space-y-5">
+    <div className="rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-6 shadow-sm space-y-5">
       {/* 시즌 배지 */}
       <div className="flex items-center gap-3">
         <span className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700">
           {season.name}
         </span>
-        <span className="text-sm text-gray-500 dark:text-slate-500">
+        <span className="text-sm text-gray-500 dark:text-zinc-500">
           {formatDate(season.start_date)} ~ {formatDate(season.end_date)}
         </span>
       </div>
 
       {/* 잔고 카드 */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="rounded-lg bg-gray-50 dark:bg-slate-900 p-4">
-          <p className="text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wide">초기 시드머니</p>
-          <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-slate-100">
+        <div className="rounded-lg bg-gray-50 dark:bg-zinc-950 p-4">
+          <p className="text-xs font-medium text-gray-500 dark:text-zinc-500 uppercase tracking-wide">초기 시드머니</p>
+          <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-zinc-100">
             {formatKRW(account.initial_balance)}
           </p>
         </div>
-        <div className="rounded-lg bg-gray-50 dark:bg-slate-900 p-4">
-          <p className="text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wide">현재 잔고</p>
-          <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-slate-100">
+        <div className="rounded-lg bg-gray-50 dark:bg-zinc-950 p-4">
+          <p className="text-xs font-medium text-gray-500 dark:text-zinc-500 uppercase tracking-wide">현재 잔고</p>
+          <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-zinc-100">
             {formatKRW(account.current_balance)}
           </p>
         </div>
@@ -81,16 +81,16 @@ export default function MockTradingDashboard() {
 
       {/* 수익률 비교 카드 */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="rounded-lg bg-gray-50 dark:bg-slate-900 p-4">
-          <p className="text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wide">내 수익률</p>
+        <div className="rounded-lg bg-gray-50 dark:bg-zinc-950 p-4">
+          <p className="text-xs font-medium text-gray-500 dark:text-zinc-500 uppercase tracking-wide">내 수익률</p>
           <p className={`mt-1 text-2xl font-bold ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
             {isPositive ? '+' : ''}{profitRate.toFixed(2)}%
           </p>
         </div>
-        <div className="rounded-lg bg-gray-50 dark:bg-slate-900 p-4">
-          <p className="text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wide">코스피 수익률</p>
+        <div className="rounded-lg bg-gray-50 dark:bg-zinc-950 p-4">
+          <p className="text-xs font-medium text-gray-500 dark:text-zinc-500 uppercase tracking-wide">코스피 수익률</p>
           <p className="mt-1 text-2xl font-bold text-green-600">+2.10%</p>
-          <p className="mt-1 text-xs text-gray-400 dark:text-slate-500">
+          <p className="mt-1 text-xs text-gray-400 dark:text-zinc-500">
             {isPositive && profitRate > 2.1
               ? `코스피 대비 +${(profitRate - 2.1).toFixed(2)}%p 초과 수익`
               : '코스피 대비 수익률을 비교해보세요'}
