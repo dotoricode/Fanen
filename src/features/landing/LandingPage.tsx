@@ -5,7 +5,7 @@
  * 섹션: Hero → FeatureCards → 반디 소개 → 요금제 미리보기 → CTA
  */
 import Link from 'next/link';
-import Card from '@/components/ui/Card';
+import { Card } from '@/components/ui/Card';
 import { BandiAvatar } from '@/features/ai-coach/components/BandiAvatar';
 
 /* ── 기능 카드 데이터 ── */
@@ -66,7 +66,7 @@ function FeatureCards() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {FEATURE_CARDS.map((card) => (
           <Link key={card.href} href={card.href} className="group">
-            <Card variant="bordered" padding="lg" className="h-full transition-shadow group-hover:shadow-md">
+            <Card className="h-full p-6 transition-shadow group-hover:shadow-md">
               <div className="mb-3 text-3xl">{card.icon}</div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-slate-100 group-hover:text-teal-600 transition-colors">
                 {card.title}
@@ -126,7 +126,7 @@ function FreeSection() {
       <h2 className="mb-8 text-center text-2xl font-bold text-gray-900 dark:text-slate-100 sm:text-3xl">
         BINAH는 완전 무료입니다
       </h2>
-      <Card variant="bordered" padding="lg" className="text-center">
+      <Card className="p-6 text-center">
         <p className="text-4xl font-extrabold text-teal-600 dark:text-teal-400 mb-2">₩0</p>
         <p className="text-gray-500 dark:text-slate-400 text-sm mb-6">영원히 무료 · 신용카드 불필요</p>
         <ul className="space-y-3 text-left">

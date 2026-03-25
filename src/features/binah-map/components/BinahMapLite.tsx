@@ -75,29 +75,34 @@ export function BinahMapLite({ events, selectedId, onSelect, height = 200 }: Pro
       .attr('stroke', '#1E3448')
       .attr('stroke-width', 0.5);
 
-    /* 이벤트 마커 — 외곽 glow */
-    svg.selectAll<SVGCircleElement, GeoEvent>('.marker-glow')
+    /* 이벤트 마커 — ping group으로 교체 */
+    const markerGroup = svg.selectAll<SVGGElement, GeoEvent>('.event-marker')
       .data(events, (d) => d.id)
-      .join('circle')
-      .attr('class', 'marker-glow')
-      .attr('cx', (d) => lonToX(d.lon, w))
-      .attr('cy', (d) => latToY(d.lat, h))
-      .attr('r', (d) => (d.id === selectedId ? 14 : 10))
-      .attr('fill', (d) => riskColor(d.riskScore))
-      .attr('fill-opacity', 0.2)
-      .attr('pointer-events', 'none');
+      .join('g')
+      .attr('class', 'event-marker');
 
-    /* 이벤트 마커 — 본체 */
-    svg.selectAll<SVGCircleElement, GeoEvent>('.marker-dot')
-      .data(events, (d) => d.id)
+    /* ping ring (map-ping-ring 클래스만 — 애니메이션은 globals.css에 정의) */
+    markerGroup.selectAll<SVGCircleElement, GeoEvent>('.ping-ring')
+      .data((d) => [d])
       .join('circle')
-      .attr('class', 'marker-dot')
+      .attr('class', 'ping-ring map-ping-ring')
+      .attr('r', 7)
       .attr('cx', (d) => lonToX(d.lon, w))
       .attr('cy', (d) => latToY(d.lat, h))
-      .attr('r', (d) => (d.id === selectedId ? 7 : 5))
-      .attr('fill', (d) => riskColor(d.riskScore))
-      .attr('stroke', '#0F1923')
+      .attr('fill', 'none')
+      .attr('stroke', (d) => riskColor(d.riskScore))
       .attr('stroke-width', 1.5)
+      .attr('opacity', 0.6);
+
+    /* core dot */
+    markerGroup.selectAll<SVGCircleElement, GeoEvent>('.ping-core')
+      .data((d) => [d])
+      .join('circle')
+      .attr('class', 'ping-core')
+      .attr('r', 4)
+      .attr('cx', (d) => lonToX(d.lon, w))
+      .attr('cy', (d) => latToY(d.lat, h))
+      .attr('fill', (d) => riskColor(d.riskScore))
       .attr('cursor', 'pointer')
       .on('click', (_evt, d) => onSelect?.(d));
 
