@@ -29,21 +29,21 @@ export function CompanyCard({ node, isSelected = false, onClick }: CompanyCardPr
       onKeyDown={(e) => e.key === 'Enter' && onClick?.()}
       className={cn(
         'w-full rounded-xl border p-4 transition-all cursor-pointer text-left',
-        'bg-white dark:bg-slate-800/80',
-        'hover:bg-slate-50 dark:hover:bg-slate-800',
+        'bg-white dark:bg-zinc-900/80',
+        'hover:bg-zinc-50 dark:hover:bg-zinc-800',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500',
         isSelected
           ? 'border-teal-500 dark:border-teal-500 shadow-md shadow-teal-500/10'
-          : 'border-slate-200 dark:border-slate-700'
+          : 'border-slate-200 dark:border-zinc-700'
       )}
     >
       {/* 헤더: 티어 뱃지 + 티커 + 기업명 */}
       <div className="flex flex-wrap items-center gap-2 mb-3">
         <TierBadge tier={node.tier} />
-        <span className="text-xs font-mono text-slate-500 dark:text-slate-400">
+        <span className="text-xs font-mono text-slate-500 dark:text-zinc-400">
           {node.ticker}
         </span>
-        <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+        <span className="text-sm font-semibold text-slate-900 dark:text-zinc-100">
           {node.name}
         </span>
       </div>
@@ -59,13 +59,13 @@ export function CompanyCard({ node, isSelected = false, onClick }: CompanyCardPr
             배당 {node.dividendYield.toFixed(1)}%
           </span>
         )}
-        <span className="text-xs text-slate-500 dark:text-slate-500">
+        <span className="text-xs text-slate-500 dark:text-zinc-500">
           {node.relationship}
         </span>
       </div>
 
       {/* 반디 설명 */}
-      <p className="text-xs text-slate-600 dark:text-slate-400 mb-3 leading-relaxed">
+      <p className="text-xs text-slate-600 dark:text-zinc-400 mb-3 leading-relaxed">
         {node.description}
       </p>
 
