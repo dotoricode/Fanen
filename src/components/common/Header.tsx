@@ -39,7 +39,7 @@ export async function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-[#1E3448] bg-white dark:bg-[#162032]">
+    <header className="sticky top-0 z-50 w-full border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
         {/* 로고 */}
         <BinahLogo />
@@ -50,7 +50,7 @@ export async function Header() {
             <Link
               key={item.href}
               href={item.href}
-              className="text-sm font-medium text-gray-600 dark:text-slate-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
+              className="text-sm font-medium text-zinc-500 dark:text-zinc-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
             >
               {item.label}
             </Link>
@@ -67,7 +67,7 @@ export async function Header() {
               {/* 알림 아이콘 + 미읽음 뱃지 */}
               <Link
                 href="/notifications"
-                className="relative rounded-lg p-2 text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+                className="relative rounded-lg p-2 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                 aria-label="알림"
               >
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -88,7 +88,7 @@ export async function Header() {
               <DarkModeToggle />
               <Link
                 href="/login"
-                className="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+                className="rounded-lg px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
               >
                 로그인
               </Link>

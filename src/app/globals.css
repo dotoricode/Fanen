@@ -31,7 +31,17 @@ body {
 }
 
 /* ── CSS Variables (라이트/다크 모드) ── */
+/* shadcn 호환 시맨틱 토큰 — RGB 값만 (/ opacity 연산 지원) */
 :root {
+  --background: 255 255 255;         /* white */
+  --foreground: 9 9 11;              /* zinc-950 */
+  --muted: 244 244 245;              /* zinc-100 */
+  --muted-foreground: 113 113 122;   /* zinc-500 */
+  --border: 228 228 231;             /* zinc-200 */
+  --card: 255 255 255;
+  --card-foreground: 9 9 11;
+
+  /* 레거시 변수 (기존 컴포넌트 호환) */
   --bg-primary: #F9FAFB;
   --bg-card: #FFFFFF;
   --bg-nav: #FFFFFF;
@@ -42,30 +52,87 @@ body {
 }
 
 .dark {
-  --bg-primary: #0F1923;
-  --bg-card: #162032;
-  --bg-nav: #162032;
-  --text-primary: #F1F5F9;
-  --text-secondary: #94A3B8;
-  --border-color: #1E3448;
+  --background: 9 9 11;              /* zinc-950 */
+  --foreground: 250 250 250;         /* zinc-50 */
+  --muted: 27 27 29;                 /* zinc-900 */
+  --muted-foreground: 161 161 170;   /* zinc-400 */
+  --border: 39 39 42;                /* zinc-800 */
+  --card: 24 24 27;                  /* zinc-900 */
+  --card-foreground: 250 250 250;
+
+  /* 레거시 변수 */
+  --bg-primary: #09090b;
+  --bg-card: #18181b;
+  --bg-nav: #18181b;
+  --text-primary: #fafafa;
+  --text-secondary: #a1a1aa;
+  --border-color: #27272a;
   --accent: #2DD4BF;
+
+  /* 다크모드 body text 강제 */
+  --color-foreground: #fafafa;
 }
 
 /* 시니어 모드 — 별도 파일로 분리 */
 @import '../styles/senior.css';
 @import '../styles/zoom.css';
 
-/* ── Dashboard Redesign: BinahMapLite ping animation ── */
-@keyframes map-ping {
-  75%, 100% {
-    transform: scale(2.5);
+/* ── BinahMapLite: 테마별 지도 색상 변수 ── */
+:root {
+  --map-bg: rgba(241,245,249,0.5);
+  --globe-fill: #f0f4f8;
+  --globe-border: rgba(148,163,184,0.4);
+  --map-continent-fill: rgba(203,213,225,0.5);
+  --map-continent-stroke: rgba(100,116,139,0.5);
+  --map-grid: rgba(0,0,0,0.07);
+  --map-continent-label: rgba(0,0,0,0.2);
+  --map-lat-label: rgba(0,0,0,0.18);
+}
+.dark {
+  --map-bg: rgba(9,9,11,0.0);
+  --globe-fill: #0d1117;
+  --globe-border: rgba(255,255,255,0.1);
+  --map-continent-fill: rgba(255,255,255,0.04);
+  --map-continent-stroke: rgba(255,255,255,0.18);
+  --map-grid: rgba(255,255,255,0.06);
+  --map-continent-label: rgba(255,255,255,0.18);
+  --map-lat-label: rgba(255,255,255,0.2);
+}
+
+/* ── BinahMapLite: 홀로그램 와이어프레임 펄스 애니메이션 ── */
+@keyframes map-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  70% {
+    transform: scale(3.2);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(3.2);
     opacity: 0;
   }
 }
-.map-ping-ring {
-  animation: map-ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+
+/* 펄스 링 1 — 기본 타이밍 */
+.map-pulse-1 {
+  animation: map-pulse 2.4s cubic-bezier(0.2, 0, 0.4, 1) infinite;
   transform-box: fill-box;
   transform-origin: center;
+}
+
+/* 펄스 링 2 — 0.8s 딜레이 스타거드 */
+.map-pulse-2 {
+  animation: map-pulse 2.4s cubic-bezier(0.2, 0, 0.4, 1) 0.8s infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* 레거시 호환 (이전 D3 마커에서 사용) */
+.map-ping-ring {
+  animation: map-pulse 2s cubic-bezier(0.2, 0, 0.4, 1) infinite;
+  transform-box: fill-box;
 }
 
 /* ── Dashboard Redesign: Hot Zone dot pattern ── */
@@ -77,3 +144,14 @@ body {
 /* ── Hot Zone 라이트모드: SVG 배경 투명 처리 ── */
 .hot-zone-map .bg-rect { fill: transparent; }
 .dark .hot-zone-map .bg-rect { fill: #0F1923; }
+
+/* ── AiBadge live variant: 핑 애니메이션 ── */
+@keyframes ai-badge-ping {
+  75%, 100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+.ai-badge-ping {
+  animation: ai-badge-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}

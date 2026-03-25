@@ -30,7 +30,7 @@ export default function RootLayout({
 (function(){try{var s=localStorage.getItem('fanen-theme');var p=window.matchMedia('(prefers-color-scheme:dark)').matches;if(s==='dark'||(s===null&&p)){document.documentElement.classList.add('dark');}else{document.documentElement.classList.remove('dark');}}catch(e){}})();
         `}} />
       </head>
-      <body className={`${inter.className} antialiased pb-16 md:pb-0 bg-white dark:bg-slate-900`}>
+      <body className={`${inter.className} antialiased pb-16 md:pb-0 bg-background text-foreground`}>
         <ToastProvider>
           <DevModeBanner />
           <Header />

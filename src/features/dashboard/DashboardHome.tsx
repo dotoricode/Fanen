@@ -9,7 +9,7 @@ import { HubMenu } from './components/HubMenu';
 
 export default function DashboardHome() {
   return (
-    <div className="bg-slate-50 dark:bg-[#0F1923]">
+    <div className="bg-zinc-50 dark:bg-zinc-950">
       <div className="mx-auto max-w-7xl px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* 1. 반디 오전 브리핑 — full width */}

@@ -61,12 +61,12 @@ export default function DisclaimerBanner({ variant = 'default' }: DisclaimerBann
   }, [visible, fullText]);
 
   return (
-    <div ref={ref} className="py-6 text-center">
+    <div ref={ref} className="py-3 text-center">
       <motion.p
         initial={{ opacity: 0 }}
         animate={visible ? { opacity: 1 } : {}}
         transition={{ duration: 0.3 }}
-        className="font-mono text-xs text-zinc-400 dark:text-zinc-600 tracking-wide"
+        className="font-mono text-xs text-muted-foreground tracking-wide"
       >
         {displayedText}
         {/* 커서 깜빡임 — 타이핑 중에만 표시 */}
@@ -74,7 +74,7 @@ export default function DisclaimerBanner({ variant = 'default' }: DisclaimerBann
           <motion.span
             animate={{ opacity: [1, 0, 1] }}
             transition={{ duration: 0.8, repeat: Infinity }}
-            className="inline-block w-0.5 h-3 bg-zinc-400 dark:bg-zinc-600 ml-0.5 align-middle"
+            className="inline-block w-0.5 h-3 bg-muted-foreground ml-0.5 align-middle"
           />
         )}
       </motion.p>
