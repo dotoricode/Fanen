@@ -49,7 +49,7 @@ export default function TrafficLightSignal({ signal, confidence, reason }: Traff
   const config = SIGNAL_CONFIG[signal];
 
   return (
-    <div className="flex items-start gap-4 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-4">
+    <div className="flex items-start gap-4 rounded-lg border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900/50 p-4">
       {/* 신호등 원형 아이콘 */}
       <div
         className={`h-10 w-10 flex-shrink-0 rounded-full ${config.bgColor}`}
@@ -62,14 +62,14 @@ export default function TrafficLightSignal({ signal, confidence, reason }: Traff
           {config.label}
         </p>
         {/* 설명 */}
-        <p className="text-sm text-gray-600 dark:text-slate-400">{config.description}</p>
+        <p className="text-sm text-gray-600 dark:text-zinc-400">{config.description}</p>
         {/* 신뢰도 */}
-        <p className="mt-1 text-xs text-gray-500 dark:text-slate-500">
+        <p className="mt-1 text-xs text-gray-500 dark:text-zinc-500">
           신뢰도 {confidence}%
         </p>
         {/* AI 분석 근거 */}
         {reason && (
-          <p className="mt-2 text-sm text-gray-700 dark:text-slate-300">
+          <p className="mt-2 text-sm text-gray-700 dark:text-zinc-300">
             {reason}
           </p>
         )}
