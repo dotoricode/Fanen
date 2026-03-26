@@ -1,4 +1,4 @@
-import type { ValueChain } from '@/features/value-chain/types';
+import type { ValueChain } from '@/features/sector-analysis/types';
 
 /** 방산 섹터 밸류체인 목 데이터 */
 const DEFENSE_CHAIN: ValueChain = {

@@ -1,16 +1,16 @@
-/** 밸류체인 티어 레벨 — 0=메이저, 1=직접납품, 2=부품소재, 3=간접수혜 */
+/** 섹터 분석 티어 레벨 — 0=중심섹터, 1=연관섹터, 2=기업, 3=공급사 */
 export type TierLevel = 0 | 1 | 2 | 3;
 
 /** 반디 매매 시그널 */
 export type SignalType = 'buy' | 'wait' | 'watch';
 
-/** 밸류체인 노드 (개별 종목) */
+/** 섹터 분석 노드 (개별 종목/섹터) */
 export interface ValueChainNode {
   ticker: string;
   name: string;
-  /** 0=메이저, 1=직접납품, 2=부품/소재, 3=간접수혜 */
+  /** 0=중심섹터, 1=연관섹터, 2=기업, 3=공급사 */
   tier: TierLevel;
-  /** 관계 설명: "직접 납품" | "부품/소재" | "간접 수혜" | "메이저" */
+  /** 관계 설명: "메이저" | "직접 납품" | "부품/소재" | "간접 수혜" */
   relationship: string;
   /** 시가배당률 (%) — 선택값 */
   dividendYield?: number;
@@ -21,7 +21,7 @@ export interface ValueChainNode {
   sourceUrl: string;
 }
 
-/** 밸류체인 섹터 전체 데이터 */
+/** 섹터 분석 전체 데이터 */
 export interface ValueChain {
   /** 섹터 키: "defense" | "semiconductor" | "battery" */
   sector: string;
@@ -33,3 +33,7 @@ export interface ValueChain {
   /** ISO 8601 업데이트 시각 */
   updatedAt: string;
 }
+
+// API 호환 alias
+export type SectorData = ValueChain;
+export type SectorNode = ValueChainNode;

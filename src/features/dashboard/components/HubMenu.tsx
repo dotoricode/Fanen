@@ -31,9 +31,9 @@ const STATIONS = [
   },
   {
     emoji: '💰',
-    label: '수혜 기업',
-    sub: '수혜기업 연결망',
-    href: '/value-chain',
+    label: '섹터 연결망',
+    sub: '기업 수혜 관계망',
+    href: '/sector-analysis',
   },
   {
     emoji: '💼',

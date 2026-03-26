@@ -1,6 +1,20 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  async redirects() {
+    return [
+      {
+        source: '/value-chain',
+        destination: '/sector-analysis',
+        permanent: true,
+      },
+      {
+        source: '/value-chain/:path*',
+        destination: '/sector-analysis/:path*',
+        permanent: true,
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       {

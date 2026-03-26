@@ -22,7 +22,7 @@ const NAV_ITEMS = [
   { href: '/binah-map',     label: '세계 정세',    icon: GlobeIcon },
   { href: '/news',          label: '뉴스 분석',    icon: NewsIcon },
   { href: '/sector',        label: '섹터 분석',    icon: ChartBarIcon },
-  { href: '/value-chain',   label: '수혜 기업 연결망', icon: LinkIcon },
+  { href: '/sector-analysis', label: '섹터 연결망', icon: LinkIcon },
   { href: '/portfolio',     label: '내 포트폴리오', icon: BriefcaseIcon },
   { href: '/dividend',      label: '배당 계산기',  icon: CoinIcon },
   { href: '/mock-trading',  label: '모의투자',     icon: TrendingIcon },
@@ -61,7 +61,7 @@ export default function SideNav() {
   };
 
   return (
-    <aside className="hidden md:flex flex-col fixed top-0 left-0 h-screen w-[220px] z-40 border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
+    <aside className="hidden md:flex flex-col fixed top-0 left-0 h-screen z-50 border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950" style={{ width: 'var(--senior-sidebar-w, 220px)' }}>
 
       {/* 로고 영역 */}
       <div className="px-4 py-5 border-b border-zinc-100 dark:border-zinc-800">
