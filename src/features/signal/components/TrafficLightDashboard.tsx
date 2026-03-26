@@ -1,6 +1,7 @@
 'use client';
 
-import { DisclaimerBanner, AiBadge } from '@/components/common';
+import DisclaimerBanner from '@/components/common/DisclaimerBanner';
+import AiBadge from '@/components/common/AiBadge';
 import { useSignal } from '../hooks/useSignal';
 import SignalCard from './SignalCard';
 

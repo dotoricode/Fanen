@@ -1,5 +1,5 @@
 'use client';
-import { DisclaimerBanner } from '@/components/common';
+import DisclaimerBanner from '@/components/common/DisclaimerBanner';
 import { useGlobalNews } from '@/features/global-news';
 import GlobalNewsCard from '@/features/global-news/components/GlobalNewsCard';
 import GlobalNewsAnalysis from '@/features/global-news/components/GlobalNewsAnalysis';

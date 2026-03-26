@@ -1,6 +1,6 @@
 'use client';
 
-import { DisclaimerBanner } from '@/components/common';
+import DisclaimerBanner from '@/components/common/DisclaimerBanner';
 import { TrafficLightDashboard } from '@/features/signal';
 
 /** 매매 신호등 페이지 */

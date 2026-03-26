@@ -1,5 +1,5 @@
 'use client';
-import { DisclaimerBanner } from '@/components/common';
+import DisclaimerBanner from '@/components/common/DisclaimerBanner';
 import { MorningBriefCard } from './components/MorningBriefCard';
 import { SectorTop3Card } from './components/SectorTop3Card';
 import { HotZoneCard } from './components/HotZoneCard';

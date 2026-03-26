@@ -1,6 +1,7 @@
 'use client';
 
-import { DisclaimerBanner, AiBadge } from '@/components/common';
+import DisclaimerBanner from '@/components/common/DisclaimerBanner';
+import AiBadge from '@/components/common/AiBadge';
 import { BinahMapFull } from '@/features/binah-map';
 
 /** 세계 정세 맵 — 지정학 이벤트 + 수혜 기업 분석 */

@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { DisclaimerBanner, AiBadge } from '@/components/common';
+import DisclaimerBanner from '@/components/common/DisclaimerBanner';
+import AiBadge from '@/components/common/AiBadge';
 import { useAiReport } from '../hooks/useAiReport';
 import type { ReportParams } from '../hooks/useAiReport';
 

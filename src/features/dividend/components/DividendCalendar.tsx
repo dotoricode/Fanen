@@ -5,7 +5,7 @@
  * 현재 월 기준 ±3개월 탭으로 월 선택, 해당 월의 배당 종목 목록 표시
  */
 import { useMemo } from 'react';
-import { DisclaimerBanner } from '@/components/common';
+import DisclaimerBanner from '@/components/common/DisclaimerBanner';
 import { useDividendCalendar } from '../hooks/useDividendCalendar';
 import DividendCalendarCard from './DividendCalendarCard';
 

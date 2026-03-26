@@ -1,5 +1,6 @@
 import type { StockRecommendation } from '@/lib/mock/mockGlobalNews';
-import { AiBadge, TrafficLightSignal } from '@/components/common';
+import AiBadge from '@/components/common/AiBadge';
+import TrafficLightSignal from '@/components/common/TrafficLightSignal';
 
 interface Props { stock: StockRecommendation; }
 

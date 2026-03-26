@@ -1,6 +1,6 @@
 'use client';
 
-import { TrafficLightSignal } from '@/components/common';
+import TrafficLightSignal from '@/components/common/TrafficLightSignal';
 import type { SignalItem } from '../hooks/useSignal';
 
 interface SignalCardProps {

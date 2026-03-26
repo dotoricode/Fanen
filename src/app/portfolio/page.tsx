@@ -1,6 +1,11 @@
 import type { Metadata } from 'next';
-import { DisclaimerBanner } from '@/components/common';
-import PortfolioPageClient from '@/features/portfolio/components/PortfolioPageClient';
+import dynamic from 'next/dynamic';
+import DisclaimerBanner from '@/components/common/DisclaimerBanner';
+
+const PortfolioPageClient = dynamic(
+  () => import('@/features/portfolio/components/PortfolioPageClient'),
+  { ssr: false, loading: () => <div className="animate-pulse h-64 rounded-lg bg-zinc-100 dark:bg-zinc-900" /> }
+);
 
 export const metadata: Metadata = {
   title: '내 포트폴리오 — BINAH',

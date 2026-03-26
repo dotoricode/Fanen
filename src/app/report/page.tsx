@@ -1,6 +1,6 @@
 'use client';
 
-import { DisclaimerBanner } from '@/components/common';
+import DisclaimerBanner from '@/components/common/DisclaimerBanner';
 import ReportGenerator from '@/features/ai-report/components/ReportGenerator';
 
 /** AI 맞춤 리포트 페이지 */

@@ -1,6 +1,6 @@
 'use client';
 
-import { DisclaimerBanner } from '@/components/common';
+import DisclaimerBanner from '@/components/common/DisclaimerBanner';
 import type { TaxCalcResult } from './TaxForm';
 
 interface TaxResultProps {

@@ -4,7 +4,7 @@
  * 투자 일지 카드 컴포넌트
  * 개별 일지 항목을 카드 형태로 표시
  */
-import { AiBadge } from '@/components/common';
+import AiBadge from '@/components/common/AiBadge';
 import { getEmotionConfig } from '../types';
 import type { TradeJournalRow } from '../types';
 

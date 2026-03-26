@@ -3,7 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { Header } from '@/components/common/Header';
 import BottomNav from '@/components/common/BottomNav';
-import SideNav from '@/components/common/SideNav';
+import SideNavWrapper from '@/components/common/SideNavWrapper';
 import DevModeBanner from '@/components/common/DevModeBanner';
 import { ToastProvider } from '@/components/ui/Toast';
 
@@ -43,7 +43,7 @@ export default function RootLayout({
           {/* 전체 레이아웃: 사이드바 + 메인 */}
           <div className="flex min-h-screen">
             {/* 데스크탑 사이드바 — SideNav 내부에서 hidden md:flex 처리 */}
-            <SideNav />
+            <SideNavWrapper />
 
             {/* 메인 콘텐츠: 모바일에서는 pb-16(하단바 높이), 데스크탑에서는 사이드바 너비만큼 margin */}
             <main className="flex-1 md-main-offset pb-16 md:pb-0">

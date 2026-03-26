@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { DisclaimerBanner, TutorialPopup } from '@/components/common';
+import DisclaimerBanner from '@/components/common/DisclaimerBanner';
+import TutorialPopup from '@/components/common/TutorialPopup';
 import DividendCalendar from '@/features/dividend/components/DividendCalendar';
 import PassiveIncomeCalculator from '@/features/dividend/components/PassiveIncomeCalculator';
 import MonthlyETFSimulator from '@/features/dividend/components/MonthlyETFSimulator';

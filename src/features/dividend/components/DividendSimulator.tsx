@@ -6,7 +6,7 @@
  * 완전 무료 — 횟수 제한 없음
  */
 import { useState, useMemo } from 'react';
-import { DisclaimerBanner } from '@/components/common';
+import DisclaimerBanner from '@/components/common/DisclaimerBanner';
 import {
   calculateDividend,
   formatKRW,

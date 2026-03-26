@@ -2,12 +2,23 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useSectorAnalysis } from '@/features/sector-analysis/hooks/useSectorAnalysis';
-import { ValueChainDiagram } from '@/features/sector-analysis/components/ValueChainDiagram';
 import { SectorDetailPanel } from '@/features/sector-analysis/components/SectorDetailPanel';
 import type { ValueChainNode } from '@/features/sector-analysis/types';
+
+/** D3 기반 컴포넌트는 SSR에서 제외 — ESM 모듈(d3) 서버 평가 오류 방지 */
+const ValueChainDiagram = dynamic(
+  () => import('@/features/sector-analysis/components/ValueChainDiagram').then((m) => m.ValueChainDiagram),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="animate-pulse h-[520px] rounded-2xl bg-zinc-200 dark:bg-zinc-900" />
+    ),
+  }
+);
 
 /**
  * 섹터 탭 목록

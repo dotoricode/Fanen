@@ -7,7 +7,8 @@
  */
 import { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { AiBadge, StockChart } from '@/components/common';
+import AiBadge from '@/components/common/AiBadge';
+import StockChart from '@/components/common/StockChart';
 import type { NewsImpactCardData } from '../types';
 import type { StockPriceResponse } from '@/types/market.types';
 

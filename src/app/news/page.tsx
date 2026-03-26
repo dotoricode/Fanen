@@ -1,6 +1,15 @@
 import type { Metadata } from 'next';
-import { DisclaimerBanner, TutorialPopup } from '@/components/common';
-import { NewsImpactList } from '@/features/news-impact';
+import dynamic from 'next/dynamic';
+import DisclaimerBanner from '@/components/common/DisclaimerBanner';
+
+const NewsImpactList = dynamic(
+  () => import('@/features/news-impact/components/NewsImpactList'),
+  { ssr: false, loading: () => <div className="animate-pulse h-64 rounded-lg bg-zinc-100 dark:bg-zinc-900" /> }
+);
+const TutorialPopup = dynamic(
+  () => import('@/components/common/TutorialPopup'),
+  { ssr: false }
+);
 
 export const metadata: Metadata = {
   title: '뉴스 분석 — 파낸',

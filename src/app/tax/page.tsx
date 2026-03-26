@@ -1,6 +1,6 @@
 'use client';
 
-import { DisclaimerBanner } from '@/components/common';
+import DisclaimerBanner from '@/components/common/DisclaimerBanner';
 import TaxForm from '@/features/tax-simulator/components/TaxForm';
 
 /** 세금 시뮬레이터 페이지 — 완전 무료 */

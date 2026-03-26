@@ -1,7 +1,8 @@
 'use client';
 
 import { AiCoachChat } from '@/features/ai-coach';
-import { DisclaimerBanner, TutorialPopup } from '@/components/common';
+import DisclaimerBanner from '@/components/common/DisclaimerBanner';
+import TutorialPopup from '@/components/common/TutorialPopup';
 
 /** AI 코치 반디 페이지 */
 export default function CoachPage() {

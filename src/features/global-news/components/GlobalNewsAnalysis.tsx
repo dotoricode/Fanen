@@ -2,7 +2,7 @@
 import type { GlobalNewsItem } from '@/lib/mock/mockGlobalNews';
 import SectorImpactHeatmap from './SectorImpactHeatmap';
 import BenefitStockCard from './BenefitStockCard';
-import { AiBadge } from '@/components/common';
+import AiBadge from '@/components/common/AiBadge';
 
 interface Props { news: GlobalNewsItem; }
 

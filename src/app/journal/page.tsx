@@ -1,6 +1,11 @@
 import type { Metadata } from 'next';
-import { DisclaimerBanner } from '@/components/common';
-import { JournalList } from '@/features/journal';
+import dynamic from 'next/dynamic';
+import DisclaimerBanner from '@/components/common/DisclaimerBanner';
+
+const JournalList = dynamic(
+  () => import('@/features/journal/components/JournalList'),
+  { ssr: false, loading: () => <div className="animate-pulse h-64 rounded-lg bg-zinc-100 dark:bg-zinc-900" /> }
+);
 
 export const metadata: Metadata = {
   title: '투자 일지 — BINAH',
