@@ -49,6 +49,10 @@ body {
   --text-secondary: #6B7280;
   --border-color: #E5E7EB;
   --accent: #0D9488;
+
+  /* Senior 모드 스케일 변수 */
+  --senior-font-scale: 1;
+  --senior-sidebar-w: 220px;
 }
 
 .dark {
@@ -76,6 +80,17 @@ body {
 /* 시니어 모드 — 별도 파일로 분리 */
 @import '../styles/senior.css';
 @import '../styles/zoom.css';
+
+html.senior {
+  --senior-font-scale: 1.25;
+  --senior-sidebar-w: 260px;
+}
+
+@media (min-width: 768px) {
+  .md-main-offset {
+    margin-left: var(--senior-sidebar-w, 220px);
+  }
+}
 
 /* ── 세계 정세 맵: 테마별 지도 색상 변수 ── */
 :root {

@@ -10,14 +10,14 @@ export default function SectorAnalysisPage({
   searchParams: { sector?: string };
 }) {
   return (
-    <main className="min-h-screen bg-[#111111]">
+    <main className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
       <div className="container mx-auto px-4 py-6 max-w-5xl space-y-6">
         {/* 페이지 헤더 */}
         <header>
-          <h1 className="text-3xl font-bold text-[#F9FAFB]">
-            섹터 <span className="text-[#3B82F6]">연결망</span>
+          <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100">
+            섹터 <span className="text-zinc-700 dark:text-zinc-300">연결망</span>
           </h1>
-          <p className="mt-2 text-[#9CA3AF]">
+          <p className="mt-2 text-zinc-500 dark:text-zinc-500">
             섹터 생태계 수혜 관계망을 방사형 마인드맵으로 탐색합니다
           </p>
         </header>
@@ -29,8 +29,8 @@ export default function SectorAnalysisPage({
         <Suspense
           fallback={
             <div className="animate-pulse space-y-4">
-              <div className="h-12 rounded-lg bg-[#1F2937]" />
-              <div className="h-[520px] rounded-xl bg-[#1F2937]" />
+              <div className="h-12 rounded-lg bg-zinc-200 dark:bg-zinc-800" />
+              <div className="h-[520px] rounded-xl bg-zinc-200 dark:bg-zinc-800" />
             </div>
           }
         >

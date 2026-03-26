@@ -2,15 +2,13 @@
 /* UiModeSwitch 또는 온보딩/프로필에서 document.documentElement.classList.add('zoom') 으로 활성화 */
 
 .zoom {
-  font-size: 150%;
-  line-height: 2.0;
   letter-spacing: 0.01em;
 }
 
 .zoom button,
 .zoom [role="button"] {
   min-height: 64px !important;
-  font-size: 1.15rem;
+  font-size: calc(0.875rem * 1.5);
   padding: 1rem 1.75rem;
 }
 
@@ -18,15 +16,15 @@
 .zoom select,
 .zoom textarea {
   min-height: 64px !important;
-  font-size: 1.15rem;
+  font-size: calc(0.875rem * 1.5);
   padding: 0.75rem 1rem;
 }
 
-.zoom h1 { font-size: 2.5rem !important; }
-.zoom h2 { font-size: 2rem !important; }
-.zoom h3 { font-size: 1.5rem !important; }
-.zoom p  { font-size: 1.1rem; }
-.zoom label { font-size: 1rem; }
+.zoom h1 { font-size: calc(1.5rem * 1.5) !important; }
+.zoom h2 { font-size: calc(1.25rem * 1.5) !important; }
+.zoom h3 { font-size: calc(1.125rem * 1.5) !important; }
+.zoom p  { font-size: calc(0.875rem * 1.5); }
+.zoom label { font-size: calc(0.875rem * 1.5); }
 
 /* 모바일 하단 네비 아이콘 확대 */
 .zoom nav svg { width: 28px !important; height: 28px !important; }

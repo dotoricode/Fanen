@@ -45,8 +45,8 @@ export default function RootLayout({
             {/* 데스크탑 사이드바 — SideNav 내부에서 hidden md:flex 처리 */}
             <SideNav />
 
-            {/* 메인 콘텐츠: 모바일에서는 pb-16(하단바 높이), 데스크탑에서는 ml-[220px] */}
-            <main className="flex-1 md:ml-[220px] pb-16 md:pb-0">
+            {/* 메인 콘텐츠: 모바일에서는 pb-16(하단바 높이), 데스크탑에서는 사이드바 너비만큼 margin */}
+            <main className="flex-1 md-main-offset pb-16 md:pb-0">
               {children}
             </main>
           </div>

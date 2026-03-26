@@ -1,13 +1,11 @@
-/* 시니어 모드 override — UiModeSwitch에서 .senior 클래스 토글 */
-.senior {
-  font-size: 120%;
-  line-height: 1.8;
-}
+/* 시니어 모드 — CSS 변수 기반 폰트 스케일링 */
+/* UiModeSwitch에서 html.senior 클래스 토글 시 --senior-font-scale 변수가 활성화됨 */
+/* 루트 font-size를 변경하지 않으므로 레이아웃 rem 단위에 영향 없음 */
 
 .senior button,
 .senior [role="button"] {
   min-height: 52px;
-  font-size: 1.1rem;
+  font-size: calc(0.875rem * var(--senior-font-scale, 1));
   padding: 0.75rem 1.5rem;
 }
 
@@ -15,28 +13,45 @@
 .senior select,
 .senior textarea {
   min-height: 52px;
-  font-size: 1.1rem;
+  font-size: calc(0.875rem * var(--senior-font-scale, 1));
 }
 
 .senior .card,
-.senior [class*="rounded"] {
+.senior [data-card] {
   padding: 1.5rem;
+  height: auto;
 }
 
-.senior h1 {
-  font-size: 2rem;
-}
-
-.senior h2 {
-  font-size: 1.75rem;
-}
-
-.senior h3 {
-  font-size: 1.5rem;
-}
+.senior h1 { font-size: calc(1.5rem * var(--senior-font-scale, 1)); }
+.senior h2 { font-size: calc(1.25rem * var(--senior-font-scale, 1)); }
+.senior h3 { font-size: calc(1.125rem * var(--senior-font-scale, 1)); }
 
 .senior p,
 .senior li {
-  font-size: 1.1rem;
+  font-size: calc(0.875rem * var(--senior-font-scale, 1));
   line-height: 1.9;
+}
+
+/* 텍스트 명도 강화 — 옅은 회색을 더 진한 회색으로 */
+.senior .text-zinc-500,
+.senior .text-zinc-400,
+.senior .text-gray-500,
+.senior .text-gray-400 {
+  color: #3f3f46 !important; /* zinc-700 */
+}
+
+.dark .senior .text-zinc-500,
+.dark .senior .text-zinc-400,
+.dark .senior .text-gray-500,
+.dark .senior .text-gray-400 {
+  color: #d4d4d8 !important; /* zinc-300 */
+}
+
+/* CSS 레거시 변수 명도 강화 */
+.senior {
+  --text-secondary: #3f3f46;
+}
+
+.dark .senior {
+  --text-secondary: #d4d4d8;
 }

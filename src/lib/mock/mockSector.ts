@@ -2,7 +2,9 @@
  * Mock 섹터 인과관계 데이터 — 노드 및 링크
  * D3 ForceSimulation 기반 시각화용
  */
-import type { SectorNode, SectorLink } from '@/features/sector-map/types';
+/** sector-map feature 제거 후 로컬 타입 정의 */
+interface SectorNode { id: string; name: string; }
+interface SectorLink { source: string; target: string; causal_strength: number; description: string; }
 
 /** 섹터 노드 8개 */
 export const MOCK_SECTOR_NODES: SectorNode[] = [

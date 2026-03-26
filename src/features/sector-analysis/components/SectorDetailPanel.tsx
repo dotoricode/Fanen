@@ -29,7 +29,7 @@ export function SectorDetailPanel({ node, onClose }: SectorDetailPanelProps) {
 
   return (
     <div
-      className="rounded-xl border border-[#374151] bg-[#1F2937] p-4"
+      className="bg-white/85 dark:bg-zinc-900/85 backdrop-blur-md border border-zinc-200/70 dark:border-zinc-700/40 rounded-2xl shadow-xl p-4"
       style={{ transition: 'opacity 0.2s, transform 0.2s' }}
     >
       {/* 헤더 */}
